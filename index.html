@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+document.getElementById('importantInfoInput').value = tempData[currentSize].importantInfo || '';
+
+
+show('stepInfo');
+};
+});
+
+
+// Back from Info
+document.getElementById('backToSizes').onclick = () => {
+// Save current size info
+tempData[currentSize] = {
+printTime: document.getElementById('printTimeInput').value,
+filamentCost: document.getElementById('filamentCostInput').value,
+sellPrice: document.getElementById('sellPriceInput').value,
+importantInfo: document.getElementById('importantInfoInput').value
+};
+show('stepSize');
+};
+
+
+// Save Item
+document.getElementById('saveItemBtn').onclick = () => {
+const items = JSON.parse(localStorage.getItem('models') || '{}');
+items[currentModel] = tempData;
+localStorage.setItem('models', JSON.stringify(items));
+alert('Item saved!');
+show('home');
+};
+
+
+// Search Functionality
+document.getElementById('searchBtn').onclick = () => {
+const query = document.getElementById('searchInput').value.trim();
+const items = JSON.parse(localStorage.getItem('models') || '{}');
+const resultDiv = document.getElementById('searchResult');
+resultDiv.innerHTML = '';
+if(!items[query]) { resultDiv.innerText = 'Model not found'; return; }
+
+
+resultDiv.innerHTML = '<label>Select Size</label>' +
+'<select id="sizeSelect"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
+'<button id="viewInfoBtn">View Info</button>' +
+'<div id="infoDisplay"></div>';
+
+
+document.getElementById('viewInfoBtn').onclick = () => {
+const size = document.getElementById('sizeSelect').value;
+const data = items[query][size];
+document.getElementById('infoDisplay').innerHTML = `<p>Print Time: ${data.printTime} hours</p><p>Filament Cost: $${data.filamentCost}</p><p>Sell Price: $${data.sellPrice}</p><p>Important Info: ${data.importantInfo}</p>`;
+};
+};
+</script>
+
+
+</body>
+</html>
