@@ -104,71 +104,72 @@
 </div>
 
 <script>
-let currentModel = null;
-let currentSize = null;
-let tempData = { small: {}, medium: {}, large: {} };
+document.addEventListener('DOMContentLoaded', () => {
+  let currentModel = null;
+  let currentSize = null;
+  let tempData = { small: {}, medium: {}, large: {} };
 
-// Password check
-document.getElementById('passwordBtn').onclick = () => {
-  const pass = document.getElementById('passwordInput').value;
-  if(pass === 'stego'){
-    document.getElementById('passwordContainer').classList.add('hidden');
-    document.getElementById('mainContainer').classList.remove('hidden');
-  } else {
-    document.getElementById('passwordError').innerText = 'Incorrect password';
+  function show(id){
+    document.querySelectorAll('#mainContainer > div').forEach(div => div.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
   }
-};
 
-function show(id){
-  document.querySelectorAll('#mainContainer > div').forEach(d => d.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-}
+  // Password
+  document.getElementById('passwordBtn').onclick = () => {
+    const pass = document.getElementById('passwordInput').value;
+    if(pass === 'stego'){
+      document.getElementById('passwordContainer').classList.add('hidden');
+      document.getElementById('mainContainer').classList.remove('hidden');
+    } else {
+      document.getElementById('passwordError').innerText = 'Incorrect password';
+    }
+  };
 
-// Home Buttons
-document.getElementById('addModelBtn').onclick = () => show('stepName');
-document.getElementById('searchModelBtn').onclick = () => show('searchPage');
-document.getElementById('addCustomerBtn').onclick = () => show('addCustomerPage');
-document.getElementById('changeInfoBtn').onclick = () => show('changeInfoPage');
+  // Home Buttons
+  document.getElementById('addModelBtn').onclick = () => show('stepName');
+  document.getElementById('searchModelBtn').onclick = () => show('searchPage');
+  document.getElementById('addCustomerBtn').onclick = () => show('addCustomerPage');
+  document.getElementById('changeInfoBtn').onclick = () => show('changeInfoPage');
 
-// Back buttons
-document.getElementById('backToHomeFromName').onclick = () => show('home');
-document.getElementById('backToName').onclick = () => show('stepName');
-document.getElementById('backToSizes').onclick = () => show('stepSize');
-document.getElementById('backToHomeFromSearch').onclick = () => show('home');
-document.getElementById('backToHomeFromCustomer').onclick = () => { document.getElementById('customerSizeSelection').classList.add('hidden'); show('home'); };
-document.getElementById('backToHomeFromChangeInfo').onclick = () => show('home');
+  // Back buttons
+  document.getElementById('backToHomeFromName').onclick = () => show('home');
+  document.getElementById('backToName').onclick = () => show('stepName');
+  document.getElementById('backToSizes').onclick = () => show('stepSize');
+  document.getElementById('backToHomeFromSearch').onclick = () => show('home');
+  document.getElementById('backToHomeFromCustomer').onclick = () => { document.getElementById('customerSizeSelection').classList.add('hidden'); show('home'); };
+  document.getElementById('backToHomeFromChangeInfo').onclick = () => show('home');
 
-// Next button for naming 3D model
-document.getElementById('nextToSize').onclick = () => {
-  const name = document.getElementById('modelNameInput').value.trim();
-  if(!name){ alert('Please enter a model name'); return; }
-  currentModel = name;
-  if(!localStorage.getItem('models')) localStorage.setItem('models', JSON.stringify({}));
-  const items = JSON.parse(localStorage.getItem('models'));
-  if(!items[name]) items[name] = { small:{}, medium:{}, large:{} };
-  localStorage.setItem('models', JSON.stringify(items));
-  show('stepSize');
-};
+  // Next button for naming 3D model
+  document.getElementById('nextToSize').onclick = () => {
+    const name = document.getElementById('modelNameInput').value.trim();
+    if(!name){ alert('Please enter a model name'); return; }
+    currentModel = name;
 
-// Suggestion logic for search
-const searchInput = document.getElementById('searchInput');
-const suggestionsDiv = document.getElementById('suggestions');
-searchInput.addEventListener('input', () => {
-  const query = searchInput.value.toLowerCase();
-  const items = JSON.parse(localStorage.getItem('models') || '{}');
-  suggestionsDiv.innerHTML = '';
-  if(!query){ suggestionsDiv.classList.add('hidden'); return; }
-  const matches = Object.keys(items).filter(name => name.toLowerCase().includes(query));
-  matches.forEach(name => {
-    const div = document.createElement('div');
-    div.innerText = name;
-    div.onclick = () => { searchInput.value = name; suggestionsDiv.classList.add('hidden'); };
-    suggestionsDiv.appendChild(div);
+    let items = JSON.parse(localStorage.getItem('models') || '{}');
+    if(!items[name]) items[name] = { small: {}, medium: {}, large: {} };
+    localStorage.setItem('models', JSON.stringify(items));
+
+    show('stepSize');
+  };
+
+  // Live suggestions
+  const searchInput = document.getElementById('searchInput');
+  const suggestionsDiv = document.getElementById('suggestions');
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
+    const items = JSON.parse(localStorage.getItem('models') || '{}');
+    suggestionsDiv.innerHTML = '';
+    if(!query){ suggestionsDiv.classList.add('hidden'); return; }
+    const matches = Object.keys(items).filter(name => name.toLowerCase().includes(query));
+    matches.forEach(name => {
+      const div = document.createElement('div');
+      div.innerText = name;
+      div.onclick = () => { searchInput.value = name; suggestionsDiv.classList.add('hidden'); };
+      suggestionsDiv.appendChild(div);
+    });
+    suggestionsDiv.classList.remove('hidden');
   });
-  suggestionsDiv.classList.remove('hidden');
 });
-
-// Remaining logic for size selection, saving item, customers, and change info remains the same (unchanged)
 </script>
 </body>
 </html>
