@@ -93,85 +93,86 @@
 </style>
 </head>
 <body>
+
 <div class="container show" id="passwordContainer">
-<h2>Enter Password to Access</h2>
-<input type="password" id="passwordInput" placeholder="Password">
-<button id="passwordBtn">Enter</button>
-<p id="passwordError" style="color:red"></p>
+  <h2>Enter Password to Access</h2>
+  <input type="password" id="passwordInput" placeholder="Password">
+  <button id="passwordBtn">Enter</button>
+  <p id="passwordError" style="color:red"></p>
 </div>
 
 <div class="container show hidden" id="mainContainer">
-<header>3D Print Manager</header>
-<div id="home">
-  <button id="addModelBtn">Add 3D Model</button>
-  <button id="searchModelBtn">Search 3D Model</button>
-  <button id="addCustomerBtn">Add Customers</button>
-  <button id="changeInfoBtn">Change Info</button>
-</div>
-
-<div id="stepName" class="hidden">
-  <h2>Name your 3D Model</h2>
-  <input type="text" id="modelNameInput" placeholder="Model Name">
-  <button id="nextToSize">Next</button>
-  <button class="backBtn" data-target="home">Back</button>
-</div>
-
-<div id="stepSize" class="hidden">
-  <h2>Select Size to Add Info</h2>
-  <div class="size-btn-group">
-    <button class="sizeBtn" data-size="small">Small</button>
-    <button class="sizeBtn" data-size="medium">Medium</button>
-    <button class="sizeBtn" data-size="large">Large</button>
+  <header>3D Print Manager</header>
+  <div id="home">
+    <button id="addModelBtn">Add 3D Model</button>
+    <button id="searchModelBtn">Search 3D Model</button>
+    <button id="addCustomerBtn">Add Customers</button>
+    <button id="changeInfoBtn">Change Info</button>
   </div>
-  <button id="saveItemBtn">Save Item</button>
-  <button class="backBtn" data-target="stepName">Back</button>
-</div>
 
-<div id="stepInfo" class="hidden">
-  <h2 id="sizeTitle"></h2>
-  <label>Print Time (hours)</label>
-  <input type="number" id="printTimeInput">
-  <label>Filament Cost ($)</label>
-  <input type="number" id="filamentCostInput">
-  <label>Sell Price ($)</label>
-  <input type="number" id="sellPriceInput">
-  <label>Important Info</label>
-  <textarea id="importantInfoInput" rows="3"></textarea>
-  <button class="backBtn" data-target="stepSize">Back</button>
-</div>
-
-<div id="searchPage" class="hidden">
-  <h2>Search 3D Model</h2>
-  <input type="text" id="searchInput" placeholder="Enter model name">
-  <button id="searchBtn">Search</button>
-  <div id="searchResult"></div>
-  <button class="backBtn" data-target="home">Back</button>
-</div>
-
-<div id="addCustomerPage" class="hidden">
-  <h2>Add Customer</h2>
-  <p>Search model and size first:</p>
-  <input type="text" id="customerModelSearch" placeholder="Enter model name">
-  <button id="searchCustomerModelBtn">Next</button>
-  <div id="customerSizeSelection" class="hidden">
-    <label>Select Size:</label>
-    <select id="customerSizeSelect">
-      <option value="small">Small</option>
-      <option value="medium">Medium</option>
-      <option value="large">Large</option>
-    </select>
-    <button id="addCustomerConfirm">Add Customer</button>
+  <div id="stepName" class="hidden">
+    <h2>Name your 3D Model</h2>
+    <input type="text" id="modelNameInput" placeholder="Model Name">
+    <button id="nextToSize">Next</button>
+    <button id="backToHomeFromName">Back</button>
   </div>
-  <button class="backBtn" data-target="home">Back</button>
-</div>
 
-<div id="changeInfoPage" class="hidden">
-  <h2>Change Info</h2>
-  <input type="text" id="changeInfoModelSearch" placeholder="Enter model name">
-  <button id="searchChangeInfoBtn">Search</button>
-  <div id="changeInfoResult"></div>
-  <button class="backBtn" data-target="home">Back</button>
-</div>
+  <div id="stepSize" class="hidden">
+    <h2>Select Size to Add Info</h2>
+    <div class="size-btn-group">
+      <button class="sizeBtn" data-size="small">Small</button>
+      <button class="sizeBtn" data-size="medium">Medium</button>
+      <button class="sizeBtn" data-size="large">Large</button>
+    </div>
+    <button id="saveItemBtn">Save Item</button>
+    <button id="backToName">Back</button>
+  </div>
+
+  <div id="stepInfo" class="hidden">
+    <h2 id="sizeTitle"></h2>
+    <label>Print Time (hours)</label>
+    <input type="number" id="printTimeInput">
+    <label>Filament Cost ($)</label>
+    <input type="number" id="filamentCostInput">
+    <label>Sell Price ($)</label>
+    <input type="number" id="sellPriceInput">
+    <label>Important Info</label>
+    <textarea id="importantInfoInput" rows="3"></textarea>
+    <button id="backToSizes">Back</button>
+  </div>
+
+  <div id="searchPage" class="hidden">
+    <h2>Search 3D Model</h2>
+    <input type="text" id="searchInput" placeholder="Enter model name">
+    <button id="searchBtn">Search</button>
+    <div id="searchResult"></div>
+    <button id="backToHomeFromSearch">Back</button>
+  </div>
+
+  <div id="addCustomerPage" class="hidden">
+    <h2>Add Customer</h2>
+    <p>Search model and size first:</p>
+    <input type="text" id="customerModelSearch" placeholder="Enter model name">
+    <button id="searchCustomerModelBtn">Next</button>
+    <div id="customerSizeSelection" class="hidden">
+      <label>Select Size:</label>
+      <select id="customerSizeSelect">
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+      </select>
+      <button id="addCustomerConfirm">Add Customer</button>
+    </div>
+    <button id="backToHomeFromCustomer">Back</button>
+  </div>
+
+  <div id="changeInfoPage" class="hidden">
+    <h2>Change Info</h2>
+    <input type="text" id="changeInfoModelSearch" placeholder="Enter model name">
+    <button id="searchChangeInfoBtn">Search</button>
+    <div id="changeInfoResult"></div>
+    <button id="backToHomeFromChangeInfo">Back</button>
+  </div>
 </div>
 
 <script>
@@ -202,15 +203,18 @@ document.getElementById('searchModelBtn').onclick = () => show('searchPage');
 document.getElementById('addCustomerBtn').onclick = () => show('addCustomerPage');
 document.getElementById('changeInfoBtn').onclick = () => show('changeInfoPage');
 
-// Universal Back Buttons
-document.querySelectorAll('.backBtn').forEach(btn => {
-  btn.onclick = () => {
-    const target = btn.getAttribute('data-target');
-    show(target);
-  };
-});
+// Back buttons fixed
+document.getElementById('backToHomeFromName').onclick = () => show('home');
+document.getElementById('backToName').onclick = () => show('stepName');
+document.getElementById('backToSizes').onclick = () => show('stepSize');
+document.getElementById('backToHomeFromSearch').onclick = () => show('home');
+document.getElementById('backToHomeFromCustomer').onclick = () => {
+  document.getElementById('customerSizeSelection').classList.add('hidden');
+  show('home');
+};
+document.getElementById('backToHomeFromChangeInfo').onclick = () => show('home');
 
-// Existing 3D model, customer, and change info logic remains as before (unchanged)...
+// Existing 3D model, customer, and change info logic remains here (same as before, unchanged)...
 </script>
 </body>
 </html>
