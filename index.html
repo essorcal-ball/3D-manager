@@ -5,205 +5,172 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>3D Print Manager</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #3B5323, #FFA500); color: white; }
-  header { background: black; padding: 20px; text-align: center; font-size: 2em; font-weight: bold; color: #FFA500; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-  .container { max-width: 750px; margin: 50px auto; background: rgba(0,0,0,0.9); padding: 30px; border-radius: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); transition: transform 0.3s ease, opacity 0.3s ease; }
-  .container.show { transform: translateY(0); opacity: 1; }
-  h1, h2 { color: #FFA500; text-align: center; }
-  button { margin: 5px; padding: 10px 20px; border: none; background: #3B5323; color: white; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.3s; }
-  button:hover { background: #FFA500; color: black; }
-  input, textarea, select { display: block; margin: 5px 0 15px; width: 100%; padding: 10px; border: 2px solid #FFA500; border-radius: 10px; background: black; color: white; transition: border 0.3s ease; }
-  input:focus, textarea:focus, select:focus { border-color: #3B5323; outline: none; }
-  .hidden { display: none; }
-  .size-btn-group button { width: 30%; }
-  #suggestions { background: #3B5323; color: white; border-radius: 10px; margin-top: -10px; margin-bottom: 10px; max-height: 150px; overflow-y: auto; }
-  #suggestions div { padding: 8px; cursor: pointer; }
-  #suggestions div:hover { background: #FFA500; color: black; }
+body { font-family: Arial, sans-serif; margin:0; padding:0; background: linear-gradient(135deg,#3B5323,#FFA500); color:white; }
+header { background:black; padding:20px; text-align:center; font-size:2em; font-weight:bold; color:#FFA500; box-shadow:0 4px 8px rgba(0,0,0,0.3);}
+.container { max-width:750px; margin:50px auto; background: rgba(0,0,0,0.9); padding:30px; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.5); }
+.hidden { display:none; }
+button { margin:5px; padding:10px 20px; border:none; background:#3B5323; color:white; cursor:pointer; border-radius:10px; font-weight:bold; }
+button:hover { background:#FFA500; color:black; }
+input, textarea, select { display:block; margin:5px 0 15px; width:100%; padding:10px; border:2px solid #FFA500; border-radius:10px; background:black; color:white; }
+.size-btn-group button { width:30%; }
+#suggestions { background:#3B5323; color:white; border-radius:10px; margin-top:-10px; margin-bottom:10px; max-height:150px; overflow-y:auto; }
+#suggestions div { padding:8px; cursor:pointer; }
+#suggestions div:hover { background:#FFA500; color:black; }
 </style>
 </head>
 <body>
-<div class="container show" id="passwordContainer">
-  <h2>Enter Password to Access</h2>
-  <input type="password" id="passwordInput" placeholder="Password">
-  <button id="passwordBtn">Enter</button>
-  <p id="passwordError" style="color:red"></p>
+
+<div class="container" id="passwordContainer">
+<h2>Enter Password</h2>
+<input type="password" id="passwordInput" placeholder="Password">
+<button id="passwordBtn">Enter</button>
+<p id="passwordError" style="color:red"></p>
 </div>
-<div class="container show hidden" id="mainContainer">
-  <header>3D Print Manager</header>
-  <div id="home">
-    <button id="addModelBtn">Add 3D Model</button>
-    <button id="searchModelBtn">Search 3D Model</button>
-    <button id="addCustomerBtn">Add Customers</button>
-    <button id="changeInfoBtn">Change Info</button>
-  </div>
 
-  <div id="stepName" class="hidden">
-    <h2>Name your 3D Model</h2>
-    <input type="text" id="modelNameInput" placeholder="Model Name">
-    <button id="nextToSize">Next</button>
-    <button id="backToHomeFromName">Back</button>
-  </div>
+<div class="container hidden" id="mainContainer">
 
-  <div id="stepSize" class="hidden">
-    <h2>Select Size to Add Info</h2>
-    <div class="size-btn-group">
-      <button class="sizeBtn" data-size="small">Small</button>
-      <button class="sizeBtn" data-size="medium">Medium</button>
-      <button class="sizeBtn" data-size="large">Large</button>
-    </div>
-    <button id="saveItemBtn">Save Item</button>
-    <button id="backToName">Back</button>
-  </div>
+<header>3D Print Manager</header>
 
-  <div id="stepInfo" class="hidden">
-    <h2 id="sizeTitle"></h2>
-    <label>Print Time (hours)</label>
-    <input type="number" id="printTimeInput">
-    <label>Filament Cost ($)</label>
-    <input type="number" id="filamentCostInput">
-    <label>Sell Price ($)</label>
-    <input type="number" id="sellPriceInput">
-    <label>Important Info</label>
-    <textarea id="importantInfoInput" rows="3"></textarea>
-    <button id="backToSizes">Back</button>
-  </div>
+<div id="home">
+<button id="addModelBtn">Add 3D Model</button>
+<button id="searchModelBtn">Search 3D Model</button>
+<button id="addCustomerBtn">Add Customers</button>
+<button id="changeInfoBtn">Change Info</button>
+</div>
 
-  <div id="searchPage" class="hidden">
-    <h2>Search 3D Model</h2>
-    <input type="text" id="searchInput" placeholder="Enter model name" autocomplete="off">
-    <div id="suggestions" class="hidden"></div>
-    <button id="searchBtn">Search</button>
-    <div id="searchResult"></div>
-    <button id="backToHomeFromSearch">Back</button>
-  </div>
+<div id="stepName" class="hidden">
+<h2>Name your 3D Model</h2>
+<input type="text" id="modelNameInput" placeholder="Model Name">
+<button id="nextToSize">Next</button>
+<button id="backToHomeFromName">Back</button>
+</div>
 
-  <div id="addCustomerPage" class="hidden">
-    <h2>Add Customer</h2>
-    <p>Search model and size first:</p>
-    <input type="text" id="customerModelSearch" placeholder="Enter model name">
-    <button id="searchCustomerModelBtn">Next</button>
-    <div id="customerSizeSelection" class="hidden">
-      <label>Select Size:</label>
-      <select id="customerSizeSelect">
-        <option value="small">Small</option>
-        <option value="medium">Medium</option>
-        <option value="large">Large</option>
-      </select>
-      <button id="addCustomerConfirm">Add Customer</button>
-    </div>
-    <button id="backToHomeFromCustomer">Back</button>
-  </div>
+<div id="stepSize" class="hidden">
+<h2>Select Size to Add Info</h2>
+<div class="size-btn-group">
+<button class="sizeBtn" data-size="small">Small</button>
+<button class="sizeBtn" data-size="medium">Medium</button>
+<button class="sizeBtn" data-size="large">Large</button>
+</div>
+<button id="backToName">Back</button>
+</div>
 
-  <div id="changeInfoPage" class="hidden">
-    <h2>Change Info</h2>
-    <input type="text" id="changeInfoModelSearch" placeholder="Enter model name">
-    <button id="searchChangeInfoBtn">Search</button>
-    <div id="changeInfoResult"></div>
-    <button id="backToHomeFromChangeInfo">Back</button>
-  </div>
+<div id="stepInfo" class="hidden">
+<h2 id="sizeTitle"></h2>
+<label>Print Time (hours)</label>
+<input type="number" id="printTimeInput">
+<label>Filament Cost ($)</label>
+<input type="number" id="filamentCostInput">
+<label>Sell Price ($)</label>
+<input type="number" id="sellPriceInput">
+<label>Important Info</label>
+<textarea id="importantInfoInput" rows="3"></textarea>
+<button id="saveInfoBtn">Save Info</button>
+<button id="backToSizes">Back</button>
+</div>
+
+<div id="searchPage" class="hidden">
+<h2>Search 3D Model</h2>
+<input type="text" id="searchInput" placeholder="Enter model name" autocomplete="off">
+<div id="suggestions" class="hidden"></div>
+<button id="searchBtn">Search</button>
+<div id="searchResult"></div>
+<button id="backToHomeFromSearch">Back</button>
+</div>
+
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  let currentModel = null;
-  let currentSize = null;
-  let tempData = { small: {}, medium: {}, large: {} };
+document.addEventListener('DOMContentLoaded', ()=>{
 
-  function show(id){
-    document.querySelectorAll('#mainContainer > div').forEach(div => div.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
-  }
+let currentModel=null;
+let currentSize=null;
 
-  // Password
-  document.getElementById('passwordBtn').onclick = () => {
-    const pass = document.getElementById('passwordInput').value;
-    if(pass === 'stego'){
-      document.getElementById('passwordContainer').classList.add('hidden');
-      document.getElementById('mainContainer').classList.remove('hidden');
-    } else {
-      document.getElementById('passwordError').innerText = 'Incorrect password';
-    }
-  };
+function show(id){
+document.querySelectorAll('#mainContainer > div').forEach(div=>div.classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
+}
 
-  // Home Buttons
-  document.getElementById('addModelBtn').onclick = () => show('stepName');
-  document.getElementById('searchModelBtn').onclick = () => show('searchPage');
-  document.getElementById('addCustomerBtn').onclick = () => show('addCustomerPage');
-  document.getElementById('changeInfoBtn').onclick = () => show('changeInfoPage');
+// Password
+document.getElementById('passwordBtn').onclick=()=>{
+let pass=document.getElementById('passwordInput').value;
+if(pass==='stego'){
+document.getElementById('passwordContainer').classList.add('hidden');
+document.getElementById('mainContainer').classList.remove('hidden');
+}else{
+document.getElementById('passwordError').innerText='Incorrect password';
+}
+};
 
-  // Back buttons
-  document.getElementById('backToHomeFromName').onclick = () => show('home');
-  document.getElementById('backToName').onclick = () => show('stepName');
-  document.getElementById('backToSizes').onclick = () => show('stepSize');
-  document.getElementById('backToHomeFromSearch').onclick = () => show('home');
-  document.getElementById('backToHomeFromCustomer').onclick = () => { document.getElementById('customerSizeSelection').classList.add('hidden'); show('home'); };
-  document.getElementById('backToHomeFromChangeInfo').onclick = () => show('home');
+// Home buttons
+document.getElementById('addModelBtn').onclick=()=>show('stepName');
+document.getElementById('searchModelBtn').onclick=()=>show('searchPage');
 
-  // Next button for naming 3D model
-  document.getElementById('nextToSize').onclick = () => {
-    const name = document.getElementById('modelNameInput').value.trim();
-    if(!name){ alert('Please enter a model name'); return; }
-    currentModel = name;
+// Back buttons
+document.getElementById('backToHomeFromName').onclick=()=>show('home');
+document.getElementById('backToName').onclick=()=>show('stepName');
+document.getElementById('backToSizes').onclick=()=>show('stepSize');
+document.getElementById('backToHomeFromSearch').onclick=()=>show('home');
 
-    let items = JSON.parse(localStorage.getItem('models') || '{}');
-    if(!items[name]) items[name] = { small: {}, medium: {}, large: {} };
-    localStorage.setItem('models', JSON.stringify(items));
+// Next button (model name)
+document.getElementById('nextToSize').onclick=()=>{
+let name=document.getElementById('modelNameInput').value.trim();
+if(!name){ alert('Enter a name'); return; }
+currentModel=name;
+let items=JSON.parse(localStorage.getItem('models')||'{}');
+if(!items[name]) items[name]={ small:{}, medium:{}, large:{} };
+localStorage.setItem('models',JSON.stringify(items));
+show('stepSize');
+};
 
-    show('stepSize');
-  };
+// Small/Medium/Large buttons
+document.querySelectorAll('.sizeBtn').forEach(btn=>{
+btn.onclick=()=>{
+currentSize=btn.dataset.size;
+document.getElementById('sizeTitle').innerText=`Add info for ${currentSize} of ${currentModel}`;
+let items=JSON.parse(localStorage.getItem('models')||'{}');
+let data=items[currentModel][currentSize]||{};
+document.getElementById('printTimeInput').value=data.printTime||'';
+document.getElementById('filamentCostInput').value=data.filamentCost||'';
+document.getElementById('sellPriceInput').value=data.sellPrice||'';
+document.getElementById('importantInfoInput').value=data.importantInfo||'';
+show('stepInfo');
+};
+});
 
-  // Small, Medium, Large buttons
-  document.querySelectorAll('.sizeBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentSize = btn.dataset.size;
-      document.getElementById('sizeTitle').innerText = `Adding info for ${currentSize} size of ${currentModel}`;
+// Save info
+document.getElementById('saveInfoBtn').onclick=()=>{
+if(!currentModel || !currentSize){ alert('Select model and size first'); return; }
+let items=JSON.parse(localStorage.getItem('models')||'{}');
+items[currentModel][currentSize]={
+printTime:document.getElementById('printTimeInput').value,
+filamentCost:document.getElementById('filamentCostInput').value,
+sellPrice:document.getElementById('sellPriceInput').value,
+importantInfo:document.getElementById('importantInfoInput').value
+};
+localStorage.setItem('models',JSON.stringify(items));
+alert(`Info saved for ${currentModel} (${currentSize})`);
+show('stepSize');
+};
 
-      let items = JSON.parse(localStorage.getItem('models') || '{}');
-      let data = items[currentModel][currentSize] || {};
+// Live search suggestions
+const searchInput=document.getElementById('searchInput');
+const suggestionsDiv=document.getElementById('suggestions');
+searchInput.addEventListener('input',()=>{
+let query=searchInput.value.toLowerCase();
+let items=JSON.parse(localStorage.getItem('models')||'{}');
+suggestionsDiv.innerHTML='';
+if(!query){ suggestionsDiv.classList.add('hidden'); return; }
+let matches=Object.keys(items).filter(name=>name.toLowerCase().includes(query));
+matches.forEach(name=>{
+let div=document.createElement('div');
+div.innerText=name;
+div.onclick=()=>{ searchInput.value=name; suggestionsDiv.classList.add('hidden'); };
+suggestionsDiv.appendChild(div);
+});
+suggestionsDiv.classList.remove('hidden');
+});
 
-      document.getElementById('printTimeInput').value = data.printTime || '';
-      document.getElementById('filamentCostInput').value = data.filamentCost || '';
-      document.getElementById('sellPriceInput').value = data.sellPrice || '';
-      document.getElementById('importantInfoInput').value = data.importantInfo || '';
-
-      show('stepInfo');
-    });
-  });
-
-  // Back from stepInfo
-  document.getElementById('backToSizes').onclick = () => show('stepSize');
-
-  // Save info button
-  document.getElementById('saveItemBtn').onclick = () => {
-    let items = JSON.parse(localStorage.getItem('models') || '{}');
-    items[currentModel][currentSize] = {
-      printTime: document.getElementById('printTimeInput').value,
-      filamentCost: document.getElementById('filamentCostInput').value,
-      sellPrice: document.getElementById('sellPriceInput').value,
-      importantInfo: document.getElementById('importantInfoInput').value
-    };
-    localStorage.setItem('models', JSON.stringify(items));
-    alert(`Info saved for ${currentModel} (${currentSize})`);
-    show('stepSize');
-  };
-
-  // Live search suggestions
-  const searchInput = document.getElementById('searchInput');
-  const suggestionsDiv = document.getElementById('suggestions');
-  searchInput.addEventListener('input', () => {
-    const query = searchInput.value.toLowerCase();
-    const items = JSON.parse(localStorage.getItem('models') || '{}');
-    suggestionsDiv.innerHTML = '';
-    if(!query){ suggestionsDiv.classList.add('hidden'); return; }
-    const matches = Object.keys(items).filter(name => name.toLowerCase().includes(query));
-    matches.forEach(name => {
-      const div = document.createElement('div');
-      div.innerText = name;
-      div.onclick = () => { searchInput.value = name; suggestionsDiv.classList.add('hidden'); };
-      suggestionsDiv.appendChild(div);
-    });
-    suggestionsDiv.classList.remove('hidden');
-  });
 });
 </script>
 </body>
