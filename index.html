@@ -152,7 +152,42 @@ document.addEventListener('DOMContentLoaded', () => {
     show('stepSize');
   };
 
-  // Live suggestions
+  // Small, Medium, Large buttons
+  document.querySelectorAll('.sizeBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSize = btn.dataset.size;
+      document.getElementById('sizeTitle').innerText = `Adding info for ${currentSize} size of ${currentModel}`;
+
+      let items = JSON.parse(localStorage.getItem('models') || '{}');
+      let data = items[currentModel][currentSize] || {};
+
+      document.getElementById('printTimeInput').value = data.printTime || '';
+      document.getElementById('filamentCostInput').value = data.filamentCost || '';
+      document.getElementById('sellPriceInput').value = data.sellPrice || '';
+      document.getElementById('importantInfoInput').value = data.importantInfo || '';
+
+      show('stepInfo');
+    });
+  });
+
+  // Back from stepInfo
+  document.getElementById('backToSizes').onclick = () => show('stepSize');
+
+  // Save info button
+  document.getElementById('saveItemBtn').onclick = () => {
+    let items = JSON.parse(localStorage.getItem('models') || '{}');
+    items[currentModel][currentSize] = {
+      printTime: document.getElementById('printTimeInput').value,
+      filamentCost: document.getElementById('filamentCostInput').value,
+      sellPrice: document.getElementById('sellPriceInput').value,
+      importantInfo: document.getElementById('importantInfoInput').value
+    };
+    localStorage.setItem('models', JSON.stringify(items));
+    alert(`Info saved for ${currentModel} (${currentSize})`);
+    show('stepSize');
+  };
+
+  // Live search suggestions
   const searchInput = document.getElementById('searchInput');
   const suggestionsDiv = document.getElementById('suggestions');
   searchInput.addEventListener('input', () => {
