@@ -90,6 +90,26 @@
     background: #FFA500;
     color: black;
   }
+
+  #suggestions {
+    background: #3B5323;
+    color: white;
+    border-radius: 10px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
+  #suggestions div {
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  #suggestions div:hover {
+    background: #FFA500;
+    color: black;
+  }
 </style>
 </head>
 <body>
@@ -143,7 +163,8 @@
 
   <div id="searchPage" class="hidden">
     <h2>Search 3D Model</h2>
-    <input type="text" id="searchInput" placeholder="Enter model name">
+    <input type="text" id="searchInput" placeholder="Enter model name" autocomplete="off">
+    <div id="suggestions" class="hidden"></div>
     <button id="searchBtn">Search</button>
     <div id="searchResult"></div>
     <button id="backToHomeFromSearch">Back</button>
@@ -203,7 +224,7 @@ document.getElementById('searchModelBtn').onclick = () => show('searchPage');
 document.getElementById('addCustomerBtn').onclick = () => show('addCustomerPage');
 document.getElementById('changeInfoBtn').onclick = () => show('changeInfoPage');
 
-// Back buttons fixed
+// Back buttons
 document.getElementById('backToHomeFromName').onclick = () => show('home');
 document.getElementById('backToName').onclick = () => show('stepName');
 document.getElementById('backToSizes').onclick = () => show('stepSize');
@@ -214,7 +235,33 @@ document.getElementById('backToHomeFromCustomer').onclick = () => {
 };
 document.getElementById('backToHomeFromChangeInfo').onclick = () => show('home');
 
-// Existing 3D model, customer, and change info logic remains here (same as before, unchanged)...
+// Live suggestions for search
+const searchInput = document.getElementById('searchInput');
+const suggestionsDiv = document.getElementById('suggestions');
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  const items = JSON.parse(localStorage.getItem('models') || '{}');
+  suggestionsDiv.innerHTML = '';
+  if(!query) { suggestionsDiv.classList.add('hidden'); return; }
+
+  const matches = Object.keys(items).filter(name => name.toLowerCase().includes(query));
+  if(matches.length > 0){
+    matches.forEach(name => {
+      const div = document.createElement('div');
+      div.innerText = name;
+      div.onclick = () => {
+        searchInput.value = name;
+        suggestionsDiv.classList.add('hidden');
+      };
+      suggestionsDiv.appendChild(div);
+    });
+    suggestionsDiv.classList.remove('hidden');
+  } else {
+    suggestionsDiv.classList.add('hidden');
+  }
+});
+
+// Existing 3D model, customer, and change info logic remains here...
 </script>
 </body>
 </html>
