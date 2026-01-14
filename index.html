@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+
+
+document.getElementById('printTimeInput').value = tempData[currentSize].printTime || '';
+document.getElementById('filamentCostInput').value = tempData[currentSize].filamentCost || '';
+document.getElementById('sellPriceInput').value = tempData[currentSize].sellPrice || '';
 document.getElementById('importantInfoInput').value = tempData[currentSize].importantInfo || '';
 
 
@@ -9,7 +14,6 @@ show('stepInfo');
 
 // Back from Info
 document.getElementById('backToSizes').onclick = () => {
-// Save current size info
 tempData[currentSize] = {
 printTime: document.getElementById('printTimeInput').value,
 filamentCost: document.getElementById('filamentCostInput').value,
@@ -48,11 +52,9 @@ resultDiv.innerHTML = '<label>Select Size</label>' +
 document.getElementById('viewInfoBtn').onclick = () => {
 const size = document.getElementById('sizeSelect').value;
 const data = items[query][size];
-document.getElementById('infoDisplay').innerHTML = `<p>Print Time: ${data.printTime} hours</p><p>Filament Cost: $${data.filamentCost}</p><p>Sell Price: $${data.sellPrice}</p><p>Important Info: ${data.importantInfo}</p>`;
+document.getElementById('infoDisplay').innerHTML = `<p><strong>Print Time:</strong> ${data.printTime} hours</p><p><strong>Filament Cost:</strong> $${data.filamentCost}</p><p><strong>Sell Price:</strong> $${data.sellPrice}</p><p><strong>Important Info:</strong> ${data.importantInfo}</p>`;
 };
 };
 </script>
-
-
 </body>
 </html>
