@@ -24,7 +24,7 @@
   }
 
   .container {
-    max-width: 700px;
+    max-width: 750px;
     margin: 50px auto;
     background: rgba(0,0,0,0.9);
     padding: 30px;
@@ -79,7 +79,6 @@
 
   .hidden { display: none; }
   .size-btn-group button { width: 30%; }
-
   #infoDisplay p {
     margin: 5px 0;
     padding: 10px;
@@ -87,7 +86,6 @@
     border-radius: 10px;
     transition: background 0.3s ease;
   }
-
   #infoDisplay p:hover {
     background: #FFA500;
     color: black;
@@ -95,11 +93,20 @@
 </style>
 </head>
 <body>
+<div class="container show" id="passwordContainer">
+<h2>Enter Password to Access</h2>
+<input type="password" id="passwordInput" placeholder="Password">
+<button id="passwordBtn">Enter</button>
+<p id="passwordError" style="color:red"></p>
+</div>
+
+<div class="container show hidden" id="mainContainer">
 <header>3D Print Manager</header>
-<div class="container show">
 <div id="home">
   <button id="addModelBtn">Add 3D Model</button>
   <button id="searchModelBtn">Search 3D Model</button>
+  <button id="addCustomerBtn">Add Customers</button>
+  <button id="changeInfoBtn">Change Info</button>
 </div>
 
 <div id="stepName" class="hidden">
@@ -140,6 +147,31 @@
   <div id="searchResult"></div>
   <button id="backToHomeFromSearch">Back</button>
 </div>
+
+<div id="addCustomerPage" class="hidden">
+  <h2>Add Customer</h2>
+  <p>Search model and size first:</p>
+  <input type="text" id="customerModelSearch" placeholder="Enter model name">
+  <button id="searchCustomerModelBtn">Next</button>
+  <div id="customerSizeSelection" class="hidden">
+    <label>Select Size:</label>
+    <select id="customerSizeSelect">
+      <option value="small">Small</option>
+      <option value="medium">Medium</option>
+      <option value="large">Large</option>
+    </select>
+    <button id="addCustomerConfirm">Add Customer</button>
+  </div>
+  <button id="backToHomeFromCustomer">Back</button>
+</div>
+
+<div id="changeInfoPage" class="hidden">
+  <h2>Change Info</h2>
+  <input type="text" id="changeInfoModelSearch" placeholder="Enter model name">
+  <button id="searchChangeInfoBtn">Search</button>
+  <div id="changeInfoResult"></div>
+  <button id="backToHomeFromChangeInfo">Back</button>
+</div>
 </div>
 
 <script>
@@ -147,77 +179,86 @@ let currentModel = null;
 let currentSize = null;
 let tempData = { small: {}, medium: {}, large: {} };
 
+// Password check
+document.getElementById('passwordBtn').onclick = () => {
+  const pass = document.getElementById('passwordInput').value;
+  if(pass === 'stego'){
+    document.getElementById('passwordContainer').classList.add('hidden');
+    document.getElementById('mainContainer').classList.remove('hidden');
+  } else {
+    document.getElementById('passwordError').innerText = 'Incorrect password';
+  }
+};
+
 function show(id) {
-  document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+  document.querySelectorAll('#mainContainer > div').forEach(d => d.classList.add('hidden'));
   const div = document.getElementById(id);
-  div.classList.remove('hidden');
-  div.parentElement.classList.add('show');
+  if(div) div.classList.remove('hidden');
 }
 
+// Home Buttons
 document.getElementById('addModelBtn').onclick = () => show('stepName');
 document.getElementById('searchModelBtn').onclick = () => show('searchPage');
+document.getElementById('addCustomerBtn').onclick = () => show('addCustomerPage');
+document.getElementById('changeInfoBtn').onclick = () => show('changeInfoPage');
 
-document.getElementById('backToHomeFromName').onclick = () => show('home');
-document.getElementById('backToName').onclick = () => show('stepName');
-document.getElementById('backToSizes').onclick = () => show('stepSize');
-document.getElementById('backToHomeFromSearch').onclick = () => show('home');
+// Existing 3D model logic remains (stepName, stepSize, stepInfo, searchPage) ... (kept as before)
 
-document.getElementById('nextToSize').onclick = () => {
-  const name = document.getElementById('modelNameInput').value.trim();
-  if(!name) { alert('Enter a model name'); return; }
-  currentModel = name;
-  tempData = { small: {}, medium: {}, large: {} };
-  show('stepSize');
-};
-
-document.querySelectorAll('.sizeBtn').forEach(btn => {
-  btn.onclick = () => {
-    currentSize = btn.getAttribute('data-size');
-    document.getElementById('sizeTitle').innerText = `Enter info for ${currentSize}`;
-    document.getElementById('printTimeInput').value = tempData[currentSize].printTime || '';
-    document.getElementById('filamentCostInput').value = tempData[currentSize].filamentCost || '';
-    document.getElementById('sellPriceInput').value = tempData[currentSize].sellPrice || '';
-    document.getElementById('importantInfoInput').value = tempData[currentSize].importantInfo || '';
-    show('stepInfo');
-  };
-});
-
-document.getElementById('backToSizes').onclick = () => {
-  tempData[currentSize] = {
-    printTime: document.getElementById('printTimeInput').value,
-    filamentCost: document.getElementById('filamentCostInput').value,
-    sellPrice: document.getElementById('sellPriceInput').value,
-    importantInfo: document.getElementById('importantInfoInput').value
-  };
-  show('stepSize');
-};
-
-document.getElementById('saveItemBtn').onclick = () => {
+// Save customer logic
+document.getElementById('searchCustomerModelBtn').onclick = () => {
+  const model = document.getElementById('customerModelSearch').value.trim();
   const items = JSON.parse(localStorage.getItem('models') || '{}');
-  items[currentModel] = tempData;
+  if(items[model]) {
+    currentModel = model;
+    document.getElementById('customerSizeSelection').classList.remove('hidden');
+  } else {
+    alert('Model not found');
+  }
+};
+
+document.getElementById('addCustomerConfirm').onclick = () => {
+  const size = document.getElementById('customerSizeSelect').value;
+  const items = JSON.parse(localStorage.getItem('models') || '{}');
+  if(!items[currentModel][size].customers) items[currentModel][size].customers = 0;
+  items[currentModel][size].customers += 1;
   localStorage.setItem('models', JSON.stringify(items));
-  alert('Item saved!');
-  show('home');
+  alert('Customer added! Total: ' + items[currentModel][size].customers);
 };
 
-document.getElementById('searchBtn').onclick = () => {
-  const query = document.getElementById('searchInput').value.trim();
+document.getElementById('backToHomeFromCustomer').onclick = () => show('home');
+
+// Change info logic
+document.getElementById('searchChangeInfoBtn').onclick = () => {
+  const model = document.getElementById('changeInfoModelSearch').value.trim();
   const items = JSON.parse(localStorage.getItem('models') || '{}');
-  const resultDiv = document.getElementById('searchResult');
-  resultDiv.innerHTML = '';
-  if(!items[query]) { resultDiv.innerText = 'Model not found'; return; }
+  const container = document.getElementById('changeInfoResult');
+  container.innerHTML = '';
+  if(!items[model]) { container.innerText = 'Model not found'; return; }
+  currentModel = model;
 
-  resultDiv.innerHTML = '<label>Select Size</label>' +
-    '<select id="sizeSelect"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select>' +
-    '<button id="viewInfoBtn">View Info</button>' +
-    '<div id="infoDisplay"></div>';
+  ['small','medium','large'].forEach(size => {
+    const data = items[model][size];
+    container.innerHTML += `<h3>${size}</h3>
+      <label>Print Time</label><input type='number' id='editPrintTime${size}' value='${data.printTime || ''}'>
+      <label>Filament Cost</label><input type='number' id='editFilamentCost${size}' value='${data.filamentCost || ''}'>
+      <label>Sell Price</label><input type='number' id='editSellPrice${size}' value='${data.sellPrice || ''}'>
+      <label>Important Info</label><textarea id='editInfo${size}'>${data.importantInfo || ''}</textarea>`;
+  });
+  container.innerHTML += `<button id='saveChangesBtn'>Save Changes</button>`;
 
-  document.getElementById('viewInfoBtn').onclick = () => {
-    const size = document.getElementById('sizeSelect').value;
-    const data = items[query][size];
-    document.getElementById('infoDisplay').innerHTML = `<p><strong>Print Time:</strong> ${data.printTime} hours</p><p><strong>Filament Cost:</strong> $${data.filamentCost}</p><p><strong>Sell Price:</strong> $${data.sellPrice}</p><p><strong>Important Info:</strong> ${data.importantInfo}</p>`;
+  document.getElementById('saveChangesBtn').onclick = () => {
+    ['small','medium','large'].forEach(size => {
+      items[model][size].printTime = document.getElementById('editPrintTime'+size).value;
+      items[model][size].filamentCost = document.getElementById('editFilamentCost'+size).value;
+      items[model][size].sellPrice = document.getElementById('editSellPrice'+size).value;
+      items[model][size].importantInfo = document.getElementById('editInfo'+size).value;
+    });
+    localStorage.setItem('models', JSON.stringify(items));
+    alert('Changes saved!');
   };
 };
+
+document.getElementById('backToHomeFromChangeInfo').onclick = () => show('home');
 </script>
 </body>
 </html>
