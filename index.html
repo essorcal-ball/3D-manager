@@ -314,12 +314,14 @@
         // Global Firebase Configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'playmate-clan-app';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "dummy-key",
-            authDomain: "dummy.firebaseapp.com",
-            projectId: "dummy-project",
-            storageBucket: "dummy.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+            apiKey: "AIzaSyC8YQweW7eKHDhwZ-QDhVuMhGiNRUEC-mE",
+            authDomain: "play-clan.firebaseapp.com",
+            databaseURL: "https://play-clan-default-rtdb.firebaseio.com",
+            projectId: "play-clan",
+            storageBucket: "play-clan.firebasestorage.app",
+            messagingSenderId: "347261005232",
+            appId: "1:347261005232:web:5d97a30746b7a6e366ba75",
+            measurementId: "G-S66TSKRF2Q"
         };
 
         const app = initializeApp(firebaseConfig);
