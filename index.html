@@ -13,7 +13,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
+            background-color: #ffffff !important;
             color: #111827;
         }
         .custom-shadow {
@@ -23,30 +23,25 @@
 </head>
 <body class="bg-white min-h-screen flex flex-col justify-between">
 
-    <!-- Header / Branding -->
+    <!-- Header / Branding (No Admin Button or Reference) -->
     <header class="border-b border-gray-100 bg-white sticky top-0 z-40">
         <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-3 mx-auto md:mx-0">
                 <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <div>
+                <div class="text-center md:text-left">
                     <h1 class="text-2xl font-extrabold tracking-tight text-gray-900">The Playmate Clan</h1>
-                    <p class="text-xs text-gray-500 font-medium">Official Clan Activity & Level Progression Hub</p>
+                    <p class="text-xs text-gray-500 font-medium">Official Clan Activity & Progression Hub</p>
                 </div>
             </div>
             
-            <!-- User Nav & Admin Shortcut Hint -->
-            <div class="flex items-center gap-3">
-                <div id="headerUserNav" class="hidden flex items-center gap-3">
-                    <span id="navUserName" class="text-sm font-semibold text-gray-700"></span>
-                    <span id="navUserBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-blue-50 text-blue-700 border border-blue-200"></span>
-                    <button onclick="handleLogout()" class="text-xs text-red-600 hover:text-red-700 font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-50 transition">
-                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Log Out
-                    </button>
-                </div>
-                <button onclick="triggerAdminModal()" class="text-xs text-gray-400 hover:text-gray-600 bg-gray-50 px-2 py-1 rounded border border-gray-200">
-                    <i class="fa-solid fa-key mr-1"></i> Admin (Ctrl+Shift+A)
+            <!-- User Nav Header (Strictly for User Profile & Logout) -->
+            <div id="headerUserNav" class="hidden flex items-center gap-3">
+                <span id="navUserName" class="text-sm font-semibold text-gray-700"></span>
+                <span id="navUserBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-blue-50 text-blue-700 border border-blue-200"></span>
+                <button onclick="handleLogout()" class="text-xs text-red-600 hover:text-red-700 font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-50 transition">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Log Out
                 </button>
             </div>
         </div>
@@ -75,7 +70,7 @@
             <form id="loginForm" onsubmit="handleLogin(event)" class="bg-white p-6 rounded-2xl border border-gray-200 custom-shadow space-y-4">
                 <div class="text-center mb-4">
                     <h2 class="text-xl font-bold text-gray-900">Welcome Back</h2>
-                    <p class="text-xs text-gray-500">Log in to keep your 3-day check-in timer active</p>
+                    <p class="text-xs text-gray-500">Log in to check-in and keep your active rank</p>
                 </div>
 
                 <div>
@@ -90,7 +85,7 @@
                 </div>
 
                 <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm shadow-sm transition flex items-center justify-center gap-2">
-                    <span>Log In to Clan</span>
+                    <span>Log In</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </form>
@@ -171,10 +166,10 @@
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <div class="text-xs font-semibold text-gray-500 uppercase">3-Day Check-In Timer</div>
                         <div id="dashTimerDisplay" class="text-3xl font-extrabold text-blue-600 mt-1">72h 00m 00s</div>
-                        <p class="text-xs text-gray-400 mt-1">Click the check-in button daily to reset this back to 3 full days.</p>
+                        <p class="text-xs text-gray-400 mt-1">Click check-in daily to reset back to 3 full days.</p>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <div class="text-xs font-semibold text-gray-500 uppercase">Demotion Warning</div>
+                        <div class="text-xs font-semibold text-gray-500 uppercase">Demotion Rules</div>
                         <div class="text-sm font-semibold text-gray-800 mt-2">
                             If this timer hits 0, your rank automatically drops down 1 level!
                         </div>
@@ -184,7 +179,7 @@
             </div>
         </div>
 
-        <!-- ADMIN PANEL MODAL -->
+        <!-- SECRET ADMIN PANEL MODAL (NO VISIBLE TRIGGER ON WEBSITE) -->
         <div id="adminModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             
             <!-- ADMIN AUTH PASSWORD PROMPT -->
@@ -193,7 +188,7 @@
                     <h3 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-lock text-blue-600 mr-2"></i>Admin Access</h3>
                     <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <p class="text-xs text-gray-500 mb-4">Enter password to unlock Clan Admin Panel.</p>
+                <p class="text-xs text-gray-500 mb-4">Enter passcode to open Admin Panel.</p>
                 <form onsubmit="handleAdminLogin(event)" class="space-y-4">
                     <input type="password" id="adminPasswordInput" placeholder="Password" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm">
@@ -202,17 +197,17 @@
                 </form>
             </div>
 
-            <!-- ADMIN CONTROL PANEL (PAGE 1 & PAGE 2) -->
+            <!-- ADMIN CONTROL PANEL (SEARCH & ELEVATE) -->
             <div id="adminContentBox" class="hidden bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col custom-shadow border border-gray-200 overflow-hidden">
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                     <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Admin Mode</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Admin Panel</span>
                         <h3 class="font-bold text-gray-900">Clan Account Management</h3>
                     </div>
                     <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600 text-lg px-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
 
-                <!-- PAGE 1: ACCOUNT SEARCH -->
+                <!-- PAGE 1: SEARCH ALL ACCOUNTS -->
                 <div id="adminPage1" class="p-6 flex-grow overflow-y-auto space-y-4">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
@@ -253,11 +248,11 @@
 
                         <div class="grid grid-cols-2 gap-4 text-xs pt-2 border-t border-gray-200">
                             <div>
-                                <span class="text-gray-400 block">Registered First Name</span>
+                                <span class="text-gray-400 block">First Name</span>
                                 <span id="admDetailFirstName" class="font-semibold text-gray-700"></span>
                             </div>
                             <div>
-                                <span class="text-gray-400 block">Registered Last Name</span>
+                                <span class="text-gray-400 block">Last Name</span>
                                 <span id="admDetailLastName" class="font-semibold text-gray-700"></span>
                             </div>
                             <div>
@@ -265,7 +260,7 @@
                                 <span id="admDetailLastCheckIn" class="font-semibold text-gray-700"></span>
                             </div>
                             <div>
-                                <span class="text-gray-400 block">Current Level Numeric</span>
+                                <span class="text-gray-400 block">Level Numeric</span>
                                 <span id="admDetailLevelNum" class="font-semibold text-gray-700"></span>
                             </div>
                         </div>
@@ -273,7 +268,7 @@
 
                     <!-- Level Elevation Control -->
                     <div class="border border-purple-200 bg-purple-50/50 rounded-xl p-5 space-y-3">
-                        <h5 class="text-sm font-bold text-purple-900">Change Member Level Rank</h5>
+                        <h5 class="text-sm font-bold text-purple-900">Change Level Rank</h5>
                         <p class="text-xs text-purple-700">Admins can promote or elevate members up to Dictator Playmate (Level 7).</p>
                         
                         <div class="flex items-center gap-3">
@@ -301,41 +296,42 @@
     <!-- Footer -->
     <footer class="border-t border-gray-100 py-6 bg-white mt-12">
         <div class="max-w-6xl mx-auto px-4 text-center text-xs text-gray-400">
-            <p>© The Playmate Clan. Standalone Cloud Connected Web Application.</p>
+            <p>© The Playmate Clan. Official Web Application.</p>
         </div>
     </footer>
 
-    <!-- Firebase Script Logic -->
+    <!-- MAIN APP SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global Firebase Configuration
+        // Global Firebase Config Guard with fallback to local state
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'playmate-clan-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyC8YQweW7eKHDhwZ-QDhVuMhGiNRUEC-mE",
-            authDomain: "play-clan.firebaseapp.com",
-            databaseURL: "https://play-clan-default-rtdb.firebaseio.com",
-            projectId: "play-clan",
-            storageBucket: "play-clan.firebasestorage.app",
-            messagingSenderId: "347261005232",
-            appId: "1:347261005232:web:5d97a30746b7a6e366ba75",
-            measurementId: "G-S66TSKRF2Q"
-        };
+        let firebaseConfig = null;
+        let db = null;
+        let auth = null;
+        let isFirebaseConnected = false;
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                isFirebaseConnected = true;
+            }
+        } catch (e) {
+            console.log("Firebase default setup bypassed, operating in instantaneous local storage mode.");
+        }
 
-        // State Management
+        // Global State
         let currentUserData = null;
-        let authInitialized = false;
         let timerInterval = null;
         let allAccountsCache = [];
         let selectedAdminAccountKey = null;
 
-        // Level Hierarchy
+        // Level Hierarchy Map
         const LEVEL_NAMES = {
             1: "Regular Playmate",
             2: "Baseball Bat Playmate",
@@ -349,36 +345,68 @@
         const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
         const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
-        // Initialize Anonymous or Custom Token Auth
-        async function initAuth() {
+        // --- LOCAL STORAGE DATA HELPER (Ensures 0 second wait time out-of-the-box) ---
+        function getLocalAccounts() {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                return JSON.parse(localStorage.getItem('playmate_clan_accounts') || '{}');
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveLocalAccounts(accounts) {
+            try {
+                localStorage.setItem('playmate_clan_accounts', JSON.stringify(accounts));
+            } catch (e) {
+                console.error("Local storage error:", e);
+            }
+        }
+
+        // Initialize connection or sync local accounts
+        async function initApp() {
+            if (isFirebaseConnected && auth) {
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    subscribeToFirestoreAccounts();
+                } catch (err) {
+                    console.log("Firestore auth error, falling back to local mode.");
+                    loadLocalAccountsIntoCache();
                 }
-            } catch (err) {
-                console.error("Auth init error:", err);
+            } else {
+                loadLocalAccountsIntoCache();
             }
         }
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                authInitialized = true;
-                subscribeToAllAccounts();
-            }
-        });
-
-        initAuth();
-
-        function getMembersCollection() {
-            return collection(db, 'artifacts', appId, 'public', 'data', 'members');
+        function loadLocalAccountsIntoCache() {
+            const accs = getLocalAccounts();
+            allAccountsCache = Object.values(accs);
+            filterAdminAccounts();
         }
 
-        // --- ACCOUNT REGISTRATION ---
+        function subscribeToFirestoreAccounts() {
+            if (!db) return;
+            const membersColl = collection(db, 'artifacts', appId, 'public', 'data', 'members');
+            onSnapshot(membersColl, (snapshot) => {
+                allAccountsCache = [];
+                snapshot.forEach(doc => {
+                    allAccountsCache.push(doc.data());
+                });
+                filterAdminAccounts();
+            }, (err) => {
+                console.log("Firestore subscription error, using local accounts fallback.");
+                loadLocalAccountsIntoCache();
+            });
+        }
+
+        initApp();
+
+        // --- ACCOUNT REGISTRATION MECHANIC ---
         window.handleRegister = async function(e) {
             e.preventDefault();
-            if (!authInitialized) return showToast("Connecting to server, please wait...", "error");
 
             const firstName = document.getElementById('regFirstName').value.trim();
             const lastName = document.getElementById('regLastName').value.trim();
@@ -391,64 +419,80 @@
             }
 
             const memberKey = firstName.toLowerCase();
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+            const now = Date.now();
+            const newMemberData = {
+                firstName,
+                lastName,
+                normalizedFirstName: memberKey,
+                school,
+                state,
+                password,
+                level: 1, // Default Level 1: Regular Playmate
+                lastCheckInTimestamp: now,
+                createdAt: now
+            };
 
-            try {
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    return showToast(`An account with first name "${firstName}" already exists!`, "error");
-                }
-
-                const now = Date.now();
-                const newMemberData = {
-                    firstName,
-                    lastName,
-                    normalizedFirstName: memberKey,
-                    school,
-                    state,
-                    password,
-                    level: 1, // Starts at Level 1 (Regular Playmate)
-                    lastCheckInTimestamp: now,
-                    createdAt: now
-                };
-
-                await setDoc(docRef, newMemberData);
-                showToast("Welcome to The Playmate Clan! Account created.", "success");
-                loginUser(newMemberData);
-            } catch (err) {
-                console.error(err);
-                showToast("Cloud registration error.", "error");
+            // Save to Local Storage (Instant)
+            const localAccs = getLocalAccounts();
+            if (localAccs[memberKey]) {
+                return showToast(`An account with first name "${firstName}" already exists!`, "error");
             }
+
+            localAccs[memberKey] = newMemberData;
+            saveLocalAccounts(localAccs);
+
+            // Sync to Firestore if connected
+            if (isFirebaseConnected && db) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+                    await setDoc(docRef, newMemberData);
+                } catch (err) {
+                    console.error("Firestore sync error:", err);
+                }
+            }
+
+            loadLocalAccountsIntoCache();
+            showToast("Welcome to The Playmate Clan! Account created.", "success");
+            loginUser(newMemberData);
         };
 
-        // --- LOGIN (CASE-INSENSITIVE FIRST NAME) ---
+        // --- LOGIN MECHANIC (CASE INSENSITIVE FIRST NAME) ---
         window.handleLogin = async function(e) {
             e.preventDefault();
-            if (!authInitialized) return showToast("Connecting to server, please wait...", "error");
 
             const firstNameInput = document.getElementById('loginFirstName').value.trim();
             const passwordInput = document.getElementById('loginPassword').value;
-
             const memberKey = firstNameInput.toLowerCase();
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
 
-            try {
-                const docSnap = await getDoc(docRef);
-                if (!docSnap.exists()) {
-                    return showToast(`No account found for first name "${firstNameInput}".`, "error");
+            let userData = null;
+
+            // Check Local Storage first
+            const localAccs = getLocalAccounts();
+            if (localAccs[memberKey]) {
+                userData = localAccs[memberKey];
+            } else if (isFirebaseConnected && db) {
+                // Query Firestore if not local
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        userData = docSnap.data();
+                    }
+                } catch (err) {
+                    console.error(err);
                 }
-
-                const userData = docSnap.data();
-                if (userData.password !== passwordInput) {
-                    return showToast("Incorrect password.", "error");
-                }
-
-                showToast(`Welcome back, ${userData.firstName}!`, "success");
-                loginUser(userData);
-            } catch (err) {
-                console.error(err);
-                showToast("Cloud login error.", "error");
             }
+
+            if (!userData) {
+                return showToast(`No account found for first name "${firstNameInput}".`, "error");
+            }
+
+            if (userData.password !== passwordInput) {
+                return showToast("Incorrect password.", "error");
+            }
+
+            showToast(`Welcome back, ${userData.firstName}!`, "success");
+            loginUser(userData);
         };
 
         function loginUser(userData) {
@@ -473,7 +517,7 @@
             showToast("Logged out.", "info");
         };
 
-        // --- CHECK-IN MECHANICS ---
+        // --- DAILY CHECK-IN & 3-DAY EXPIRATION MECHANIC ---
         window.handleCheckIn = async function() {
             if (!currentUserData) return;
 
@@ -485,24 +529,30 @@
                 return showToast("You can only check-in once every 24 hours!", "error");
             }
 
-            const memberKey = currentUserData.normalizedFirstName;
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+            currentUserData.lastCheckInTimestamp = now;
 
-            try {
-                await updateDoc(docRef, {
-                    lastCheckInTimestamp: now
-                });
-
-                currentUserData.lastCheckInTimestamp = now;
-                showToast("Check-in recorded! Your 3-day timer has been reset to 72 hours.", "success");
-                updateDashboardUI();
-            } catch (err) {
-                console.error("Check-in error:", err);
-                showToast("Could not process check-in.", "error");
+            // Update local storage
+            const localAccs = getLocalAccounts();
+            if (localAccs[currentUserData.normalizedFirstName]) {
+                localAccs[currentUserData.normalizedFirstName].lastCheckInTimestamp = now;
+                saveLocalAccounts(localAccs);
             }
+
+            // Sync Firestore
+            if (isFirebaseConnected && db) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', currentUserData.normalizedFirstName);
+                    await updateDoc(docRef, { lastCheckInTimestamp: now });
+                } catch (err) {
+                    console.error("Firestore update error:", err);
+                }
+            }
+
+            loadLocalAccountsIntoCache();
+            showToast("Check-in recorded! Your 3-day timer has been reset to 72 hours.", "success");
+            updateDashboardUI();
         };
 
-        // Demotion check if 3 days passed without check-in
         async function checkAndApplyDemotionIfNeeded() {
             if (!currentUserData) return;
 
@@ -512,25 +562,36 @@
 
             if (elapsed >= THREE_DAYS_MS && currentUserData.level > 1) {
                 const newLevel = Math.max(1, currentUserData.level - 1);
-                const memberKey = currentUserData.normalizedFirstName;
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+                
+                currentUserData.level = newLevel;
+                currentUserData.lastCheckInTimestamp = now; // Reset timer on demotion
 
-                try {
-                    await updateDoc(docRef, {
-                        level: newLevel,
-                        lastCheckInTimestamp: now // Reset timer upon demotion
-                    });
-
-                    currentUserData.level = newLevel;
-                    currentUserData.lastCheckInTimestamp = now;
-                    showToast(`Notice: You missed checking in for 3 days! You have been demoted to ${LEVEL_NAMES[newLevel]}.`, "error");
-                } catch (err) {
-                    console.error("Demotion update error:", err);
+                // Update local storage
+                const localAccs = getLocalAccounts();
+                if (localAccs[currentUserData.normalizedFirstName]) {
+                    localAccs[currentUserData.normalizedFirstName].level = newLevel;
+                    localAccs[currentUserData.normalizedFirstName].lastCheckInTimestamp = now;
+                    saveLocalAccounts(localAccs);
                 }
+
+                // Sync Firestore
+                if (isFirebaseConnected && db) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', currentUserData.normalizedFirstName);
+                        await updateDoc(docRef, {
+                            level: newLevel,
+                            lastCheckInTimestamp: now
+                        });
+                    } catch (err) {
+                        console.error("Demotion update error:", err);
+                    }
+                }
+
+                loadLocalAccountsIntoCache();
+                showToast(`Inactivity Notice: 3 days elapsed without check-in. You were demoted to ${LEVEL_NAMES[newLevel]}.`, "error");
             }
         }
 
-        // Live Timer Loop
         function startTimerLoop() {
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
@@ -553,7 +614,7 @@
                         `${hours}h ${minutes < 10 ? '0' : ''}${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
                 }
 
-                // Check 24h button cooldown status
+                // Update daily check-in button state
                 const timeSinceLast = now - lastCheckIn;
                 const checkInBtn = document.getElementById('checkInBtn');
                 const statusText = document.getElementById('checkInStatusText');
@@ -567,7 +628,7 @@
                     const nextCheckInIn = ONE_DAY_MS - timeSinceLast;
                     const cHours = Math.floor(nextCheckInIn / (1000 * 60 * 60));
                     const cMins = Math.floor((nextCheckInIn % (1000 * 60 * 60)) / (1000 * 60));
-                    document.getElementById('checkInBtnText').textContent = "Checked-In for Today";
+                    document.getElementById('checkInBtnText').textContent = "Checked-In Today";
                     statusText.textContent = `Next check-in available in ${cHours}h ${cMins}m`;
                 }
 
@@ -590,21 +651,21 @@
             document.getElementById('dashState').textContent = state;
         }
 
-        // --- ADMIN PANEL CONTROL (CTRL + SHIFT + A) ---
+        // --- SECRET KEYBOARD SHORTCUT FOR ADMIN PANEL (CTRL+SHIFT+A or CMD+SHIFT+A) ---
         window.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
                 e.preventDefault();
-                triggerAdminModal();
+                openSecretAdminModal();
             }
         });
 
-        window.triggerAdminModal = function() {
+        function openSecretAdminModal() {
             document.getElementById('adminModal').classList.remove('hidden');
             document.getElementById('adminAuthBox').classList.remove('hidden');
             document.getElementById('adminContentBox').classList.add('hidden');
             document.getElementById('adminPasswordInput').value = '';
             document.getElementById('adminPasswordInput').focus();
-        };
+        }
 
         window.closeAdminModal = function() {
             document.getElementById('adminModal').classList.add('hidden');
@@ -621,16 +682,6 @@
                 showToast("Incorrect Admin Password!", "error");
             }
         };
-
-        function subscribeToAllAccounts() {
-            onSnapshot(getMembersCollection(), (snapshot) => {
-                allAccountsCache = [];
-                snapshot.forEach(doc => {
-                    allAccountsCache.push(doc.data());
-                });
-                filterAdminAccounts();
-            });
-        }
 
         window.showAdminPage1 = function() {
             document.getElementById('adminPage1').classList.remove('hidden');
@@ -651,7 +702,7 @@
             );
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-400">No accounts found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-400 text-xs">No accounts found.</td></tr>`;
                 return;
             }
 
@@ -665,7 +716,7 @@
                     <td class="py-2.5 px-3 font-medium text-xs text-blue-600">Level ${acc.level || 1}: ${LEVEL_NAMES[acc.level || 1]}</td>
                     <td class="py-2.5 px-3 text-right">
                         <button class="text-xs bg-gray-100 hover:bg-blue-600 hover:text-white px-2.5 py-1 rounded font-semibold text-gray-700 transition">
-                            View
+                            Inspect
                         </button>
                     </td>
                 `;
@@ -698,22 +749,33 @@
             if (!selectedAdminAccountKey) return;
 
             const newLevel = parseInt(document.getElementById('admLevelSelect').value, 10);
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', selectedAdminAccountKey);
 
-            try {
-                await updateDoc(docRef, {
-                    level: newLevel
-                });
-
-                showToast(`Level updated to Level ${newLevel}: ${LEVEL_NAMES[newLevel]}!`, "success");
-                
-                // Update local selection UI
-                openAdminAccountDetails(selectedAdminAccountKey);
-
-            } catch (err) {
-                console.error("Admin update error:", err);
-                showToast("Failed to update user level.", "error");
+            // Update local storage
+            const localAccs = getLocalAccounts();
+            if (localAccs[selectedAdminAccountKey]) {
+                localAccs[selectedAdminAccountKey].level = newLevel;
+                saveLocalAccounts(localAccs);
             }
+
+            // Sync Firestore
+            if (isFirebaseConnected && db) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', selectedAdminAccountKey);
+                    await updateDoc(docRef, { level: newLevel });
+                } catch (err) {
+                    console.error("Admin update error:", err);
+                }
+            }
+
+            // If active user updated, update current session
+            if (currentUserData && currentUserData.normalizedFirstName === selectedAdminAccountKey) {
+                currentUserData.level = newLevel;
+                updateDashboardUI();
+            }
+
+            loadLocalAccountsIntoCache();
+            showToast(`Level updated to Level ${newLevel}: ${LEVEL_NAMES[newLevel]}!`, "success");
+            openAdminAccountDetails(selectedAdminAccountKey);
         };
 
         // --- UI UTILITIES ---
@@ -747,7 +809,7 @@
             if (type === 'error') {
                 toast.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
                 toastIcon.className = "fa-solid fa-circle-exclamation text-red-500";
-              } else if (type === 'success') {
+            } else if (type === 'success') {
                 toast.classList.add('bg-green-50', 'text-green-800', 'border-green-200');
                 toastIcon.className = "fa-solid fa-circle-check text-green-500";
             } else {
