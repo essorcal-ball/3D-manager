@@ -1,177 +1,762 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Print Manager</title>
-<style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background: linear-gradient(135deg,#3B5323,#FFA500); color:white; }
-header { background:black; padding:20px; text-align:center; font-size:2em; font-weight:bold; color:#FFA500; box-shadow:0 4px 8px rgba(0,0,0,0.3);}
-.container { max-width:750px; margin:50px auto; background: rgba(0,0,0,0.9); padding:30px; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.5); }
-.hidden { display:none; }
-button { margin:5px; padding:10px 20px; border:none; background:#3B5323; color:white; cursor:pointer; border-radius:10px; font-weight:bold; }
-button:hover { background:#FFA500; color:black; }
-input, textarea, select { display:block; margin:5px 0 15px; width:100%; padding:10px; border:2px solid #FFA500; border-radius:10px; background:black; color:white; }
-.size-btn-group button { width:30%; }
-#suggestions { background:#3B5323; color:white; border-radius:10px; margin-top:-10px; margin-bottom:10px; max-height:150px; overflow-y:auto; }
-#suggestions div { padding:8px; cursor:pointer; }
-#suggestions div:hover { background:#FFA500; color:black; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Playmate Clan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+    </style>
 </head>
-<body>
+<body class="bg-white min-h-screen flex flex-col justify-between">
 
-<div class="container" id="passwordContainer">
-<h2>Enter Password</h2>
-<input type="password" id="passwordInput" placeholder="Password">
-<button id="passwordBtn">Enter</button>
-<p id="passwordError" style="color:red"></p>
-</div>
+    <!-- Header / Branding -->
+    <header class="border-b border-gray-100 bg-white sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight text-gray-900">The Playmate Clan</h1>
+                    <p class="text-xs text-gray-500 font-medium">Official Clan Activity & Level Progression Hub</p>
+                </div>
+            </div>
+            
+            <!-- User Nav & Admin Shortcut Hint -->
+            <div class="flex items-center gap-3">
+                <div id="headerUserNav" class="hidden flex items-center gap-3">
+                    <span id="navUserName" class="text-sm font-semibold text-gray-700"></span>
+                    <span id="navUserBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-blue-50 text-blue-700 border border-blue-200"></span>
+                    <button onclick="handleLogout()" class="text-xs text-red-600 hover:text-red-700 font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Log Out
+                    </button>
+                </div>
+                <button onclick="triggerAdminModal()" class="text-xs text-gray-400 hover:text-gray-600 bg-gray-50 px-2 py-1 rounded border border-gray-200">
+                    <i class="fa-solid fa-key mr-1"></i> Admin (Ctrl+Shift+A)
+                </button>
+            </div>
+        </div>
+    </header>
 
-<div class="container hidden" id="mainContainer">
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+        
+        <!-- System Toast Alert -->
+        <div id="toast" class="hidden mb-6 p-4 rounded-xl text-sm font-medium flex items-center justify-between border transition-all">
+            <div class="flex items-center gap-2">
+                <i id="toastIcon" class="fa-solid"></i>
+                <span id="toastMessage"></span>
+            </div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+        </div>
 
-<header>3D Print Manager</header>
+        <!-- AUTHENTICATION VIEW -->
+        <div id="authSection" class="max-w-md mx-auto my-6">
+            
+            <div class="flex bg-gray-100 p-1 rounded-xl mb-6">
+                <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-gray-900 transition">Log In</button>
+                <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-900 transition">Create Account</button>
+            </div>
 
-<div id="home">
-<button id="addModelBtn">Add 3D Model</button>
-<button id="searchModelBtn">Search 3D Model</button>
-<button id="addCustomerBtn">Add Customers</button>
-<button id="changeInfoBtn">Change Info</button>
-</div>
+            <!-- LOGIN FORM -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="bg-white p-6 rounded-2xl border border-gray-200 custom-shadow space-y-4">
+                <div class="text-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-900">Welcome Back</h2>
+                    <p class="text-xs text-gray-500">Log in to keep your 3-day check-in timer active</p>
+                </div>
 
-<div id="stepName" class="hidden">
-<h2>Name your 3D Model</h2>
-<input type="text" id="modelNameInput" placeholder="Model Name">
-<button id="nextToSize">Next</button>
-<button id="backToHomeFromName">Back</button>
-</div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">First Name</label>
+                    <input type="text" id="loginFirstName" required placeholder="e.g. Alex" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    <span class="text-[11px] text-gray-400">First name matching is case-insensitive</span>
+                </div>
 
-<div id="stepSize" class="hidden">
-<h2>Select Size to Add Info</h2>
-<div class="size-btn-group">
-<button class="sizeBtn" data-size="small">Small</button>
-<button class="sizeBtn" data-size="medium">Medium</button>
-<button class="sizeBtn" data-size="large">Large</button>
-</div>
-<button id="backToName">Back</button>
-</div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                </div>
 
-<div id="stepInfo" class="hidden">
-<h2 id="sizeTitle"></h2>
-<label>Print Time (hours)</label>
-<input type="number" id="printTimeInput">
-<label>Filament Cost ($)</label>
-<input type="number" id="filamentCostInput">
-<label>Sell Price ($)</label>
-<input type="number" id="sellPriceInput">
-<label>Important Info</label>
-<textarea id="importantInfoInput" rows="3"></textarea>
-<button id="saveInfoBtn">Save Info</button>
-<button id="backToSizes">Back</button>
-</div>
+                <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm shadow-sm transition flex items-center justify-center gap-2">
+                    <span>Log In to Clan</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
 
-<div id="searchPage" class="hidden">
-<h2>Search 3D Model</h2>
-<input type="text" id="searchInput" placeholder="Enter model name" autocomplete="off">
-<div id="suggestions" class="hidden"></div>
-<button id="searchBtn">Search</button>
-<div id="searchResult"></div>
-<button id="backToHomeFromSearch">Back</button>
-</div>
+            <!-- REGISTER FORM -->
+            <form id="registerForm" onsubmit="handleRegister(event)" class="hidden bg-white p-6 rounded-2xl border border-gray-200 custom-shadow space-y-4">
+                <div class="text-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-900">Join The Playmate Clan</h2>
+                    <p class="text-xs text-gray-500">Create an account to join at Level 1 (Regular Playmate)</p>
+                </div>
 
-</div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">First Name</label>
+                        <input type="text" id="regFirstName" required placeholder="John" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Last Name</label>
+                        <input type="text" id="regLastName" required placeholder="Doe" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    </div>
+                </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">School</label>
+                    <input type="text" id="regSchool" required placeholder="e.g. Oak High School" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                </div>
 
-let currentModel=null;
-let currentSize=null;
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">State</label>
+                    <input type="text" id="regState" required placeholder="e.g. Texas" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                </div>
 
-function show(id){
-document.querySelectorAll('#mainContainer > div').forEach(div=>div.classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
-}
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Choose Password</label>
+                    <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                </div>
 
-// Password
-document.getElementById('passwordBtn').onclick=()=>{
-let pass=document.getElementById('passwordInput').value;
-if(pass==='stego'){
-document.getElementById('passwordContainer').classList.add('hidden');
-document.getElementById('mainContainer').classList.remove('hidden');
-}else{
-document.getElementById('passwordError').innerText='Incorrect password';
-}
-};
+                <button type="submit" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg text-sm shadow-sm transition flex items-center justify-center gap-2">
+                    <span>Create Clan Account</span>
+                    <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </form>
+        </div>
 
-// Home buttons
-document.getElementById('addModelBtn').onclick=()=>show('stepName');
-document.getElementById('searchModelBtn').onclick=()=>show('searchPage');
+        <!-- USER DASHBOARD VIEW -->
+        <div id="dashboardSection" class="hidden space-y-8">
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 custom-shadow">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-2xl shadow-lg">
+                            <span id="userAvatar"></span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 id="dashFullName" class="text-2xl font-bold text-gray-900"></h2>
+                                <span id="dashBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800"></span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-0.5">
+                                <i class="fa-solid fa-graduation-cap text-gray-400 mr-1"></i> <span id="dashSchool"></span>
+                                <span class="mx-2">•</span>
+                                <i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> <span id="dashState"></span>
+                            </p>
+                        </div>
+                    </div>
 
-// Back buttons
-document.getElementById('backToHomeFromName').onclick=()=>show('home');
-document.getElementById('backToName').onclick=()=>show('stepName');
-document.getElementById('backToSizes').onclick=()=>show('stepSize');
-document.getElementById('backToHomeFromSearch').onclick=()=>show('home');
+                    <!-- Daily Check-In Controls -->
+                    <div class="w-full md:w-auto text-center md:text-right">
+                        <button id="checkInBtn" onclick="handleCheckIn()" class="w-full md:w-auto px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span id="checkInBtnText">Check-In Now</span>
+                        </button>
+                        <p id="checkInStatusText" class="text-xs text-gray-500 mt-2 font-medium"></p>
+                    </div>
+                </div>
 
-// Next button (model name)
-document.getElementById('nextToSize').onclick=()=>{
-let name=document.getElementById('modelNameInput').value.trim();
-if(!name){ alert('Enter a name'); return; }
-currentModel=name;
-let items=JSON.parse(localStorage.getItem('models')||'{}');
-if(!items[name]) items[name]={ small:{}, medium:{}, large:{} };
-localStorage.setItem('models',JSON.stringify(items));
-show('stepSize');
-};
+                <!-- 3-Day Countdown Timer Display -->
+                <div class="mt-6 pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <div class="text-xs font-semibold text-gray-500 uppercase">3-Day Check-In Timer</div>
+                        <div id="dashTimerDisplay" class="text-3xl font-extrabold text-blue-600 mt-1">72h 00m 00s</div>
+                        <p class="text-xs text-gray-400 mt-1">Click the check-in button daily to reset this back to 3 full days.</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <div class="text-xs font-semibold text-gray-500 uppercase">Demotion Warning</div>
+                        <div class="text-sm font-semibold text-gray-800 mt-2">
+                            If this timer hits 0, your rank automatically drops down 1 level!
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Promotions to higher levels are granted solely by Clan Admins.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-// Small/Medium/Large buttons
-document.querySelectorAll('.sizeBtn').forEach(btn=>{
-btn.onclick=()=>{
-currentSize=btn.dataset.size;
-document.getElementById('sizeTitle').innerText=`Add info for ${currentSize} of ${currentModel}`;
-let items=JSON.parse(localStorage.getItem('models')||'{}');
-let data=items[currentModel][currentSize]||{};
-document.getElementById('printTimeInput').value=data.printTime||'';
-document.getElementById('filamentCostInput').value=data.filamentCost||'';
-document.getElementById('sellPriceInput').value=data.sellPrice||'';
-document.getElementById('importantInfoInput').value=data.importantInfo||'';
-show('stepInfo');
-};
-});
+        <!-- ADMIN PANEL MODAL -->
+        <div id="adminModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            
+            <!-- ADMIN AUTH PASSWORD PROMPT -->
+            <div id="adminAuthBox" class="bg-white rounded-2xl max-w-sm w-full p-6 custom-shadow border border-gray-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-lock text-blue-600 mr-2"></i>Admin Access</h3>
+                    <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <p class="text-xs text-gray-500 mb-4">Enter password to unlock Clan Admin Panel.</p>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <input type="password" id="adminPasswordInput" placeholder="Password" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm">
+                        Unlock Admin Panel
+                    </button>
+                </form>
+            </div>
 
-// Save info
-document.getElementById('saveInfoBtn').onclick=()=>{
-if(!currentModel || !currentSize){ alert('Select model and size first'); return; }
-let items=JSON.parse(localStorage.getItem('models')||'{}');
-items[currentModel][currentSize]={
-printTime:document.getElementById('printTimeInput').value,
-filamentCost:document.getElementById('filamentCostInput').value,
-sellPrice:document.getElementById('sellPriceInput').value,
-importantInfo:document.getElementById('importantInfoInput').value
-};
-localStorage.setItem('models',JSON.stringify(items));
-alert(`Info saved for ${currentModel} (${currentSize})`);
-show('stepSize');
-};
+            <!-- ADMIN CONTROL PANEL (PAGE 1 & PAGE 2) -->
+            <div id="adminContentBox" class="hidden bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col custom-shadow border border-gray-200 overflow-hidden">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Admin Mode</span>
+                        <h3 class="font-bold text-gray-900">Clan Account Management</h3>
+                    </div>
+                    <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600 text-lg px-2"><i class="fa-solid fa-xmark"></i></button>
+                </div>
 
-// Live search suggestions
-const searchInput=document.getElementById('searchInput');
-const suggestionsDiv=document.getElementById('suggestions');
-searchInput.addEventListener('input',()=>{
-let query=searchInput.value.toLowerCase();
-let items=JSON.parse(localStorage.getItem('models')||'{}');
-suggestionsDiv.innerHTML='';
-if(!query){ suggestionsDiv.classList.add('hidden'); return; }
-let matches=Object.keys(items).filter(name=>name.toLowerCase().includes(query));
-matches.forEach(name=>{
-let div=document.createElement('div');
-div.innerText=name;
-div.onclick=()=>{ searchInput.value=name; suggestionsDiv.classList.add('hidden'); };
-suggestionsDiv.appendChild(div);
-});
-suggestionsDiv.classList.remove('hidden');
-});
+                <!-- PAGE 1: ACCOUNT SEARCH -->
+                <div id="adminPage1" class="p-6 flex-grow overflow-y-auto space-y-4">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+                        <input type="text" id="adminSearchInput" oninput="filterAdminAccounts()" placeholder="Search accounts by name, school, or state..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
 
-});
-</script>
+                    <div class="overflow-x-auto border border-gray-100 rounded-xl">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 uppercase">
+                                <tr>
+                                    <th class="py-2.5 px-3">Member</th>
+                                    <th class="py-2.5 px-3">School / State</th>
+                                    <th class="py-2.5 px-3">Level Rank</th>
+                                    <th class="py-2.5 px-3 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAccountsTable" class="divide-y divide-gray-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PAGE 2: ACCOUNT DETAILS & LEVEL ELEVATION -->
+                <div id="adminPage2" class="hidden p-6 flex-grow overflow-y-auto space-y-6">
+                    <button onclick="showAdminPage1()" class="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Account List
+                    </button>
+
+                    <div class="border border-gray-200 rounded-xl p-5 bg-gray-50/50 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 id="admDetailName" class="text-xl font-bold text-gray-900"></h4>
+                                <p id="admDetailSchoolState" class="text-xs text-gray-500 mt-0.5"></p>
+                            </div>
+                            <span id="admDetailRankBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-800"></span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-xs pt-2 border-t border-gray-200">
+                            <div>
+                                <span class="text-gray-400 block">Registered First Name</span>
+                                <span id="admDetailFirstName" class="font-semibold text-gray-700"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 block">Registered Last Name</span>
+                                <span id="admDetailLastName" class="font-semibold text-gray-700"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 block">Last Check-In Time</span>
+                                <span id="admDetailLastCheckIn" class="font-semibold text-gray-700"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 block">Current Level Numeric</span>
+                                <span id="admDetailLevelNum" class="font-semibold text-gray-700"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Level Elevation Control -->
+                    <div class="border border-purple-200 bg-purple-50/50 rounded-xl p-5 space-y-3">
+                        <h5 class="text-sm font-bold text-purple-900">Change Member Level Rank</h5>
+                        <p class="text-xs text-purple-700">Admins can promote or elevate members up to Dictator Playmate (Level 7).</p>
+                        
+                        <div class="flex items-center gap-3">
+                            <select id="admLevelSelect" class="flex-1 px-3 py-2 rounded-lg border border-purple-300 text-sm bg-white font-medium focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                                <option value="1">Level 1: Regular Playmate</option>
+                                <option value="2">Level 2: Baseball Bat Playmate</option>
+                                <option value="3">Level 3: Rifle Playmate</option>
+                                <option value="4">Level 4: Army Playmate</option>
+                                <option value="5">Level 5: Rich Playmate</option>
+                                <option value="6">Level 6: King Playmate</option>
+                                <option value="7">Level 7: Dictator Playmate</option>
+                            </select>
+                            <button onclick="saveAdminLevelChange()" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm rounded-lg shadow-sm">
+                                Save Level
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-100 py-6 bg-white mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-gray-400">
+            <p>© The Playmate Clan. Standalone Cloud Connected Web Application.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase Script Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase Configuration
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'playmate-clan-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "dummy-key",
+            authDomain: "dummy.firebaseapp.com",
+            projectId: "dummy-project",
+            storageBucket: "dummy.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State Management
+        let currentUserData = null;
+        let authInitialized = false;
+        let timerInterval = null;
+        let allAccountsCache = [];
+        let selectedAdminAccountKey = null;
+
+        // Level Hierarchy
+        const LEVEL_NAMES = {
+            1: "Regular Playmate",
+            2: "Baseball Bat Playmate",
+            3: "Rifle Playmate",
+            4: "Army Playmate",
+            5: "Rich Playmate",
+            6: "King Playmate",
+            7: "Dictator Playmate"
+        };
+
+        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+        const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+        // Initialize Anonymous or Custom Token Auth
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth init error:", err);
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authInitialized = true;
+                subscribeToAllAccounts();
+            }
+        });
+
+        initAuth();
+
+        function getMembersCollection() {
+            return collection(db, 'artifacts', appId, 'public', 'data', 'members');
+        }
+
+        // --- ACCOUNT REGISTRATION ---
+        window.handleRegister = async function(e) {
+            e.preventDefault();
+            if (!authInitialized) return showToast("Connecting to server, please wait...", "error");
+
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const school = document.getElementById('regSchool').value.trim();
+            const state = document.getElementById('regState').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            if (!firstName || !lastName || !school || !state || !password) {
+                return showToast("Please fill in all fields.", "error");
+            }
+
+            const memberKey = firstName.toLowerCase();
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+
+            try {
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    return showToast(`An account with first name "${firstName}" already exists!`, "error");
+                }
+
+                const now = Date.now();
+                const newMemberData = {
+                    firstName,
+                    lastName,
+                    normalizedFirstName: memberKey,
+                    school,
+                    state,
+                    password,
+                    level: 1, // Starts at Level 1 (Regular Playmate)
+                    lastCheckInTimestamp: now,
+                    createdAt: now
+                };
+
+                await setDoc(docRef, newMemberData);
+                showToast("Welcome to The Playmate Clan! Account created.", "success");
+                loginUser(newMemberData);
+            } catch (err) {
+                console.error(err);
+                showToast("Cloud registration error.", "error");
+            }
+        };
+
+        // --- LOGIN (CASE-INSENSITIVE FIRST NAME) ---
+        window.handleLogin = async function(e) {
+            e.preventDefault();
+            if (!authInitialized) return showToast("Connecting to server, please wait...", "error");
+
+            const firstNameInput = document.getElementById('loginFirstName').value.trim();
+            const passwordInput = document.getElementById('loginPassword').value;
+
+            const memberKey = firstNameInput.toLowerCase();
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+
+            try {
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) {
+                    return showToast(`No account found for first name "${firstNameInput}".`, "error");
+                }
+
+                const userData = docSnap.data();
+                if (userData.password !== passwordInput) {
+                    return showToast("Incorrect password.", "error");
+                }
+
+                showToast(`Welcome back, ${userData.firstName}!`, "success");
+                loginUser(userData);
+            } catch (err) {
+                console.error(err);
+                showToast("Cloud login error.", "error");
+            }
+        };
+
+        function loginUser(userData) {
+            currentUserData = userData;
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('headerUserNav').classList.remove('hidden');
+
+            checkAndApplyDemotionIfNeeded();
+            startTimerLoop();
+            updateDashboardUI();
+        }
+
+        window.handleLogout = function() {
+            currentUserData = null;
+            clearInterval(timerInterval);
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').classList.add('hidden');
+            document.getElementById('headerUserNav').classList.add('hidden');
+            document.getElementById('loginForm').reset();
+            document.getElementById('registerForm').reset();
+            showToast("Logged out.", "info");
+        };
+
+        // --- CHECK-IN MECHANICS ---
+        window.handleCheckIn = async function() {
+            if (!currentUserData) return;
+
+            const now = Date.now();
+            const lastCheckIn = currentUserData.lastCheckInTimestamp || 0;
+            const timeSinceLast = now - lastCheckIn;
+
+            if (timeSinceLast < ONE_DAY_MS) {
+                return showToast("You can only check-in once every 24 hours!", "error");
+            }
+
+            const memberKey = currentUserData.normalizedFirstName;
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+
+            try {
+                await updateDoc(docRef, {
+                    lastCheckInTimestamp: now
+                });
+
+                currentUserData.lastCheckInTimestamp = now;
+                showToast("Check-in recorded! Your 3-day timer has been reset to 72 hours.", "success");
+                updateDashboardUI();
+            } catch (err) {
+                console.error("Check-in error:", err);
+                showToast("Could not process check-in.", "error");
+            }
+        };
+
+        // Demotion check if 3 days passed without check-in
+        async function checkAndApplyDemotionIfNeeded() {
+            if (!currentUserData) return;
+
+            const now = Date.now();
+            const lastCheckIn = currentUserData.lastCheckInTimestamp || now;
+            const elapsed = now - lastCheckIn;
+
+            if (elapsed >= THREE_DAYS_MS && currentUserData.level > 1) {
+                const newLevel = Math.max(1, currentUserData.level - 1);
+                const memberKey = currentUserData.normalizedFirstName;
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
+
+                try {
+                    await updateDoc(docRef, {
+                        level: newLevel,
+                        lastCheckInTimestamp: now // Reset timer upon demotion
+                    });
+
+                    currentUserData.level = newLevel;
+                    currentUserData.lastCheckInTimestamp = now;
+                    showToast(`Notice: You missed checking in for 3 days! You have been demoted to ${LEVEL_NAMES[newLevel]}.`, "error");
+                } catch (err) {
+                    console.error("Demotion update error:", err);
+                }
+            }
+        }
+
+        // Live Timer Loop
+        function startTimerLoop() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (!currentUserData) return;
+
+                const now = Date.now();
+                const lastCheckIn = currentUserData.lastCheckInTimestamp || now;
+                const expiresAt = lastCheckIn + THREE_DAYS_MS;
+                const remaining = expiresAt - now;
+
+                if (remaining <= 0) {
+                    checkAndApplyDemotionIfNeeded();
+                    updateDashboardUI();
+                } else {
+                    const hours = Math.floor(remaining / (1000 * 60 * 60));
+                    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                    
+                    document.getElementById('dashTimerDisplay').textContent = 
+                        `${hours}h ${minutes < 10 ? '0' : ''}${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
+                }
+
+                // Check 24h button cooldown status
+                const timeSinceLast = now - lastCheckIn;
+                const checkInBtn = document.getElementById('checkInBtn');
+                const statusText = document.getElementById('checkInStatusText');
+
+                if (timeSinceLast >= ONE_DAY_MS) {
+                    checkInBtn.disabled = false;
+                    document.getElementById('checkInBtnText').textContent = "Daily Check-In Ready!";
+                    statusText.textContent = "Click to reset your 3-day inactivity timer.";
+                } else {
+                    checkInBtn.disabled = true;
+                    const nextCheckInIn = ONE_DAY_MS - timeSinceLast;
+                    const cHours = Math.floor(nextCheckInIn / (1000 * 60 * 60));
+                    const cMins = Math.floor((nextCheckInIn % (1000 * 60 * 60)) / (1000 * 60));
+                    document.getElementById('checkInBtnText').textContent = "Checked-In for Today";
+                    statusText.textContent = `Next check-in available in ${cHours}h ${cMins}m`;
+                }
+
+            }, 1000);
+        }
+
+        function updateDashboardUI() {
+            if (!currentUserData) return;
+
+            const { firstName, lastName, school, state, level = 1 } = currentUserData;
+            const rankTitle = LEVEL_NAMES[level] || LEVEL_NAMES[1];
+
+            document.getElementById('navUserName').textContent = `${firstName} ${lastName}`;
+            document.getElementById('navUserBadge').textContent = rankTitle;
+
+            document.getElementById('dashFullName').textContent = `${firstName} ${lastName}`;
+            document.getElementById('userAvatar').textContent = firstName.charAt(0).toUpperCase();
+            document.getElementById('dashBadge').textContent = `Level ${level}: ${rankTitle}`;
+            document.getElementById('dashSchool').textContent = school;
+            document.getElementById('dashState').textContent = state;
+        }
+
+        // --- ADMIN PANEL CONTROL (CTRL + SHIFT + A) ---
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                e.preventDefault();
+                triggerAdminModal();
+            }
+        });
+
+        window.triggerAdminModal = function() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            document.getElementById('adminAuthBox').classList.remove('hidden');
+            document.getElementById('adminContentBox').classList.add('hidden');
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminPasswordInput').focus();
+        };
+
+        window.closeAdminModal = function() {
+            document.getElementById('adminModal').classList.add('hidden');
+        };
+
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('adminPasswordInput').value;
+            if (input === '12345') {
+                document.getElementById('adminAuthBox').classList.add('hidden');
+                document.getElementById('adminContentBox').classList.remove('hidden');
+                showAdminPage1();
+            } else {
+                showToast("Incorrect Admin Password!", "error");
+            }
+        };
+
+        function subscribeToAllAccounts() {
+            onSnapshot(getMembersCollection(), (snapshot) => {
+                allAccountsCache = [];
+                snapshot.forEach(doc => {
+                    allAccountsCache.push(doc.data());
+                });
+                filterAdminAccounts();
+            });
+        }
+
+        window.showAdminPage1 = function() {
+            document.getElementById('adminPage1').classList.remove('hidden');
+            document.getElementById('adminPage2').classList.add('hidden');
+            filterAdminAccounts();
+        };
+
+        window.filterAdminAccounts = function() {
+            const query = (document.getElementById('adminSearchInput').value || '').toLowerCase();
+            const tbody = document.getElementById('adminAccountsTable');
+            tbody.innerHTML = '';
+
+            const filtered = allAccountsCache.filter(acc => 
+                acc.firstName.toLowerCase().includes(query) ||
+                acc.lastName.toLowerCase().includes(query) ||
+                acc.school.toLowerCase().includes(query) ||
+                acc.state.toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-400">No accounts found.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(acc => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition cursor-pointer";
+                tr.onclick = () => openAdminAccountDetails(acc.normalizedFirstName);
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-semibold text-gray-900">${acc.firstName} ${acc.lastName}</td>
+                    <td class="py-2.5 px-3 text-gray-500 text-xs">${acc.school}, ${acc.state}</td>
+                    <td class="py-2.5 px-3 font-medium text-xs text-blue-600">Level ${acc.level || 1}: ${LEVEL_NAMES[acc.level || 1]}</td>
+                    <td class="py-2.5 px-3 text-right">
+                        <button class="text-xs bg-gray-100 hover:bg-blue-600 hover:text-white px-2.5 py-1 rounded font-semibold text-gray-700 transition">
+                            View
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.openAdminAccountDetails = function(key) {
+            selectedAdminAccountKey = key;
+            const acc = allAccountsCache.find(a => a.normalizedFirstName === key);
+            if (!acc) return;
+
+            document.getElementById('admDetailName').textContent = `${acc.firstName} ${acc.lastName}`;
+            document.getElementById('admDetailSchoolState').textContent = `${acc.school} • ${acc.state}`;
+            document.getElementById('admDetailRankBadge').textContent = `Level ${acc.level || 1}: ${LEVEL_NAMES[acc.level || 1]}`;
+            document.getElementById('admDetailFirstName').textContent = acc.firstName;
+            document.getElementById('admDetailLastName').textContent = acc.lastName;
+            document.getElementById('admDetailLevelNum').textContent = `${acc.level || 1} of 7`;
+
+            const lastDate = acc.lastCheckInTimestamp ? new Date(acc.lastCheckInTimestamp).toLocaleString() : 'Never';
+            document.getElementById('admDetailLastCheckIn').textContent = lastDate;
+
+            document.getElementById('admLevelSelect').value = acc.level || 1;
+
+            document.getElementById('adminPage1').classList.add('hidden');
+            document.getElementById('adminPage2').classList.remove('hidden');
+        };
+
+        window.saveAdminLevelChange = async function() {
+            if (!selectedAdminAccountKey) return;
+
+            const newLevel = parseInt(document.getElementById('admLevelSelect').value, 10);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', selectedAdminAccountKey);
+
+            try {
+                await updateDoc(docRef, {
+                    level: newLevel
+                });
+
+                showToast(`Level updated to Level ${newLevel}: ${LEVEL_NAMES[newLevel]}!`, "success");
+                
+                // Update local selection UI
+                openAdminAccountDetails(selectedAdminAccountKey);
+
+            } catch (err) {
+                console.error("Admin update error:", err);
+                showToast("Failed to update user level.", "error");
+            }
+        };
+
+        // --- UI UTILITIES ---
+        window.switchAuthTab = function(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const regForm = document.getElementById('registerForm');
+            const tabLoginBtn = document.getElementById('tabLoginBtn');
+            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                tabLoginBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-gray-900 transition";
+                tabRegisterBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-900 transition";
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                tabRegisterBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-gray-900 transition";
+                tabLoginBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-900 transition";
+            }
+        };
+
+        function showToast(msg, type = "info") {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.textContent = msg;
+            toast.classList.remove('hidden', 'bg-red-50', 'text-red-800', 'border-red-200', 'bg-green-50', 'text-green-800', 'border-green-200', 'bg-blue-50', 'text-blue-800', 'border-blue-200');
+
+            if (type === 'error') {
+                toast.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
+                toastIcon.className = "fa-solid fa-circle-exclamation text-red-500";
+              } else if (type === 'success') {
+                toast.classList.add('bg-green-50', 'text-green-800', 'border-green-200');
+                toastIcon.className = "fa-solid fa-circle-check text-green-500";
+            } else {
+                toast.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200');
+                toastIcon.className = "fa-solid fa-circle-info text-blue-500";
+            }
+        }
+
+        window.hideToast = function() {
+            document.getElementById('toast').classList.add('hidden');
+        };
+    </script>
 </body>
 </html>
