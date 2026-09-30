@@ -30,13 +30,14 @@
         }
         .tooltip {
             position: relative;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
         }
         .tooltip .tooltiptext {
             visibility: hidden;
-            width: 160px;
-            background-color: #1f2937;
-            color: #fff;
+            width: 170px;
+            background-color: #111827;
+            color: #ffffff;
             text-align: center;
             border-radius: 6px;
             padding: 6px 8px;
@@ -44,12 +45,13 @@
             z-index: 50;
             bottom: 125%;
             left: 50%;
-            margin-left: -80px;
+            margin-left: -85px;
             opacity: 0;
             transition: opacity 0.2s;
             font-size: 11px;
             pointer-events: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
         }
         .tooltip .tooltiptext::after {
             content: "";
@@ -59,7 +61,7 @@
             margin-left: -5px;
             border-width: 5px;
             border-style: solid;
-            border-color: #1f2937 transparent transparent transparent;
+            border-color: #111827 transparent transparent transparent;
         }
         .tooltip:hover .tooltiptext {
             visibility: visible;
@@ -73,14 +75,15 @@
     <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <h1 class="text-2xl font-black tracking-tight text-gray-900 flex items-center gap-2">
-                <span class="bg-blue-600 text-white px-2 py-1 rounded text-lg font-extrabold">PGC</span>
+                <span class="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-lg font-extrabold shadow-sm">PGC</span>
                 The Play Guy Clan
             </h1>
             
             <div id="user-header-info" class="hidden items-center gap-3">
                 <span id="header-user-name" class="font-bold text-gray-700"></span>
                 <span id="header-user-badge" class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-semibold"></span>
-                <button onclick="logout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition">Log Out</button>
+                <div id="header-user-markings" class="flex items-center gap-1"></div>
+                <button onclick="logout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg font-semibold transition ml-2">Log Out</button>
             </div>
         </div>
     </header>
@@ -88,59 +91,59 @@
     <!-- Main Container -->
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         
-        <!-- ALERT MESSAGE -->
-        <div id="alert-banner" class="hidden mb-6 p-4 rounded-lg text-sm font-medium transition-all"></div>
+        <!-- ALERT MESSAGE BANNER -->
+        <div id="alert-banner" class="hidden mb-6 p-4 rounded-xl text-sm font-semibold transition-all shadow-sm"></div>
 
         <!-- AUTH SECTION (Login / Register) -->
         <div id="auth-section" class="max-w-md mx-auto my-8">
             <!-- Tabs -->
             <div class="flex border-b border-gray-200 mb-6">
-                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600">Log In</button>
-                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700">Create Account</button>
+                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600 transition">Log In</button>
+                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700 transition">Create Account</button>
             </div>
 
             <!-- LOGIN FORM -->
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">First Name</label>
-                    <input type="text" id="login-firstname" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. Alex">
+                    <input type="text" id="login-firstname" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="e.g. Alex">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Password</label>
-                    <input type="password" id="login-password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="••••••••">
+                    <input type="password" id="login-password" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="••••••••">
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg shadow transition">Log In to Clan</button>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow transition">Log In to Clan</button>
             </form>
 
             <!-- REGISTER FORM -->
-            <form id="register-form" onsubmit="handleRegister(event)" class="hidden space-y-4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <form id="register-form" onsubmit="handleRegister(event)" class="hidden space-y-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">First Name</label>
-                        <input type="text" id="reg-firstname" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <input type="text" id="reg-firstname" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Last Name</label>
-                        <input type="text" id="reg-lastname" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <input type="text" id="reg-lastname" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">School</label>
-                    <input type="text" id="reg-school" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. West High School">
+                    <input type="text" id="reg-school" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="e.g. West High School">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">State</label>
-                    <input type="text" id="reg-state" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. California">
+                    <input type="text" id="reg-state" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="e.g. California">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Choose Password</label>
-                    <input type="password" id="reg-password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="password" id="reg-password" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg shadow transition">Join The Play Guy Clan</button>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow transition">Join The Play Guy Clan</button>
             </form>
         </div>
 
-        <!-- DASHBOARD & LEADERBOARD SECTION -->
+        <!-- DASHBOARD, LEVEL TIMELINE & LEADERBOARD SECTION -->
         <div id="dashboard-section" class="hidden space-y-8">
             
             <!-- MEMBER DASHBOARD CARD -->
@@ -151,17 +154,17 @@
                         <h2 class="text-3xl font-extrabold text-gray-900 flex items-center gap-2" id="dash-name">
                             Welcome
                         </h2>
-                        <div class="flex items-center gap-2 mt-2">
+                        <div class="flex flex-wrap items-center gap-2 mt-2">
                             <span id="dash-rank-badge" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold"></span>
-                            <div id="dash-symbols" class="flex gap-1.5 items-center"></div>
+                            <div id="dash-markings" class="flex gap-1.5 items-center flex-wrap"></div>
                         </div>
                     </div>
 
                     <!-- CHECK IN WIDGET -->
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center min-w-[240px]">
-                        <div class="text-xs text-gray-500 font-semibold mb-1">Status Timer</div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col items-center justify-center min-w-[240px]">
+                        <div class="text-xs text-gray-500 font-semibold mb-1">Check-in Timer</div>
                         <div id="timer-display" class="text-2xl font-black text-gray-800 mb-2">--:--:--</div>
-                        <button id="checkin-btn" onclick="doCheckIn()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow transition text-sm flex items-center justify-center gap-2">
+                        <button id="checkin-btn" onclick="doCheckIn()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             Check-In Now
                         </button>
@@ -170,23 +173,56 @@
                 </div>
 
                 <!-- INFO GRID -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs mb-8">
+                    <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
                         <span class="block text-gray-400 font-semibold mb-0.5">School</span>
                         <span id="dash-school" class="font-bold text-gray-800">--</span>
                     </div>
-                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
                         <span class="block text-gray-400 font-semibold mb-0.5">State</span>
                         <span id="dash-state" class="font-bold text-gray-800">--</span>
                     </div>
-                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
                         <span class="block text-gray-400 font-semibold mb-0.5">Check-In Rule</span>
                         <span id="dash-timer-type" class="font-bold text-gray-800">3-Day Regular</span>
                     </div>
-                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
                         <span class="block text-gray-400 font-semibold mb-0.5">Last Check-In</span>
                         <span id="dash-last-checkin" class="font-bold text-gray-800">Never</span>
                     </div>
+                </div>
+
+                <!-- LEVEL TIMELINE COMPONENT -->
+                <div class="pt-4 border-t border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-extrabold uppercase tracking-wider text-gray-700">Clan Rank Progression Timeline</h3>
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100" id="timeline-progress-text"></span>
+                    </div>
+
+                    <!-- Timeline Horizontal Scroll / Grid -->
+                    <div class="relative py-4 overflow-x-auto">
+                        <div class="min-w-[700px] flex items-center justify-between relative px-2" id="level-timeline-container">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OUTLAWS SECTION -->
+            <div id="outlaws-wrapper" class="hidden bg-stone-900 border border-stone-800 text-stone-100 rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-4 pb-4 border-b border-stone-800">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-red-600 text-white font-black text-xs px-2.5 py-1 rounded uppercase tracking-wider shadow">WANTED</span>
+                        <div>
+                            <h3 class="text-xl font-black text-white tracking-wide">Clan Outlaws Roster</h3>
+                            <p class="text-xs text-stone-400">Members banished or declared as outlaws by clan administration.</p>
+                        </div>
+                    </div>
+                    <span id="outlaws-count-badge" class="bg-stone-800 text-red-400 border border-red-900/50 text-xs font-bold px-3 py-1 rounded-full">0 Outlaws</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="outlaws-container">
+                    <!-- Dynamic Outlaw Cards -->
                 </div>
             </div>
 
@@ -195,12 +231,12 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
                         <h3 class="text-xl font-extrabold text-gray-900">Clan Roster & Leaderboard</h3>
-                        <p class="text-xs text-gray-500">Rankings based on Level + Number of Status Markings.</p>
+                        <p class="text-xs text-gray-500">Rankings based on Level + Number of Markings.</p>
                     </div>
 
                     <!-- MEMBER SEARCH -->
                     <div class="relative w-full md:w-64">
-                        <input type="text" id="leaderboard-search" oninput="renderLeaderboard()" placeholder="Search member name..." class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <input type="text" id="leaderboard-search" oninput="renderLeaderboard()" placeholder="Search member name..." class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                         <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
@@ -212,7 +248,7 @@
                                 <th class="p-3 w-12 text-center">Rank</th>
                                 <th class="p-3">Member</th>
                                 <th class="p-3">Level Title</th>
-                                <th class="p-3 text-center">Status Markings</th>
+                                <th class="p-3 text-center">Markings</th>
                                 <th class="p-3 text-right">Score</th>
                             </tr>
                         </thead>
@@ -241,9 +277,9 @@
             <!-- ADMIN PASSWORD PROMPT VIEW -->
             <div id="admin-pass-view" class="p-6 text-center space-y-4">
                 <p class="text-xs text-gray-600 font-semibold">Enter secret passcode to unlock admin options:</p>
-                <input type="password" id="admin-pass-input" class="w-48 text-center px-3 py-2 border border-gray-300 rounded-lg font-mono text-lg tracking-widest focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="•••••">
+                <input type="password" id="admin-pass-input" class="w-48 text-center px-3 py-2 border border-gray-300 rounded-xl font-mono text-lg tracking-widest focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="•••••">
                 <div>
-                    <button onclick="verifyAdminPass()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-6 py-2 rounded-lg transition">Authenticate</button>
+                    <button onclick="verifyAdminPass()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-6 py-2.5 rounded-xl transition">Authenticate</button>
                 </div>
             </div>
 
@@ -253,7 +289,7 @@
                 <!-- ACCOUNT SEARCH -->
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Search All Registered Accounts</label>
-                    <input type="text" id="admin-user-search" oninput="renderAdminUserList()" placeholder="Search by name, school, or state..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-red-500 focus:outline-none">
+                    <input type="text" id="admin-user-search" oninput="renderAdminUserList()" placeholder="Search by name, school, or state..." class="w-full px-3.5 py-2 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-red-500 focus:outline-none">
                 </div>
 
                 <!-- ACCOUNTS LIST -->
@@ -270,7 +306,13 @@
                             <h4 id="admin-target-fullname" class="font-extrabold text-base text-gray-900"></h4>
                             <p id="admin-target-id" class="text-[10px] font-mono text-gray-400"></p>
                         </div>
-                        <span id="admin-target-level-badge" class="bg-gray-800 text-white text-[10px] font-bold px-2 py-1 rounded"></span>
+                        <div class="flex items-center gap-2">
+                            <span id="admin-target-level-badge" class="bg-gray-800 text-white text-[10px] font-bold px-2 py-1 rounded"></span>
+                            <button onclick="triggerDeleteModal()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1 rounded-lg transition flex items-center gap-1 shadow-sm">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                Delete Account
+                            </button>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-xs">
@@ -284,7 +326,7 @@
                     <div class="pt-2 border-t border-gray-200">
                         <label class="block text-xs font-bold text-gray-700 mb-1">Set Level Rank</label>
                         <div class="flex gap-2">
-                            <select id="admin-level-select" class="flex-1 bg-white border border-gray-300 rounded-lg text-xs p-2 font-semibold text-gray-800">
+                            <select id="admin-level-select" class="flex-1 bg-white border border-gray-300 rounded-xl text-xs p-2.5 font-semibold text-gray-800">
                                 <option value="1">Level 1: Regular Play Guy</option>
                                 <option value="2">Level 2: Baseball Bat Play Guy</option>
                                 <option value="3">Level 3: Rifle Play Guy</option>
@@ -293,28 +335,28 @@
                                 <option value="6">Level 6: King Play Guy</option>
                                 <option value="7">Level 7: Dictator Play Guy</option>
                             </select>
-                            <button onclick="adminSaveLevel()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Set Rank</button>
+                            <button onclick="adminSaveLevel()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition">Set Rank</button>
                         </div>
                     </div>
 
-                    <!-- STATUS MARKINGS TOGGLES -->
+                    <!-- MARKINGS TOGGLES -->
                     <div class="pt-2 border-t border-gray-200">
-                        <label class="block text-xs font-bold text-gray-700 mb-2">Toggle Status Markings</label>
+                        <label class="block text-xs font-bold text-gray-700 mb-2">Toggle Markings</label>
                         <div class="grid grid-cols-2 gap-2 text-xs">
-                            <label class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200 cursor-pointer">
-                                <input type="checkbox" id="mark-youtube" onchange="adminToggleMark('youtube')" class="rounded text-red-600">
+                            <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
+                                <input type="checkbox" id="mark-youtube" onchange="adminToggleMark('youtube')" class="rounded text-red-600 focus:ring-red-500">
                                 <span class="font-semibold text-gray-700">YouTube Symbol</span>
                             </label>
-                            <label class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200 cursor-pointer">
-                                <input type="checkbox" id="mark-og" onchange="adminToggleMark('og')" class="rounded text-black">
+                            <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
+                                <input type="checkbox" id="mark-og" onchange="adminToggleMark('og')" class="rounded text-black focus:ring-gray-800">
                                 <span class="font-semibold text-gray-700">O.G. Status</span>
                             </label>
-                            <label class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200 cursor-pointer">
-                                <input type="checkbox" id="mark-noelec" onchange="adminToggleMark('noelec')" class="rounded text-yellow-500">
+                            <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
+                                <input type="checkbox" id="mark-noelec" onchange="adminToggleMark('noelec')" class="rounded text-yellow-500 focus:ring-yellow-400">
                                 <span class="font-semibold text-gray-700">No Elec Usage (7-Day Timer)</span>
                             </label>
-                            <label class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200 cursor-pointer">
-                                <input type="checkbox" id="mark-creator" onchange="adminToggleMark('creator')" class="rounded text-gray-900">
+                            <label class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
+                                <input type="checkbox" id="mark-creator" onchange="adminToggleMark('creator')" class="rounded text-gray-900 focus:ring-gray-900">
                                 <span class="font-semibold text-gray-700">Creator Status</span>
                             </label>
                         </div>
@@ -324,10 +366,41 @@
         </div>
     </div>
 
-    <!-- Firebase App & Firestore -->
+    <!-- OUTLAW / DELETE CONFIRMATION PROMPT MODAL -->
+    <div id="delete-outlaw-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full border border-gray-200 shadow-2xl p-6 text-center space-y-5">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl font-black">
+                ⚠️
+            </div>
+            <div>
+                <h3 class="text-lg font-extrabold text-gray-900">Account Deletion Prompt</h3>
+                <p class="text-xs text-gray-500 mt-1">You are deleting <span id="delete-target-name" class="font-bold text-gray-800"></span>.</p>
+            </div>
+
+            <div class="bg-stone-100 p-4 rounded-xl border border-stone-200 text-left space-y-1">
+                <p class="text-xs font-bold text-stone-800">Do you want to make this account an Outlaw?</p>
+                <p class="text-[11px] text-stone-500">Making them an Outlaw preserves their record on the Clan Outlaws Roster with a WANTED badge, while completely deleting their normal member account.</p>
+            </div>
+
+            <div class="flex flex-col gap-2 pt-2">
+                <button onclick="confirmActionMakeOutlaw()" class="w-full bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold py-2.5 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                    <span class="bg-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black">YES</span>
+                    Make Outlaw & Archive
+                </button>
+                <button onclick="confirmActionPermanentlyDelete()" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl shadow transition">
+                    Permanently Delete Without Outlaw
+                </button>
+                <button onclick="closeDeleteModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl transition">
+                    Cancel / Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Application Core & Firestore Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // YOUR FIREBASE CONFIGURATION
         const firebaseConfig = {
@@ -341,9 +414,131 @@
             measurementId: "G-S66TSKRF2Q"
         };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        // Initialize Firebase with Local Storage Fallback Strategy
+        let db = null;
+        let useLocalStorageMode = false;
+
+        // Default initial clan members if database is uninitialized
+        const INITIAL_SEED_USERS = [
+            {
+                id: "alex_creator_01",
+                firstName: "Alex",
+                lastName: "Vance",
+                school: "West High School",
+                state: "California",
+                password: "123",
+                level: 7,
+                isOutlaw: false,
+                lastCheckIn: Date.now() - 3600000,
+                markings: { youtube: true, og: true, noelec: false, creator: true }
+            },
+            {
+                id: "sam_og_02",
+                firstName: "Sam",
+                lastName: "Taylor",
+                school: "Oak Creek Academy",
+                state: "Texas",
+                password: "123",
+                level: 5,
+                isOutlaw: false,
+                lastCheckIn: Date.now() - 72000000,
+                markings: { youtube: true, og: true, noelec: true, creator: false }
+            },
+            {
+                id: "jordan_outlaw_03",
+                firstName: "Jordan",
+                lastName: "Rogue",
+                school: "Pinecrest Tech",
+                state: "Florida",
+                password: "123",
+                level: 3,
+                isOutlaw: true,
+                lastCheckIn: Date.now() - 500000000,
+                markings: { youtube: false, og: false, noelec: false, creator: false }
+            }
+        ];
+
+        function getLocalUsers() {
+            try {
+                const data = localStorage.getItem("pgc_clan_users");
+                if (!data) {
+                    localStorage.setItem("pgc_clan_users", JSON.stringify(INITIAL_SEED_USERS));
+                    return INITIAL_SEED_USERS;
+                }
+                return JSON.parse(data);
+            } catch (e) {
+                return INITIAL_SEED_USERS;
+            }
+        }
+
+        function saveLocalUsers(users) {
+            try {
+                localStorage.setItem("pgc_clan_users", JSON.stringify(users));
+            } catch (e) {
+                console.error("Failed to save to localStorage:", e);
+            }
+            triggerLocalUpdate(users);
+        }
+
+        function triggerLocalUpdate(users) {
+            window.allUsers = users;
+            if (window.currentUser) {
+                const refreshed = window.allUsers.find(u => u.id === window.currentUser.id);
+                if (refreshed) {
+                    window.currentUser = refreshed;
+                    checkAndApplyDemotions(window.currentUser);
+                    renderDashboard();
+                }
+            }
+            renderLeaderboard();
+            renderOutlawsRoster();
+            if (document.getElementById("admin-dash-view") && document.getElementById("admin-dash-view").style.display !== "none") {
+                renderAdminUserList();
+            }
+        }
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+        } catch(e) {
+            useLocalStorageMode = true;
+        }
+
+        // Initialize Real-time listener with automatic local failover
+        function initDataStore() {
+            if (useLocalStorageMode || !db) {
+                enableLocalStorageMode();
+                return;
+            }
+
+            try {
+                onSnapshot(collection(db, "users"), (snapshot) => {
+                    const firestoreUsers = [];
+                    snapshot.forEach((docSnap) => {
+                        firestoreUsers.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    
+                    if (firestoreUsers.length === 0) {
+                        saveLocalUsers(INITIAL_SEED_USERS);
+                    } else {
+                        saveLocalUsers(firestoreUsers);
+                    }
+                }, (error) => {
+                    console.warn("Firestore access error, failing over to Local Storage mode:", error.message);
+                    enableLocalStorageMode();
+                });
+            } catch (err) {
+                enableLocalStorageMode();
+            }
+        }
+
+        function enableLocalStorageMode() {
+            useLocalStorageMode = true;
+            const users = getLocalUsers();
+            triggerLocalUpdate(users);
+        }
+
+        initDataStore();
 
         // RANK DEFINITIONS
         const LEVEL_NAMES = {
@@ -356,39 +551,39 @@
             7: "Dictator Play Guy"
         };
 
-        // STATUS MARKINGS DEFINITIONS WITH HTML SYMBOLS
-        const STATUS_DEFINITIONS = {
+        // MARKINGS DEFINITIONS WITH HTML SYMBOLS
+        const MARKING_DEFINITIONS = {
             youtube: {
                 key: "youtube",
                 title: "YouTube",
                 description: "This person has posted videos on YouTube about the Play Guy.",
-                html: `<div class="tooltip inline-block"><span class="bg-red-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px] flex items-center gap-0.5 shadow-sm">
+                html: `<div class="tooltip inline-flex"><span class="bg-red-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px] flex items-center gap-0.5 shadow-sm">
                     <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                </span><span class="tooltiptext">This person has posted videos on YouTube about the "play guy"</span></div>`
+                </span><span class="tooltiptext">Posted YouTube videos about the Play Guy</span></div>`
             },
             og: {
                 key: "og",
                 title: "O.G.",
                 description: "Considered as one of the starting followers of the Play Guy.",
-                html: `<div class="tooltip inline-block"><span class="bg-white border border-gray-900 text-black font-black px-1.5 py-0.5 rounded text-[10px] shadow-sm">
+                html: `<div class="tooltip inline-flex"><span class="bg-white border border-gray-900 text-black font-black px-1.5 py-0.5 rounded text-[10px] shadow-sm">
                     O.G.
-                </span><span class="tooltiptext">Given when the person is considered as one of the starting followers of the "play guy"</span></div>`
+                </span><span class="tooltiptext">One of the starting followers of the Play Guy</span></div>`
             },
             noelec: {
                 key: "noelec",
                 title: "No Electronics Usage Daily",
                 description: "Doesn't have access to daily electronics. Granted a 7-day check-in timer.",
-                html: `<div class="tooltip inline-block"><span class="bg-sky-200 text-amber-500 font-bold px-1.5 py-0.5 rounded text-[10px] flex items-center justify-center shadow-sm">
+                html: `<div class="tooltip inline-flex"><span class="bg-sky-200 text-amber-500 font-bold px-1.5 py-0.5 rounded text-[10px] flex items-center justify-center shadow-sm">
                     ⚡
-                </span><span class="tooltiptext">No Electronics Usage Daily: Grants a 7-day check-in timer</span></div>`
+                </span><span class="tooltiptext">No Electronics Usage Daily (7-Day Timer)</span></div>`
             },
             creator: {
                 key: "creator",
                 title: "Creator",
                 description: "One of the people who created the Play Guy.",
-                html: `<div class="tooltip inline-block"><span class="bg-black text-white font-extrabold uppercase px-1.5 py-0.5 rounded text-[9px] tracking-wider shadow-sm">
+                html: `<div class="tooltip inline-flex"><span class="bg-black text-white font-extrabold uppercase px-1.5 py-0.5 rounded text-[9px] tracking-wider shadow-sm">
                     CREATOR
-                </span><span class="tooltiptext">One of the people who created the "play guy"</span></div>`
+                </span><span class="tooltiptext">One of the original creators of the Play Guy</span></div>`
             }
         };
 
@@ -397,29 +592,6 @@
         window.currentUser = null;
         window.selectedAdminTarget = null;
         let timerInterval = null;
-
-        // REAL-TIME FIRESTORE LISTENER
-        onSnapshot(collection(db, "users"), (snapshot) => {
-            window.allUsers = [];
-            snapshot.forEach((docSnap) => {
-                window.allUsers.push({ id: docSnap.id, ...docSnap.data() });
-            });
-            
-            // Re-evaluate current user if logged in
-            if (window.currentUser) {
-                const refreshed = window.allUsers.find(u => u.id === window.currentUser.id);
-                if (refreshed) {
-                    window.currentUser = refreshed;
-                    checkAndApplyDemotions(window.currentUser);
-                    renderDashboard();
-                }
-            }
-
-            renderLeaderboard();
-            if (document.getElementById("admin-dash-view").style.display !== "none") {
-                renderAdminUserList();
-            }
-        });
 
         // AUTH TAB SWITCHING
         window.switchAuthTab = function(tab) {
@@ -431,17 +603,17 @@
             if (tab === 'login') {
                 loginForm.classList.remove("hidden");
                 regForm.classList.add("hidden");
-                tabLogin.className = "flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600";
-                tabReg.className = "flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700";
+                tabLogin.className = "flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600 transition";
+                tabReg.className = "flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700 transition";
             } else {
                 loginForm.classList.add("hidden");
                 regForm.classList.remove("hidden");
-                tabReg.className = "flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600";
-                tabLogin.className = "flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700";
+                tabReg.className = "flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600 transition";
+                tabLogin.className = "flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700 transition";
             }
         };
 
-        // USER REGISTER
+        // USER REGISTER & INSTANT TRANSITION TO DASHBOARD
         window.handleRegister = async function(e) {
             e.preventDefault();
             const firstName = document.getElementById("reg-firstname").value.trim();
@@ -457,12 +629,14 @@
 
             const docId = firstName.toLowerCase() + "_" + Date.now();
             const newUser = {
+                id: docId,
                 firstName: firstName,
                 lastName: lastName,
                 school: school,
                 state: state,
                 password: password,
                 level: 1,
+                isOutlaw: false,
                 lastCheckIn: Date.now(),
                 markings: {
                     youtube: false,
@@ -472,18 +646,25 @@
                 }
             };
 
-            try {
-                await setDoc(doc(db, "users", docId), newUser);
-                showAlert("Account successfully created! Logging you in...", "emerald");
-                document.getElementById("register-form").reset();
-                
-                // AUTOMATIC LOGIN UPON CREATION
-                window.currentUser = { id: docId, ...newUser };
-                showDashboardView();
-            } catch (err) {
-                console.error("Error creating user:", err);
-                showAlert("Failed to save account to database. Check internet connection.", "red");
+            if (!useLocalStorageMode && db) {
+                try {
+                    await setDoc(doc(db, "users", docId), newUser);
+                } catch (err) {
+                    console.warn("Firestore error on register, storing locally:", err);
+                    useLocalStorageMode = true;
+                }
             }
+
+            if (useLocalStorageMode) {
+                const currentList = getLocalUsers();
+                currentList.push(newUser);
+                saveLocalUsers(currentList);
+            }
+
+            document.getElementById("register-form").reset();
+            window.currentUser = newUser;
+            showDashboardView();
+            showAlert(`Welcome to the Clan, ${firstName}! Your account has been created.`, "emerald");
         };
 
         // USER LOGIN (CASE INSENSITIVE FIRST NAME MATCHING)
@@ -493,7 +674,7 @@
             const passwordInput = document.getElementById("login-password").value;
 
             const match = window.allUsers.find(u => 
-                u.firstName && u.firstName.toLowerCase() === firstNameInput && u.password === passwordInput
+                !u.isOutlaw && u.firstName && u.firstName.toLowerCase() === firstNameInput && u.password === passwordInput
             );
 
             if (match) {
@@ -503,7 +684,7 @@
                 document.getElementById("login-form").reset();
                 showDashboardView();
             } else {
-                showAlert("Invalid first name or password. Please check your credentials.", "red");
+                showAlert("Invalid first name or password, or account is banished.", "red");
             }
         };
 
@@ -532,7 +713,7 @@
             renderDashboard();
         }
 
-        // RENDER DASHBOARD & TIMER
+        // RENDER DASHBOARD, MULTIPLE MARKINGS & LEVEL TIMELINE
         function renderDashboard() {
             const u = window.currentUser;
             if (!u) return;
@@ -542,15 +723,17 @@
             document.getElementById("dash-school").textContent = u.school;
             document.getElementById("dash-state").textContent = u.state;
 
-            // Render status symbols
-            const symbolsContainer = document.getElementById("dash-symbols");
-            symbolsContainer.innerHTML = "";
-            let markingCount = 0;
+            // Render ALL active markings in header and dashboard card
+            const markingsContainer = document.getElementById("dash-markings");
+            const headerMarkingsContainer = document.getElementById("header-user-markings");
+            markingsContainer.innerHTML = "";
+            headerMarkingsContainer.innerHTML = "";
+
             if (u.markings) {
-                Object.keys(STATUS_DEFINITIONS).forEach(key => {
+                Object.keys(MARKING_DEFINITIONS).forEach(key => {
                     if (u.markings[key]) {
-                        symbolsContainer.innerHTML += STATUS_DEFINITIONS[key].html;
-                        markingCount++;
+                        markingsContainer.innerHTML += MARKING_DEFINITIONS[key].html;
+                        headerMarkingsContainer.innerHTML += MARKING_DEFINITIONS[key].html;
                     }
                 });
             }
@@ -564,8 +747,61 @@
                 document.getElementById("dash-last-checkin").textContent = "Never";
             }
 
-            // START TIMER COUNTDOWN
+            // Render Timeline
+            renderLevelTimeline(u.level);
+
+            // Start Timer
             startTimerCountdown();
+        }
+
+        // RENDER LEVEL TIMELINE WITH LOCKS
+        function renderLevelTimeline(userLevel) {
+            const container = document.getElementById("level-timeline-container");
+            const progressText = document.getElementById("timeline-progress-text");
+            if (!container) return;
+
+            progressText.textContent = `Unlocked Level ${userLevel} of 7`;
+            container.innerHTML = "";
+
+            for (let lvl = 1; lvl <= 7; lvl++) {
+                const isUnlocked = lvl <= userLevel;
+                const isCurrent = lvl === userLevel;
+
+                const cardHtml = `
+                    <div class="flex flex-col items-center flex-1 min-w-[95px] relative group px-1">
+                        <!-- Connecting Line -->
+                        ${lvl < 7 ? `<div class="absolute top-5 left-[50%] w-full h-1 ${lvl < userLevel ? 'bg-emerald-500' : 'bg-gray-200'} -z-0"></div>` : ''}
+
+                        <!-- Level Badge -->
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-xs z-10 transition-all ${
+                            isCurrent ? 'bg-blue-600 text-white ring-4 ring-blue-100 shadow-md scale-110' :
+                            isUnlocked ? 'bg-emerald-500 text-white shadow-sm' : 'bg-gray-200 text-gray-400 grayscale'
+                        }">
+                            Lvl ${lvl}
+                        </div>
+
+                        <!-- Level Title -->
+                        <div class="mt-2 text-center">
+                            <p class="text-[11px] font-bold ${isUnlocked ? 'text-gray-900' : 'text-gray-400 opacity-60'} leading-tight">
+                                ${LEVEL_NAMES[lvl]}
+                            </p>
+                        </div>
+
+                        <!-- Lock Status Symbol -->
+                        <div class="mt-2 flex items-center justify-center">
+                            ${isUnlocked ? 
+                                `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border border-emerald-200">
+                                    🔓 <span class="text-[9px]">Unlocked</span>
+                                </span>` :
+                                `<span class="bg-red-50 text-red-600 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border border-red-100 opacity-75">
+                                    🔒 <span class="text-[9px]">Locked</span>
+                                </span>`
+                            }
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            }
         }
 
         // TIMER & DEMOTION MECHANICS
@@ -586,17 +822,16 @@
                 const checkinBtn = document.getElementById("checkin-btn");
                 const hint = document.getElementById("checkin-hint");
 
-                // Check if already checked in today (once every 24 hours)
                 const oneDayMs = 24 * 60 * 60 * 1000;
                 const checkedInToday = (now - lastCheckIn) < oneDayMs;
 
                 if (checkedInToday) {
                     checkinBtn.disabled = true;
-                    checkinBtn.className = "w-full bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed";
+                    checkinBtn.className = "w-full bg-gray-200 text-gray-400 font-bold py-2.5 px-4 rounded-xl text-sm cursor-not-allowed";
                     hint.textContent = "Checked in for today! Available again tomorrow.";
                 } else {
                     checkinBtn.disabled = false;
-                    checkinBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow transition text-sm flex items-center justify-center gap-2";
+                    checkinBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2";
                     hint.textContent = "Click to reset your countdown timer back to full.";
                 }
 
@@ -629,15 +864,29 @@
 
             if (elapsed >= maxTimeMs && user.level > 1) {
                 const newLevel = user.level - 1;
-                try {
-                    await updateDoc(doc(db, "users", user.id), {
-                        level: newLevel,
-                        lastCheckIn: now // Reset timer on demotion
-                    });
-                    showAlert(`Your timer expired! You were demoted to Level ${newLevel}: ${LEVEL_NAMES[newLevel]}`, "red");
-                } catch (e) {
-                    console.error("Error auto-demoting user:", e);
+                
+                if (!useLocalStorageMode && db) {
+                    try {
+                        await updateDoc(doc(db, "users", user.id), {
+                            level: newLevel,
+                            lastCheckIn: now
+                        });
+                    } catch (e) {
+                        useLocalStorageMode = true;
+                    }
                 }
+
+                if (useLocalStorageMode) {
+                    const list = getLocalUsers();
+                    const idx = list.findIndex(u => u.id === user.id);
+                    if (idx !== -1) {
+                        list[idx].level = newLevel;
+                        list[idx].lastCheckIn = now;
+                        saveLocalUsers(list);
+                    }
+                }
+
+                showAlert(`Your timer expired! You were demoted to Level ${newLevel}: ${LEVEL_NAMES[newLevel]}`, "red");
             }
         }
 
@@ -645,26 +894,40 @@
         window.doCheckIn = async function() {
             if (!window.currentUser) return;
             const now = Date.now();
-            try {
-                await updateDoc(doc(db, "users", window.currentUser.id), {
-                    lastCheckIn: now
-                });
-                showAlert("Check-in successful! Your timer has been reset.", "emerald");
-            } catch (e) {
-                console.error("Checkin error:", e);
-                showAlert("Failed to record check-in.", "red");
+
+            if (!useLocalStorageMode && db) {
+                try {
+                    await updateDoc(doc(db, "users", window.currentUser.id), {
+                        lastCheckIn: now
+                    });
+                } catch (e) {
+                    useLocalStorageMode = true;
+                }
             }
+
+            if (useLocalStorageMode) {
+                const list = getLocalUsers();
+                const idx = list.findIndex(u => u.id === window.currentUser.id);
+                if (idx !== -1) {
+                    list[idx].lastCheckIn = now;
+                    saveLocalUsers(list);
+                }
+            }
+
+            showAlert("Check-in successful! Your timer has been reset.", "emerald");
         };
 
-        // LEADERBOARD RENDER
+        // LEADERBOARD RENDER (Excludes Outlaws)
         window.renderLeaderboard = function() {
             const tbody = document.getElementById("leaderboard-tbody");
             if (!tbody) return;
 
             const searchQuery = (document.getElementById("leaderboard-search")?.value || "").toLowerCase();
 
-            // Calculate score for each user: Level * 100 + Number of Status Markings
-            const sorted = [...window.allUsers].map(u => {
+            // Active members only
+            const activeUsers = window.allUsers.filter(u => !u.isOutlaw);
+
+            const sorted = activeUsers.map(u => {
                 let markingCount = 0;
                 if (u.markings) {
                     Object.values(u.markings).forEach(val => { if (val) markingCount++; });
@@ -680,16 +943,16 @@
 
             tbody.innerHTML = "";
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-400">No members found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-400">No active clan members found</td></tr>`;
                 return;
             }
 
             filtered.forEach((u, index) => {
-                let symbolsHtml = "";
+                let markingsHtml = "";
                 if (u.markings) {
-                    Object.keys(STATUS_DEFINITIONS).forEach(key => {
+                    Object.keys(MARKING_DEFINITIONS).forEach(key => {
                         if (u.markings[key]) {
-                            symbolsHtml += STATUS_DEFINITIONS[key].html + " ";
+                            markingsHtml += MARKING_DEFINITIONS[key].html + " ";
                         }
                     });
                 }
@@ -700,15 +963,18 @@
                     <tr class="${isCurrent ? 'bg-blue-50/60 font-semibold' : 'hover:bg-gray-50'} transition">
                         <td class="p-3 text-center font-bold text-gray-500">#${index + 1}</td>
                         <td class="p-3">
-                            <div class="font-bold text-gray-900">${u.firstName} ${u.lastName} ${isCurrent ? '<span class="text-[10px] bg-blue-600 text-white px-1.5 py-0.2 rounded ml-1">You</span>' : ''}</div>
+                            <div class="font-bold text-gray-900 flex items-center gap-1.5">
+                                ${u.firstName} ${u.lastName} 
+                                ${isCurrent ? '<span class="text-[10px] bg-blue-600 text-white px-1.5 py-0.2 rounded">You</span>' : ''}
+                            </div>
                             <div class="text-[10px] text-gray-400">${u.school || ''}</div>
                         </td>
                         <td class="p-3 font-semibold text-blue-700">
                             Level ${u.level}: ${LEVEL_NAMES[u.level] || 'Regular Play Guy'}
                         </td>
                         <td class="p-3 text-center">
-                            <div class="flex items-center justify-center gap-1">
-                                ${symbolsHtml || '<span class="text-gray-300">-</span>'}
+                            <div class="flex items-center justify-center gap-1 flex-wrap">
+                                ${markingsHtml || '<span class="text-gray-300">-</span>'}
                             </div>
                         </td>
                         <td class="p-3 text-right font-black text-gray-700">${u.score}</td>
@@ -717,21 +983,67 @@
             });
         };
 
+        // OUTLAWS ROSTER RENDER
+        function renderOutlawsRoster() {
+            const wrapper = document.getElementById("outlaws-wrapper");
+            const container = document.getElementById("outlaws-container");
+            const countBadge = document.getElementById("outlaws-count-badge");
+            if (!container) return;
+
+            const outlaws = window.allUsers.filter(u => u.isOutlaw);
+
+            if (outlaws.length === 0) {
+                wrapper.classList.add("hidden");
+                return;
+            }
+
+            wrapper.classList.remove("hidden");
+            countBadge.textContent = `${outlaws.length} Outlaw${outlaws.length === 1 ? '' : 's'}`;
+            container.innerHTML = "";
+
+            outlaws.forEach(outlaw => {
+                let markingsHtml = "";
+                if (outlaw.markings) {
+                    Object.keys(MARKING_DEFINITIONS).forEach(key => {
+                        if (outlaw.markings[key]) {
+                            markingsHtml += MARKING_DEFINITIONS[key].html + " ";
+                        }
+                    });
+                }
+
+                container.innerHTML += `
+                    <div class="bg-stone-950 border border-red-900/40 rounded-xl p-4 space-y-3 relative overflow-hidden group shadow-lg">
+                        <div class="absolute top-0 right-0 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-bl tracking-widest">
+                            WANTED OUTLAW
+                        </div>
+                        <div>
+                            <h4 class="font-black text-lg text-red-500 tracking-tight">${outlaw.firstName} ${outlaw.lastName}</h4>
+                            <p class="text-xs text-stone-400">${outlaw.school} • ${outlaw.state}</p>
+                        </div>
+                        <div class="flex items-center justify-between text-xs pt-2 border-t border-stone-800">
+                            <span class="text-stone-400">Former Rank: <strong class="text-stone-200">Level ${outlaw.level}</strong></span>
+                            <div class="flex items-center gap-1">${markingsHtml}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         // ALERT BANNER HELPER
         function showAlert(msg, color = 'blue') {
             const banner = document.getElementById("alert-banner");
             banner.textContent = msg;
             
             if (color === 'red') {
-                banner.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200 block";
+                banner.className = "mb-6 p-4 rounded-xl text-sm font-semibold bg-red-50 text-red-700 border border-red-200 block shadow-sm";
             } else if (color === 'emerald') {
-                banner.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 block";
+                banner.className = "mb-6 p-4 rounded-xl text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 block shadow-sm";
             } else {
-                banner.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 block";
+                banner.className = "mb-6 p-4 rounded-xl text-sm font-semibold bg-blue-50 text-blue-700 border border-blue-200 block shadow-sm";
             }
 
             setTimeout(() => {
-                banner.className = "hidden mb-6 p-4 rounded-lg text-sm font-medium transition-all";
+                banner.className = "hidden mb-6 p-4 rounded-xl text-sm font-semibold transition-all";
             }, 5000);
         }
 
@@ -791,6 +1103,7 @@
                         <div>
                             <span class="font-bold text-gray-900">${u.firstName} ${u.lastName}</span>
                             <span class="text-gray-400 text-[10px] ml-2">(${u.school}, ${u.state})</span>
+                            ${u.isOutlaw ? '<span class="bg-red-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded ml-1">OUTLAW</span>' : ''}
                         </div>
                         <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">Lvl ${u.level}</span>
                     </div>
@@ -818,7 +1131,6 @@
                 document.getElementById("admin-target-lastcheckin").textContent = "Never";
             }
 
-            // Checkboxes for status markings
             const m = target.markings || {};
             document.getElementById("mark-youtube").checked = !!m.youtube;
             document.getElementById("mark-og").checked = !!m.og;
@@ -830,16 +1142,27 @@
             if (!window.selectedAdminTarget) return;
             const newLvl = parseInt(document.getElementById("admin-level-select").value, 10);
 
-            try {
-                await updateDoc(doc(db, "users", window.selectedAdminTarget.id), {
-                    level: newLvl
-                });
-                alert(`Updated level to ${newLvl}: ${LEVEL_NAMES[newLvl]}`);
-                adminSelectUser(window.selectedAdminTarget.id);
-            } catch (e) {
-                console.error("Admin save level error:", e);
-                alert("Failed to update level in Firebase.");
+            if (!useLocalStorageMode && db) {
+                try {
+                    await updateDoc(doc(db, "users", window.selectedAdminTarget.id), {
+                        level: newLvl
+                    });
+                } catch (e) {
+                    useLocalStorageMode = true;
+                }
             }
+
+            if (useLocalStorageMode) {
+                const list = getLocalUsers();
+                const idx = list.findIndex(u => u.id === window.selectedAdminTarget.id);
+                if (idx !== -1) {
+                    list[idx].level = newLvl;
+                    saveLocalUsers(list);
+                }
+            }
+
+            alert(`Updated level to ${newLvl}: ${LEVEL_NAMES[newLvl]}`);
+            adminSelectUser(window.selectedAdminTarget.id);
         };
 
         window.adminToggleMark = async function(markKey) {
@@ -850,15 +1173,90 @@
             const currentMarkings = window.selectedAdminTarget.markings || {};
             const updatedMarkings = { ...currentMarkings, [markKey]: isChecked };
 
-            try {
-                await updateDoc(doc(db, "users", window.selectedAdminTarget.id), {
-                    markings: updatedMarkings
-                });
-                window.selectedAdminTarget.markings = updatedMarkings;
-            } catch (e) {
-                console.error("Admin toggle mark error:", e);
-                alert("Failed to update status marking.");
+            if (!useLocalStorageMode && db) {
+                try {
+                    await updateDoc(doc(db, "users", window.selectedAdminTarget.id), {
+                        markings: updatedMarkings
+                    });
+                } catch (e) {
+                    useLocalStorageMode = true;
+                }
             }
+
+            if (useLocalStorageMode) {
+                const list = getLocalUsers();
+                const idx = list.findIndex(u => u.id === window.selectedAdminTarget.id);
+                if (idx !== -1) {
+                    list[idx].markings = updatedMarkings;
+                    saveLocalUsers(list);
+                }
+            }
+
+            window.selectedAdminTarget.markings = updatedMarkings;
+        };
+
+        // DELETE & OUTLAW ACTION HANDLERS
+        window.triggerDeleteModal = function() {
+            if (!window.selectedAdminTarget) return;
+            document.getElementById("delete-target-name").textContent = `${window.selectedAdminTarget.firstName} ${window.selectedAdminTarget.lastName}`;
+            document.getElementById("delete-outlaw-modal").classList.remove("hidden");
+        };
+
+        window.closeDeleteModal = function() {
+            document.getElementById("delete-outlaw-modal").classList.add("hidden");
+        };
+
+        window.confirmActionMakeOutlaw = async function() {
+            if (!window.selectedAdminTarget) return;
+            const targetId = window.selectedAdminTarget.id;
+
+            if (!useLocalStorageMode && db) {
+                try {
+                    await updateDoc(doc(db, "users", targetId), {
+                        isOutlaw: true
+                    });
+                } catch (e) {
+                    useLocalStorageMode = true;
+                }
+            }
+
+            if (useLocalStorageMode) {
+                const list = getLocalUsers();
+                const idx = list.findIndex(u => u.id === targetId);
+                if (idx !== -1) {
+                    list[idx].isOutlaw = true;
+                    saveLocalUsers(list);
+                }
+            }
+
+            alert(`${window.selectedAdminTarget.firstName} is now recorded as an Outlaw!`);
+            closeDeleteModal();
+            document.getElementById("admin-inspector").classList.add("hidden");
+            window.selectedAdminTarget = null;
+        };
+
+        window.confirmActionPermanentlyDelete = async function() {
+            if (!window.selectedAdminTarget) return;
+            const targetId = window.selectedAdminTarget.id;
+
+            if (!useLocalStorageMode && db) {
+                try {
+                    await deleteDoc(doc(db, "users", targetId));
+                } catch (e) {
+                    useLocalStorageMode = true;
+                }
+            }
+
+            if (useLocalStorageMode) {
+                let list = getLocalUsers();
+                list = list.filter(u => u.id !== targetId);
+                saveLocalUsers(list);
+            }
+
+            alert(`Account permanently deleted.`);
+            closeDeleteModal();
+            document.getElementById("admin-inspector").classList.add("hidden");
+            window.selectedAdminTarget = null;
         };
     </script>
 </body>
