@@ -25,7 +25,7 @@
     </script>
     <style>
         body {
-            background-color: #ffffff !important;
+            background-color: #f8fafc !important;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
         .tooltip {
@@ -35,7 +35,7 @@
         }
         .tooltip .tooltiptext {
             visibility: hidden;
-            width: 170px;
+            width: 180px;
             background-color: #111827;
             color: #ffffff;
             text-align: center;
@@ -45,7 +45,7 @@
             z-index: 50;
             bottom: 125%;
             left: 50%;
-            margin-left: -85px;
+            margin-left: -90px;
             opacity: 0;
             transition: opacity 0.2s;
             font-size: 11px;
@@ -67,9 +67,18 @@
             visibility: visible;
             opacity: 1;
         }
+        .secret-btn-hidden {
+            position: absolute;
+            opacity: 0.35;
+            transition: all 0.2s ease;
+        }
+        .secret-btn-hidden:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
     </style>
 </head>
-<body class="bg-white text-gray-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
 
     <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
@@ -139,15 +148,36 @@
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Choose Password</label>
                     <input type="password" id="reg-password" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                 </div>
+
+                <!-- REFERRAL OPTION -->
+                <div class="pt-2 border-t border-gray-100">
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
+                        <input type="checkbox" id="reg-has-referrer" onchange="toggleReferralInputs()" class="rounded text-blue-600 focus:ring-blue-500">
+                        I got referred by a Clan member
+                    </label>
+                    <div id="referral-fields" class="hidden mt-3 p-3 bg-blue-50/60 rounded-xl border border-blue-100 space-y-2">
+                        <p class="text-[11px] text-blue-800 font-medium">Enter the details of the Clan member who referred you:</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="ref-firstname" placeholder="Referrer First Name" class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-blue-500">
+                            <input type="text" id="ref-lastname" placeholder="Referrer Last Name" class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-blue-500">
+                        </div>
+                        <input type="text" id="ref-school" placeholder="Referrer School" class="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-1 focus:ring-blue-500">
+                    </div>
+                </div>
+
                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow transition">Join The Play Guy Clan</button>
             </form>
         </div>
 
-        <!-- DASHBOARD, LEVEL TIMELINE & LEADERBOARD SECTION -->
+        <!-- DASHBOARD, ACTIVITIES & LEADERBOARD SECTION -->
         <div id="dashboard-section" class="hidden space-y-8">
             
             <!-- MEMBER DASHBOARD CARD -->
-            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm relative overflow-hidden" id="dashboard-card">
+                
+                <!-- SECRET BUTTON SPOT (Dynamically Positioned) -->
+                <div id="secret-button-container" class="hidden"></div>
+
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-100 pb-6 mb-6">
                     <div>
                         <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Clan Dashboard</div>
@@ -166,14 +196,14 @@
                         <div id="timer-display" class="text-2xl font-black text-gray-800 mb-2">--:--:--</div>
                         <button id="checkin-btn" onclick="doCheckIn()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            Check-In Now
+                            Check-In Now (+1 Normal Score)
                         </button>
                         <div id="checkin-hint" class="text-[10px] text-gray-400 mt-1.5 text-center">Can check-in once per day to reset timer.</div>
                     </div>
                 </div>
 
-                <!-- INFO GRID -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs mb-8">
+                <!-- INFO GRID WITH SEPARATE SCORES -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs mb-8">
                     <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
                         <span class="block text-gray-400 font-semibold mb-0.5">School</span>
                         <span id="dash-school" class="font-bold text-gray-800">--</span>
@@ -182,11 +212,17 @@
                         <span class="block text-gray-400 font-semibold mb-0.5">State</span>
                         <span id="dash-state" class="font-bold text-gray-800">--</span>
                     </div>
-                    <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
-                        <span class="block text-gray-400 font-semibold mb-0.5">Check-In Rule</span>
-                        <span id="dash-timer-type" class="font-bold text-gray-800">3-Day Regular</span>
+                    <div class="bg-blue-50/70 p-3.5 rounded-xl border border-blue-100">
+                        <span class="block text-blue-500 font-bold mb-0.5">Normal Score</span>
+                        <span id="dash-normal-score" class="font-black text-blue-900 text-base">0 pts</span>
+                        <span class="block text-[9px] text-blue-600 font-medium">(Check-Ins & Quests)</span>
                     </div>
-                    <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
+                    <div class="bg-amber-50/80 p-3.5 rounded-xl border border-amber-100">
+                        <span class="block text-amber-600 font-bold mb-0.5">Overall Score</span>
+                        <span id="dash-overall-score" class="font-black text-amber-900 text-base">0 pts</span>
+                        <span class="block text-[9px] text-amber-700 font-medium">(Level + Markings)</span>
+                    </div>
+                    <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100 col-span-2 md:col-span-1">
                         <span class="block text-gray-400 font-semibold mb-0.5">Last Check-In</span>
                         <span id="dash-last-checkin" class="font-bold text-gray-800">Never</span>
                     </div>
@@ -203,6 +239,46 @@
                     <div class="relative py-4 overflow-x-auto">
                         <div class="min-w-[700px] flex items-center justify-between relative px-2" id="level-timeline-container">
                             <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIVITIES HUB (DAILY & WEEKLY) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- DAILY ACTIVITIES CARD -->
+                <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-emerald-100 text-emerald-800 font-black text-xs px-2.5 py-1 rounded-lg uppercase tracking-wider">DAILY</span>
+                                <h3 class="text-lg font-extrabold text-gray-900">Today's Daily Activities</h3>
+                            </div>
+                            <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">+1 Normal Pt Each</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4">Complete today's 2 randomly assigned activities to boost your Normal Score!</p>
+                        
+                        <div id="daily-activities-list" class="space-y-3">
+                            <!-- Dynamically loaded daily activities -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WEEKLY ACTIVITIES CARD -->
+                <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-purple-100 text-purple-800 font-black text-xs px-2.5 py-1 rounded-lg uppercase tracking-wider">WEEKLY</span>
+                                <h3 class="text-lg font-extrabold text-gray-900">Weekly Challenges</h3>
+                            </div>
+                            <span class="text-[11px] font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100">+10 Normal Pts Each</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4">Challenges run Monday through Sunday. Earn major score bonuses upon completion!</p>
+                        
+                        <div id="weekly-activities-list" class="space-y-3">
+                            <!-- Dynamically loaded weekly activities -->
                         </div>
                     </div>
                 </div>
@@ -228,16 +304,29 @@
 
             <!-- LEADERBOARD SECTION -->
             <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <div>
-                        <h3 class="text-xl font-extrabold text-gray-900">Clan Roster & Leaderboard</h3>
-                        <p class="text-xs text-gray-500">Rankings based on Level + Number of Markings.</p>
+                        <h3 class="text-xl font-extrabold text-gray-900">Clan Leaderboard</h3>
+                        <p class="text-xs text-gray-500">Official rankings updated in real-time across all clan devices.</p>
                     </div>
 
                     <!-- MEMBER SEARCH -->
                     <div class="relative w-full md:w-64">
                         <input type="text" id="leaderboard-search" oninput="renderLeaderboard()" placeholder="Search member name..." class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                         <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+
+                <!-- SPECIFIC SCORING RULE EXPLANATION BANNER -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 mb-6 text-xs text-amber-900 flex items-start gap-3">
+                    <span class="text-amber-600 font-extrabold text-base leading-none">🏆</span>
+                    <div>
+                        <p class="font-extrabold text-amber-950 mb-0.5">Clan Leaderboard Ranking Rules:</p>
+                        <p class="text-amber-800">
+                            <strong>Overall Score</strong> gives 1 point for each Rank Level and 1 point for each Marking. 
+                            <strong>Normal Score</strong> gives 1 point for each Check-In and points earned through Daily & Weekly Activities. 
+                            Leaderboard standings are determined strictly by <strong>Overall Score</strong>. Normal Score does not contribute to Overall Score unless two members have the same Overall Score—in which case, the tie is determined by <strong>Normal Score</strong>!
+                        </p>
                     </div>
                 </div>
 
@@ -249,7 +338,8 @@
                                 <th class="p-3">Member</th>
                                 <th class="p-3">Level Title</th>
                                 <th class="p-3 text-center">Markings</th>
-                                <th class="p-3 text-right">Score</th>
+                                <th class="p-3 text-right">Normal Score</th>
+                                <th class="p-3 text-right font-extrabold text-amber-900">Overall Score</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboard-tbody" class="divide-y divide-gray-100">
@@ -320,7 +410,7 @@
                         <div><span class="text-gray-400">School:</span> <strong id="admin-target-school" class="text-gray-800"></strong></div>
                         <div><span class="text-gray-400">State:</span> <strong id="admin-target-state" class="text-gray-800"></strong></div>
                         <div><span class="text-gray-400">Password:</span> <strong id="admin-target-password" class="text-gray-800 font-mono"></strong></div>
-                        <div><span class="text-gray-400">Last Active:</span> <strong id="admin-target-lastcheckin" class="text-gray-800"></strong></div>
+                        <div><span class="text-gray-400">Normal Score:</span> <strong id="admin-target-normalscore" class="text-gray-800"></strong></div>
                     </div>
 
                     <!-- LEVEL MODIFIER -->
@@ -458,9 +548,11 @@
                 state: "California",
                 password: "123",
                 level: 7,
+                normalScore: 12,
                 isOutlaw: false,
                 lastCheckIn: Date.now() - 3600000,
-                markings: { youtube: true, og: true, noelec: false, creator: true }
+                markings: { youtube: true, og: true, noelec: false, creator: true },
+                referralCountThisWeek: 1
             },
             {
                 id: "sam_og_02",
@@ -470,9 +562,11 @@
                 state: "Texas",
                 password: "123",
                 level: 5,
+                normalScore: 8,
                 isOutlaw: false,
                 lastCheckIn: Date.now() - 72000000,
-                markings: { youtube: true, og: true, noelec: true, creator: false }
+                markings: { youtube: true, og: true, noelec: true, creator: false },
+                referralCountThisWeek: 0
             },
             {
                 id: "jordan_outlaw_03",
@@ -482,9 +576,11 @@
                 state: "Florida",
                 password: "123",
                 level: 3,
+                normalScore: 2,
                 isOutlaw: true,
                 lastCheckIn: Date.now() - 500000000,
-                markings: { youtube: false, og: false, noelec: false, creator: false }
+                markings: { youtube: false, og: false, noelec: false, creator: false },
+                referralCountThisWeek: 0
             }
         ];
 
@@ -501,7 +597,10 @@
 
         async function initFirebase() {
             try {
-                if (typeof __firebase_config === 'undefined') return false;
+                if (typeof __firebase_config === 'undefined') {
+                    fallbackToLocalStorage();
+                    return false;
+                }
                 const config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
                 const app = initializeApp(config);
                 db = getFirestore(app);
@@ -565,6 +664,12 @@
 
         async function saveUserToCloud(user) {
             try {
+                const existingIdx = window.allUsers.findIndex(u => u.id === user.id);
+                if (existingIdx >= 0) {
+                    window.allUsers[existingIdx] = user;
+                } else {
+                    window.allUsers.push(user);
+                }
                 localStorage.setItem("pgc_clan_users", JSON.stringify(window.allUsers));
             } catch(e) {}
 
@@ -579,6 +684,11 @@
         }
 
         async function deleteUserFromCloud(userId) {
+            try {
+                window.allUsers = window.allUsers.filter(u => u.id !== userId);
+                localStorage.setItem("pgc_clan_users", JSON.stringify(window.allUsers));
+            } catch(e) {}
+
             if (isCloudConnected && db && userId) {
                 try {
                     const userDoc = doc(db, 'artifacts', appId, 'public', 'data', 'users', userId);
@@ -644,6 +754,18 @@
             }
         }
 
+        function toggleReferralInputs() {
+            const checkbox = document.getElementById("reg-has-referrer");
+            const fields = document.getElementById("referral-fields");
+            if (checkbox && fields) {
+                if (checkbox.checked) {
+                    fields.classList.remove("hidden");
+                } else {
+                    fields.classList.add("hidden");
+                }
+            }
+        }
+
         async function handleRegister(e) {
             e.preventDefault();
             const firstName = document.getElementById("reg-firstname").value.trim();
@@ -666,20 +788,42 @@
                 state: state,
                 password: password,
                 level: 1,
+                normalScore: 0,
                 isOutlaw: false,
                 lastCheckIn: Date.now(),
-                markings: {
-                    youtube: false,
-                    og: false,
-                    noelec: false,
-                    creator: false
-                }
+                markings: { youtube: false, og: false, noelec: false, creator: false },
+                referralCountThisWeek: 0,
+                dailyActivityState: { date: getTodayString(), completedIndices: [] },
+                weeklyActivityState: { weekId: getCurrentWeekId(), completedIndices: [] }
             };
+
+            // Check if referred by someone
+            const hasReferrer = document.getElementById("reg-has-referrer")?.checked;
+            if (hasReferrer) {
+                const refFirst = (document.getElementById("ref-firstname")?.value || "").trim().toLowerCase();
+                const refLast = (document.getElementById("ref-lastname")?.value || "").trim().toLowerCase();
+                const refSchool = (document.getElementById("ref-school")?.value || "").trim().toLowerCase();
+
+                const referrer = window.allUsers.find(u => 
+                    !u.isOutlaw && 
+                    u.firstName.toLowerCase() === refFirst && 
+                    u.lastName.toLowerCase() === refLast && 
+                    u.school.toLowerCase() === refSchool
+                );
+
+                if (referrer) {
+                    referrer.normalScore = (referrer.normalScore || 0) + 1;
+                    referrer.referralCountThisWeek = (referrer.referralCountThisWeek || 0) + 1;
+                    await saveUserToCloud(referrer);
+                    showAlert(`Account created! Referral bonus awarded to ${referrer.firstName} ${referrer.lastName}!`, "emerald");
+                }
+            }
 
             window.allUsers.push(newUser);
             await saveUserToCloud(newUser);
 
             document.getElementById("register-form").reset();
+            toggleReferralInputs();
             window.currentUser = newUser;
             showDashboardView();
             showAlert(`Welcome to the Clan, ${firstName}! Your account has been created.`, "emerald");
@@ -727,14 +871,33 @@
             renderDashboard();
         }
 
+        function calculateMarkingCount(user) {
+            if (!user || !user.markings) return 0;
+            let count = 0;
+            Object.values(user.markings).forEach(v => { if (v) count++; });
+            return count;
+        }
+
+        function calculateScores(user) {
+            if (!user) return { overallScore: 0, normalScore: 0, markingCount: 0 };
+            const markingCount = calculateMarkingCount(user);
+            const overallScore = user.level + markingCount;
+            const normalScore = user.normalScore || 0;
+            return { overallScore, normalScore, markingCount };
+        }
+
         function renderDashboard() {
             const u = window.currentUser;
             if (!u) return;
+
+            const scores = calculateScores(u);
 
             document.getElementById("dash-name").textContent = `${u.firstName} ${u.lastName}`;
             document.getElementById("dash-rank-badge").textContent = `Level ${u.level}: ${LEVEL_NAMES[u.level] || "Regular Play Guy"}`;
             document.getElementById("dash-school").textContent = u.school;
             document.getElementById("dash-state").textContent = u.state;
+            document.getElementById("dash-normal-score").textContent = `${scores.normalScore} pts`;
+            document.getElementById("dash-overall-score").textContent = `${scores.overallScore} pts`;
 
             const markingsContainer = document.getElementById("dash-markings");
             const headerMarkingsContainer = document.getElementById("header-user-markings");
@@ -750,9 +913,6 @@
                 });
             }
 
-            const hasNoElec = u.markings && u.markings.noelec;
-            document.getElementById("dash-timer-type").textContent = hasNoElec ? "7-Day (No Elec)" : "3-Day Regular";
-            
             if (u.lastCheckIn) {
                 document.getElementById("dash-last-checkin").textContent = new Date(u.lastCheckIn).toLocaleDateString() + " " + new Date(u.lastCheckIn).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             } else {
@@ -760,6 +920,8 @@
             }
 
             renderLevelTimeline(u.level);
+            renderDailyActivities();
+            renderWeeklyActivities();
             startTimerCountdown();
         }
 
@@ -808,6 +970,219 @@
             }
         }
 
+        function getTodayString() {
+            const d = new Date();
+            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+        }
+
+        function getCurrentWeekId() {
+            const d = new Date();
+            const startYear = new Date(d.getFullYear(), 0, 1);
+            const days = Math.floor((d - startYear) / (24 * 60 * 60 * 1000));
+            const weekNumber = Math.ceil((days + startYear.getDay() + 1) / 7);
+            return `${d.getFullYear()}-W${weekNumber}`;
+        }
+
+        // Daily Activities Pool
+        const DAILY_ACTIVITIES_POOL = [
+            {
+                id: 0,
+                title: "1. Visit YouTube Channel",
+                desc: "Click to check out the official YouTube channel.",
+                actionType: "link",
+                url: "https://youtube.com" // Channel link placeholder
+            },
+            {
+                id: 1,
+                title: "2. Draw & Upload Play Guy Picture",
+                desc: "Upload a picture of your drawing from your photos or files.",
+                actionType: "upload"
+            },
+            {
+                id: 2,
+                title: "3. Recruit a Friend",
+                desc: "Have a friend register and check 'I got referred by' with your First Name, Last Name, and School.",
+                actionType: "referral"
+            },
+            {
+                id: 3,
+                title: "4. Find the Secret Button",
+                desc: "Find and click the hidden secret button located somewhere on your dashboard!",
+                actionType: "secret"
+            }
+        ];
+
+        function getTodaysAssignedDailyIndices() {
+            const todayStr = getTodayString();
+            let hash = 0;
+            for (let i = 0; i < todayStr.length; i++) {
+                hash = (hash << 5) - hash + todayStr.charCodeAt(i);
+                hash |= 0;
+            }
+            const idx1 = Math.abs(hash) % DAILY_ACTIVITIES_POOL.length;
+            let idx2 = (idx1 + 1) % DAILY_ACTIVITIES_POOL.length;
+            return [idx1, idx2];
+        }
+
+        function renderDailyActivities() {
+            const u = window.currentUser;
+            const container = document.getElementById("daily-activities-list");
+            const secretContainer = document.getElementById("secret-button-container");
+            if (!container || !u) return;
+
+            const todayStr = getTodayString();
+            if (!u.dailyActivityState || u.dailyActivityState.date !== todayStr) {
+                u.dailyActivityState = { date: todayStr, completedIndices: [] };
+            }
+
+            const assignedIndices = getTodaysAssignedDailyIndices();
+            container.innerHTML = "";
+            secretContainer.innerHTML = "";
+            secretContainer.classList.add("hidden");
+
+            assignedIndices.forEach(actIdx => {
+                const act = DAILY_ACTIVITIES_POOL[actIdx];
+                const isCompleted = u.dailyActivityState.completedIndices.includes(actIdx);
+
+                let actionHtml = "";
+                if (isCompleted) {
+                    actionHtml = `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-emerald-200">✓ FINISHED (+1 Pt)</span>`;
+                } else if (act.actionType === "link") {
+                    actionHtml = `<a href="${act.url}" target="_blank" onclick="completeDailyActivity(${actIdx})" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm inline-flex items-center gap-1">Open Channel & Finish</a>`;
+                } else if (act.actionType === "upload") {
+                    actionHtml = `
+                        <label class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer transition shadow-sm inline-flex items-center gap-1">
+                            📷 Upload Image
+                            <input type="file" accept="image/*" onchange="handleImageUpload(event, ${actIdx})" class="hidden">
+                        </label>
+                    `;
+                } else if (act.actionType === "referral") {
+                    actionHtml = `<span class="text-[10px] text-gray-500 font-semibold bg-gray-100 px-2 py-1 rounded">Auto-completes when friend registers</span>`;
+                } else if (act.actionType === "secret") {
+                    actionHtml = `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 px-2 py-1 rounded border border-amber-200 animate-pulse">Secret button hidden on page!</span>`;
+                    
+                    // Spawn Secret Button in a random corner on dashboard card
+                    secretContainer.classList.remove("hidden");
+                    secretContainer.innerHTML = `
+                        <button onclick="completeDailyActivity(${actIdx})" class="secret-btn-hidden bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[9px] px-2 py-1 rounded shadow-md border border-amber-300" style="bottom: 12px; right: 16px;">
+                            ⭐ click here to finish daily activity
+                        </button>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="p-3.5 rounded-xl border ${isCompleted ? 'bg-emerald-50/50 border-emerald-200' : 'bg-gray-50 border-gray-200'} transition">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h4 class="font-extrabold text-xs text-gray-900">${act.title}</h4>
+                                <p class="text-[11px] text-gray-500 mt-0.5">${act.desc}</p>
+                            </div>
+                            <div class="shrink-0">${actionHtml}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function completeDailyActivity(actIdx) {
+            const u = window.currentUser;
+            if (!u) return;
+
+            const todayStr = getTodayString();
+            if (!u.dailyActivityState || u.dailyActivityState.date !== todayStr) {
+                u.dailyActivityState = { date: todayStr, completedIndices: [] };
+            }
+
+            if (!u.dailyActivityState.completedIndices.includes(actIdx)) {
+                u.dailyActivityState.completedIndices.push(actIdx);
+                u.normalScore = (u.normalScore || 0) + 1;
+                await saveUserToCloud(u);
+                showAlert("Daily activity completed! +1 Normal Score point added.", "emerald");
+                renderDashboard();
+            }
+        }
+
+        async function handleImageUpload(e, actIdx) {
+            const file = e.target.files[0];
+            if (file) {
+                showAlert(`Uploaded "${file.name}"! Activity verified.`, "emerald");
+                await completeDailyActivity(actIdx);
+            }
+        }
+
+        function renderWeeklyActivities() {
+            const u = window.currentUser;
+            const container = document.getElementById("weekly-activities-list");
+            if (!container || !u) return;
+
+            const weekId = getCurrentWeekId();
+            if (!u.weeklyActivityState || u.weeklyActivityState.weekId !== weekId) {
+                u.weeklyActivityState = { weekId: weekId, completedIndices: [] };
+            }
+
+            const weeklyChallenges = [
+                {
+                    id: 0,
+                    title: "1. Weekly Master",
+                    desc: "Finish both daily activities every day for a week.",
+                    progress: `${(u.dailyActivityState?.completedIndices?.length || 0)}/2 Today`
+                },
+                {
+                    id: 1,
+                    title: "2. Recruiter Streak",
+                    desc: "Get 5 referrals in 1 week.",
+                    progress: `${u.referralCountThisWeek || 0}/5 Referrals`
+                },
+                {
+                    id: 2,
+                    title: "3. Leaderboard Climber",
+                    desc: "Pass up 2 people on the leaderboard in 1 week.",
+                    progress: "Tracked automatically"
+                }
+            ];
+
+            container.innerHTML = "";
+            weeklyChallenges.forEach(ch => {
+                const isCompleted = u.weeklyActivityState.completedIndices.includes(ch.id);
+
+                container.innerHTML += `
+                    <div class="p-3.5 rounded-xl border ${isCompleted ? 'bg-purple-50/60 border-purple-200' : 'bg-gray-50 border-gray-200'} transition">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <h4 class="font-extrabold text-xs text-gray-900">${ch.title}</h4>
+                                <p class="text-[11px] text-gray-500 mt-0.5">${ch.desc}</p>
+                                <span class="text-[10px] font-bold text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded mt-1.5 inline-block">${ch.progress}</span>
+                            </div>
+                            <div class="shrink-0">
+                                ${isCompleted ? 
+                                    `<span class="bg-purple-100 text-purple-900 text-[10px] font-black px-2.5 py-1 rounded-lg border border-purple-200">✓ COMPLETED (+10 Pts)</span>` :
+                                    `<button onclick="claimWeeklyChallenge(${ch.id})" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm">Claim Bonus</button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function claimWeeklyChallenge(chId) {
+            const u = window.currentUser;
+            if (!u) return;
+
+            const weekId = getCurrentWeekId();
+            if (!u.weeklyActivityState || u.weeklyActivityState.weekId !== weekId) {
+                u.weeklyActivityState = { weekId: weekId, completedIndices: [] };
+            }
+
+            if (!u.weeklyActivityState.completedIndices.includes(chId)) {
+                u.weeklyActivityState.completedIndices.push(chId);
+                u.normalScore = (u.normalScore || 0) + 10;
+                await saveUserToCloud(u);
+                showAlert("Weekly challenge claimed! +10 Normal Score points awarded!", "emerald");
+                renderDashboard();
+            }
+        }
+
         function startTimerCountdown() {
             if (timerInterval) clearInterval(timerInterval);
 
@@ -835,7 +1210,7 @@
                 } else {
                     checkinBtn.disabled = false;
                     checkinBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2";
-                    hint.textContent = "Click to reset your countdown timer back to full.";
+                    hint.textContent = "Click to reset countdown & gain +1 Normal Score point!";
                 }
 
                 if (remaining <= 0) {
@@ -877,8 +1252,9 @@
             if (!window.currentUser) return;
             const now = Date.now();
             window.currentUser.lastCheckIn = now;
+            window.currentUser.normalScore = (window.currentUser.normalScore || 0) + 1;
             await saveUserToCloud(window.currentUser);
-            showAlert("Check-in successful! Your timer has been reset.", "emerald");
+            showAlert("Check-in successful! +1 Normal Score point awarded and timer reset.", "emerald");
         }
 
         function renderLeaderboard() {
@@ -889,13 +1265,21 @@
             const activeUsers = (window.allUsers || []).filter(u => !u.isOutlaw);
 
             const sorted = activeUsers.map(u => {
-                let markingCount = 0;
-                if (u.markings) {
-                    Object.values(u.markings).forEach(val => { if (val) markingCount++; });
+                const scores = calculateScores(u);
+                return { 
+                    ...u, 
+                    overallScore: scores.overallScore, 
+                    normalScore: scores.normalScore, 
+                    markingCount: scores.markingCount 
+                };
+            }).sort((a, b) => {
+                // Primary Sort: Overall Score
+                if (b.overallScore !== a.overallScore) {
+                    return b.overallScore - a.overallScore;
                 }
-                const score = (u.level * 100) + markingCount;
-                return { ...u, score, markingCount };
-            }).sort((a, b) => b.score - a.score);
+                // Tie Breaker: Normal Score (Check-ins + Activities)
+                return b.normalScore - a.normalScore;
+            });
 
             const filtered = sorted.filter(u => 
                 (u.firstName + " " + u.lastName).toLowerCase().includes(searchQuery) ||
@@ -904,7 +1288,7 @@
 
             tbody.innerHTML = "";
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-400">No active clan members found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-gray-400">No active clan members found</td></tr>`;
                 return;
             }
 
@@ -938,7 +1322,8 @@
                                 ${markingsHtml || '<span class="text-gray-300">-</span>'}
                             </div>
                         </td>
-                        <td class="p-3 text-right font-black text-gray-700">${u.score}</td>
+                        <td class="p-3 text-right font-bold text-blue-800">${u.normalScore} pts</td>
+                        <td class="p-3 text-right font-black text-amber-950 text-sm bg-amber-50/40">${u.overallScore} pts</td>
                     </tr>
                 `;
             });
@@ -1056,14 +1441,9 @@
             document.getElementById("admin-target-school").textContent = target.school;
             document.getElementById("admin-target-state").textContent = target.state;
             document.getElementById("admin-target-password").textContent = target.password;
+            document.getElementById("admin-target-normalscore").textContent = target.normalScore || 0;
             document.getElementById("admin-target-level-badge").textContent = `Level ${target.level}: ${LEVEL_NAMES[target.level]}`;
             document.getElementById("admin-level-select").value = target.level;
-
-            if (target.lastCheckIn) {
-                document.getElementById("admin-target-lastcheckin").textContent = new Date(target.lastCheckIn).toLocaleString();
-            } else {
-                document.getElementById("admin-target-lastcheckin").textContent = "Never";
-            }
 
             const m = target.markings || {};
             document.getElementById("mark-youtube").checked = !!m.youtube;
@@ -1120,7 +1500,6 @@
             if (!window.selectedAdminTarget) return;
             const targetId = window.selectedAdminTarget.id;
 
-            window.allUsers = (window.allUsers || []).filter(u => u.id !== targetId);
             await deleteUserFromCloud(targetId);
 
             showAlert("Account permanently deleted.", "blue");
@@ -1130,12 +1509,17 @@
             renderAdminUserList();
         }
 
+        // Attach global window handlers
         window.switchAuthTab = switchAuthTab;
+        window.toggleReferralInputs = toggleReferralInputs;
         window.handleRegister = handleRegister;
         window.handleLogin = handleLogin;
         window.logout = logout;
         window.doCheckIn = doCheckIn;
         window.renderLeaderboard = renderLeaderboard;
+        window.completeDailyActivity = completeDailyActivity;
+        window.handleImageUpload = handleImageUpload;
+        window.claimWeeklyChallenge = claimWeeklyChallenge;
         window.openAdminModal = openAdminModal;
         window.closeAdminModal = closeAdminModal;
         window.verifyAdminPass = verifyAdminPass;
@@ -1155,7 +1539,7 @@
             }
         });
 
-        // Initialize Firebase Cloud sync on app launch
+        // Initialize App and Firebase Data Sync
         initFirebase();
     </script>
 </body>
