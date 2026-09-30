@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -398,8 +398,12 @@
         </div>
     </div>
 
-    <!-- Application Logic -->
+    <!-- Application Logic with Firebase Real-time Multi-Device Sync -->
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         const LEVEL_NAMES = {
             1: "Regular Play Guy",
             2: "Baseball Bat Play Guy",
@@ -489,29 +493,100 @@
         window.selectedAdminTarget = null;
         let timerInterval = null;
 
-        function getLocalUsers() {
+        /* FIREBASE STATE */
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pgc-clan-app';
+        let db = null;
+        let auth = null;
+        let isCloudConnected = false;
+
+        async function initFirebase() {
             try {
-                const data = localStorage.getItem("pgc_clan_users");
-                if (data) {
-                    const parsed = JSON.parse(data);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        return parsed;
-                    }
+                if (typeof __firebase_config === 'undefined') return false;
+                const config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+                const app = initializeApp(config);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
                 }
+
+                isCloudConnected = true;
+                subscribeToCloudUsers();
+                return true;
             } catch (e) {
-                console.warn("Error reading localStorage:", e);
+                console.warn("Firestore initialization error, operating in local fallback:", e);
+                isCloudConnected = false;
+                fallbackToLocalStorage();
+                return false;
             }
-            localStorage.setItem("pgc_clan_users", JSON.stringify(INITIAL_SEED_USERS));
-            return INITIAL_SEED_USERS;
         }
 
-        function saveLocalUsers(users) {
+        function fallbackToLocalStorage() {
             try {
-                localStorage.setItem("pgc_clan_users", JSON.stringify(users));
+                const stored = localStorage.getItem("pgc_clan_users");
+                if (stored) {
+                    window.allUsers = JSON.parse(stored);
+                } else {
+                    window.allUsers = INITIAL_SEED_USERS;
+                    localStorage.setItem("pgc_clan_users", JSON.stringify(INITIAL_SEED_USERS));
+                }
             } catch (e) {
-                console.error("Failed to save to localStorage:", e);
+                window.allUsers = INITIAL_SEED_USERS;
             }
-            triggerLocalUpdate(users);
+            triggerLocalUpdate(window.allUsers);
+        }
+
+        function subscribeToCloudUsers() {
+            if (!db) return;
+            const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+            
+            onSnapshot(usersRef, (snapshot) => {
+                if (snapshot.empty) {
+                    INITIAL_SEED_USERS.forEach(u => saveUserToCloud(u));
+                    return;
+                }
+                const cloudUsers = [];
+                snapshot.forEach(docSnap => {
+                    cloudUsers.push(docSnap.data());
+                });
+                window.allUsers = cloudUsers;
+                try {
+                    localStorage.setItem("pgc_clan_users", JSON.stringify(cloudUsers));
+                } catch(e) {}
+                triggerLocalUpdate(cloudUsers);
+            }, (error) => {
+                console.error("Cloud snapshot listener error:", error);
+                fallbackToLocalStorage();
+            });
+        }
+
+        async function saveUserToCloud(user) {
+            try {
+                localStorage.setItem("pgc_clan_users", JSON.stringify(window.allUsers));
+            } catch(e) {}
+
+            if (isCloudConnected && db && user && user.id) {
+                try {
+                    const userDoc = doc(db, 'artifacts', appId, 'public', 'data', 'users', user.id);
+                    await setDoc(userDoc, user);
+                } catch (e) {
+                    console.error("Error writing user to cloud:", e);
+                }
+            }
+        }
+
+        async function deleteUserFromCloud(userId) {
+            if (isCloudConnected && db && userId) {
+                try {
+                    const userDoc = doc(db, 'artifacts', appId, 'public', 'data', 'users', userId);
+                    await deleteDoc(userDoc);
+                } catch (e) {
+                    console.error("Error deleting user from cloud:", e);
+                }
+            }
         }
 
         function triggerLocalUpdate(users) {
@@ -530,12 +605,6 @@
             if (adminDash && !adminDash.classList.contains("hidden")) {
                 renderAdminUserList();
             }
-        }
-
-        function initDataStore() {
-            const initialLocal = getLocalUsers();
-            window.allUsers = initialLocal;
-            triggerLocalUpdate(initialLocal);
         }
 
         function showAlert(msg, color = 'blue') {
@@ -607,9 +676,8 @@
                 }
             };
 
-            const currentList = getLocalUsers();
-            currentList.push(newUser);
-            saveLocalUsers(currentList);
+            window.allUsers.push(newUser);
+            await saveUserToCloud(newUser);
 
             document.getElementById("register-form").reset();
             window.currentUser = newUser;
@@ -622,10 +690,7 @@
             const firstNameInput = document.getElementById("login-firstname").value.trim().toLowerCase();
             const passwordInput = document.getElementById("login-password").value;
 
-            const users = getLocalUsers();
-            window.allUsers = users;
-
-            const match = window.allUsers.find(u => 
+            const match = (window.allUsers || []).find(u => 
                 !u.isOutlaw && u.firstName && u.firstName.toLowerCase() === firstNameInput && u.password === passwordInput
             );
 
@@ -801,15 +866,9 @@
 
             if (elapsed >= maxTimeMs && user.level > 1) {
                 const newLevel = user.level - 1;
-                
-                const list = getLocalUsers();
-                const idx = list.findIndex(u => u.id === user.id);
-                if (idx !== -1) {
-                    list[idx].level = newLevel;
-                    list[idx].lastCheckIn = now;
-                    saveLocalUsers(list);
-                }
-
+                user.level = newLevel;
+                user.lastCheckIn = now;
+                await saveUserToCloud(user);
                 showAlert(`Your timer expired! You were demoted to Level ${newLevel}: ${LEVEL_NAMES[newLevel]}`, "red");
             }
         }
@@ -817,14 +876,8 @@
         async function doCheckIn() {
             if (!window.currentUser) return;
             const now = Date.now();
-
-            const list = getLocalUsers();
-            const idx = list.findIndex(u => u.id === window.currentUser.id);
-            if (idx !== -1) {
-                list[idx].lastCheckIn = now;
-                saveLocalUsers(list);
-            }
-
+            window.currentUser.lastCheckIn = now;
+            await saveUserToCloud(window.currentUser);
             showAlert("Check-in successful! Your timer has been reset.", "emerald");
         }
 
@@ -1022,14 +1075,9 @@
         async function adminSaveLevel() {
             if (!window.selectedAdminTarget) return;
             const newLvl = parseInt(document.getElementById("admin-level-select").value, 10);
+            window.selectedAdminTarget.level = newLvl;
 
-            const list = getLocalUsers();
-            const idx = list.findIndex(u => u.id === window.selectedAdminTarget.id);
-            if (idx !== -1) {
-                list[idx].level = newLvl;
-                saveLocalUsers(list);
-            }
-
+            await saveUserToCloud(window.selectedAdminTarget);
             showAlert(`Updated level for ${window.selectedAdminTarget.firstName} to Level ${newLvl}`, "emerald");
             adminSelectUser(window.selectedAdminTarget.id);
         }
@@ -1043,13 +1091,7 @@
             currentMarkings[markKey] = isChecked;
 
             window.selectedAdminTarget.markings = currentMarkings;
-
-            const list = getLocalUsers();
-            const idx = list.findIndex(u => u.id === window.selectedAdminTarget.id);
-            if (idx !== -1) {
-                list[idx].markings = currentMarkings;
-                saveLocalUsers(list);
-            }
+            await saveUserToCloud(window.selectedAdminTarget);
         }
 
         function triggerDeleteModal() {
@@ -1064,15 +1106,9 @@
 
         async function confirmActionMakeOutlaw() {
             if (!window.selectedAdminTarget) return;
-            const targetId = window.selectedAdminTarget.id;
+            window.selectedAdminTarget.isOutlaw = true;
 
-            const list = getLocalUsers();
-            const idx = list.findIndex(u => u.id === targetId);
-            if (idx !== -1) {
-                list[idx].isOutlaw = true;
-                saveLocalUsers(list);
-            }
-
+            await saveUserToCloud(window.selectedAdminTarget);
             showAlert(`${window.selectedAdminTarget.firstName} has been recorded as an Outlaw.`, "red");
             closeDeleteModal();
             document.getElementById("admin-inspector").classList.add("hidden");
@@ -1084,9 +1120,8 @@
             if (!window.selectedAdminTarget) return;
             const targetId = window.selectedAdminTarget.id;
 
-            let list = getLocalUsers();
-            list = list.filter(u => u.id !== targetId);
-            saveLocalUsers(list);
+            window.allUsers = (window.allUsers || []).filter(u => u.id !== targetId);
+            await deleteUserFromCloud(targetId);
 
             showAlert("Account permanently deleted.", "blue");
             closeDeleteModal();
@@ -1120,7 +1155,8 @@
             }
         });
 
-        initDataStore();
+        // Initialize Firebase Cloud sync on app launch
+        initFirebase();
     </script>
 </body>
 </html>
