@@ -6,332 +6,285 @@
     <title>The Play Guy Clan</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
             background-color: #ffffff !important;
-            color: #111827;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
-        .custom-shadow {
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
-        }
-        /* Custom Tooltip Styling */
-        .tooltip-container {
+        .tooltip {
             position: relative;
-            display: inline-flex;
+            display: inline-block;
         }
-        .tooltip-text {
+        .tooltip .tooltiptext {
             visibility: hidden;
+            width: 160px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 6px 8px;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -80px;
             opacity: 0;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            transform: translateY(4px);
+            transition: opacity 0.2s;
+            font-size: 11px;
+            pointer-events: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .tooltip-container:hover .tooltip-text {
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
-            transform: translateY(0);
         }
     </style>
 </head>
-<body class="bg-white min-h-screen flex flex-col justify-between">
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
-    <!-- Header / Branding (No Admin Button or Reference) -->
-    <header class="border-b border-gray-100 bg-white sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3 mx-auto md:mx-0">
-                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-                <div class="text-center md:text-left">
-                    <h1 class="text-2xl font-extrabold tracking-tight text-gray-900">The Play Guy Clan</h1>
-                    <p class="text-xs text-gray-500 font-medium">Official Clan Activity & Progression Hub</p>
-                </div>
-            </div>
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-2xl font-black tracking-tight text-gray-900 flex items-center gap-2">
+                <span class="bg-blue-600 text-white px-2 py-1 rounded text-lg font-extrabold">PGC</span>
+                The Play Guy Clan
+            </h1>
             
-            <!-- User Nav Header (Strictly for User Profile & Logout) -->
-            <div id="headerUserNav" class="hidden flex items-center gap-3">
-                <span id="navUserName" class="text-sm font-semibold text-gray-700"></span>
-                <span id="navUserBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-blue-50 text-blue-700 border border-blue-200"></span>
-                <button onclick="handleLogout()" class="text-xs text-red-600 hover:text-red-700 font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-50 transition">
-                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Log Out
-                </button>
+            <div id="user-header-info" class="hidden items-center gap-3">
+                <span id="header-user-name" class="font-bold text-gray-700"></span>
+                <span id="header-user-badge" class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-semibold"></span>
+                <button onclick="logout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition">Log Out</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+    <!-- Main Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
         
-        <!-- System Toast Alert -->
-        <div id="toast" class="hidden mb-6 p-4 rounded-xl text-sm font-medium flex items-center justify-between border transition-all">
-            <div class="flex items-center gap-2">
-                <i id="toastIcon" class="fa-solid"></i>
-                <span id="toastMessage"></span>
-            </div>
-            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
-        </div>
+        <!-- ALERT MESSAGE -->
+        <div id="alert-banner" class="hidden mb-6 p-4 rounded-lg text-sm font-medium transition-all"></div>
 
-        <!-- AUTHENTICATION VIEW -->
-        <div id="authSection" class="max-w-md mx-auto my-6">
-            
-            <div class="flex bg-gray-100 p-1 rounded-xl mb-6">
-                <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-gray-900 transition">Log In</button>
-                <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-900 transition">Create Account</button>
+        <!-- AUTH SECTION (Login / Register) -->
+        <div id="auth-section" class="max-w-md mx-auto my-8">
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200 mb-6">
+                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600">Log In</button>
+                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700">Create Account</button>
             </div>
 
             <!-- LOGIN FORM -->
-            <form id="loginForm" onsubmit="handleLogin(event)" class="bg-white p-6 rounded-2xl border border-gray-200 custom-shadow space-y-4">
-                <div class="text-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-900">Welcome Back</h2>
-                    <p class="text-xs text-gray-500">Log in to check-in and keep your active rank</p>
-                </div>
-
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">First Name</label>
-                    <input type="text" id="loginFirstName" required placeholder="e.g. Alex" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
-                    <span class="text-[11px] text-gray-400">First name matching is case-insensitive</span>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">First Name</label>
+                    <input type="text" id="login-firstname" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. Alex">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Password</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" id="login-password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="••••••••">
                 </div>
-
-                <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm shadow-sm transition flex items-center justify-center gap-2">
-                    <span>Log In</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg shadow transition">Log In to Clan</button>
             </form>
 
             <!-- REGISTER FORM -->
-            <form id="registerForm" onsubmit="handleRegister(event)" class="hidden bg-white p-6 rounded-2xl border border-gray-200 custom-shadow space-y-4">
-                <div class="text-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-900">Join The Play Guy Clan</h2>
-                    <p class="text-xs text-gray-500">Create an account to join at Level 1 (Regular Play Guy)</p>
-                </div>
-
+            <form id="register-form" onsubmit="handleRegister(event)" class="hidden space-y-4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">First Name</label>
-                        <input type="text" id="regFirstName" required placeholder="John" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">First Name</label>
+                        <input type="text" id="reg-firstname" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Last Name</label>
-                        <input type="text" id="regLastName" required placeholder="Doe" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Last Name</label>
+                        <input type="text" id="reg-lastname" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                 </div>
-
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">School</label>
-                    <input type="text" id="regSchool" required placeholder="e.g. Oak High School" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">School</label>
+                    <input type="text" id="reg-school" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. West High School">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">State</label>
-                    <input type="text" id="regState" required placeholder="e.g. Texas" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">State</label>
+                    <input type="text" id="reg-state" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. California">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Choose Password</label>
-                    <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Choose Password</label>
+                    <input type="password" id="reg-password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
-
-                <button type="submit" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg text-sm shadow-sm transition flex items-center justify-center gap-2">
-                    <span>Create Clan Account</span>
-                    <i class="fa-solid fa-user-plus"></i>
-                </button>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg shadow transition">Join The Play Guy Clan</button>
             </form>
         </div>
 
-        <!-- USER DASHBOARD VIEW -->
-        <div id="dashboardSection" class="hidden space-y-8">
-            <!-- Account Banner Card -->
-            <div class="bg-white border border-gray-200 rounded-2xl p-6 custom-shadow">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-2xl shadow-lg">
-                            <span id="userAvatar"></span>
-                        </div>
-                        <div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <h2 id="dashFullName" class="text-2xl font-bold text-gray-900"></h2>
-                                <span id="dashBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800"></span>
-                                <!-- Status Markings Container -->
-                                <div id="dashStatusMarkings" class="flex items-center gap-1.5 ml-1"></div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-0.5">
-                                <i class="fa-solid fa-graduation-cap text-gray-400 mr-1"></i> <span id="dashSchool"></span>
-                                <span class="mx-2">•</span>
-                                <i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> <span id="dashState"></span>
-                            </p>
+        <!-- DASHBOARD & LEADERBOARD SECTION -->
+        <div id="dashboard-section" class="hidden space-y-8">
+            
+            <!-- MEMBER DASHBOARD CARD -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-100 pb-6 mb-6">
+                    <div>
+                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Clan Dashboard</div>
+                        <h2 class="text-3xl font-extrabold text-gray-900 flex items-center gap-2" id="dash-name">
+                            Welcome
+                        </h2>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span id="dash-rank-badge" class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold"></span>
+                            <div id="dash-symbols" class="flex gap-1.5 items-center"></div>
                         </div>
                     </div>
 
-                    <!-- Daily Check-In Controls -->
-                    <div class="w-full md:w-auto text-center md:text-right">
-                        <button id="checkInBtn" onclick="handleCheckIn()" class="w-full md:w-auto px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-calendar-check"></i>
-                            <span id="checkInBtnText">Check-In Now</span>
+                    <!-- CHECK IN WIDGET -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center min-w-[240px]">
+                        <div class="text-xs text-gray-500 font-semibold mb-1">Status Timer</div>
+                        <div id="timer-display" class="text-2xl font-black text-gray-800 mb-2">--:--:--</div>
+                        <button id="checkin-btn" onclick="doCheckIn()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow transition text-sm flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Check-In Now
                         </button>
-                        <p id="checkInStatusText" class="text-xs text-gray-500 mt-2 font-medium"></p>
+                        <div id="checkin-hint" class="text-[10px] text-gray-400 mt-1.5 text-center">Can check-in once per day to reset timer.</div>
                     </div>
                 </div>
 
-                <!-- Check-In Timer Display & Rules -->
-                <div class="mt-6 pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <div class="flex justify-between items-center">
-                            <div class="text-xs font-semibold text-gray-500 uppercase">Check-In Timer</div>
-                            <span id="timerMaxNotice" class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700">3-Day Standard</span>
-                        </div>
-                        <div id="dashTimerDisplay" class="text-3xl font-extrabold text-blue-600 mt-1">72h 00m 00s</div>
-                        <p id="timerSubtext" class="text-xs text-gray-400 mt-1">Click check-in daily to reset back to full time.</p>
+                <!-- INFO GRID -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="block text-gray-400 font-semibold mb-0.5">School</span>
+                        <span id="dash-school" class="font-bold text-gray-800">--</span>
                     </div>
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <div class="text-xs font-semibold text-gray-500 uppercase">Demotion Rules</div>
-                        <div class="text-sm font-semibold text-gray-800 mt-2">
-                            If this timer hits 0, your rank automatically drops down 1 level!
-                        </div>
-                        <p class="text-xs text-gray-400 mt-1">Promotions to higher levels are granted solely by Clan Admins.</p>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="block text-gray-400 font-semibold mb-0.5">State</span>
+                        <span id="dash-state" class="font-bold text-gray-800">--</span>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="block text-gray-400 font-semibold mb-0.5">Check-In Rule</span>
+                        <span id="dash-timer-type" class="font-bold text-gray-800">3-Day Regular</span>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <span class="block text-gray-400 font-semibold mb-0.5">Last Check-In</span>
+                        <span id="dash-last-checkin" class="font-bold text-gray-800">Never</span>
                     </div>
                 </div>
             </div>
 
-            <!-- CLAN LEADERBOARD SECTION -->
-            <div class="bg-white border border-gray-200 rounded-2xl p-6 custom-shadow space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <!-- LEADERBOARD SECTION -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                            <i class="fa-solid fa-trophy text-amber-500"></i>
-                            Clan Leaderboard
-                        </h3>
-                        <p class="text-xs text-gray-500 mt-0.5">Ranked by highest level, then by total status markings</p>
+                        <h3 class="text-xl font-extrabold text-gray-900">Clan Roster & Leaderboard</h3>
+                        <p class="text-xs text-gray-500">Rankings based on Level + Number of Status Markings.</p>
                     </div>
 
-                    <!-- Leaderboard Person Search -->
-                    <div class="relative w-full sm:w-72">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-xs"></i>
-                        <input type="text" id="lbSearchInput" oninput="renderLeaderboard()" placeholder="Search member name or school..." class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                    <!-- MEMBER SEARCH -->
+                    <div class="relative w-full md:w-64">
+                        <input type="text" id="leaderboard-search" oninput="renderLeaderboard()" placeholder="Search member name..." class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
 
-                <!-- Leaderboard Table -->
-                <div class="overflow-x-auto border border-gray-100 rounded-xl">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 uppercase">
-                            <tr>
-                                <th class="py-3 px-4 text-center w-12">#</th>
-                                <th class="py-3 px-4">Clan Member</th>
-                                <th class="py-3 px-4">Level Rank</th>
-                                <th class="py-3 px-4">Status Markings</th>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 font-bold border-b border-gray-200">
+                                <th class="p-3 w-12 text-center">Rank</th>
+                                <th class="p-3">Member</th>
+                                <th class="p-3">Level Title</th>
+                                <th class="p-3 text-center">Status Markings</th>
+                                <th class="p-3 text-right">Score</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboardTableBody" class="divide-y divide-gray-100">
-                            <!-- Dynamically injected -->
+                        <tbody id="leaderboard-tbody" class="divide-y divide-gray-100">
+                            <!-- Dynamic rows -->
                         </tbody>
                     </table>
                 </div>
             </div>
-
         </div>
+    </main>
 
-        <!-- SECRET ADMIN PANEL MODAL (NO VISIBLE TRIGGER ON WEBSITE) -->
-        <div id="adminModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <!-- SECRET ADMIN PANEL MODAL (Triggered via Ctrl+Shift+A) -->
+    <div id="admin-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full border border-gray-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             
-            <!-- ADMIN AUTH PASSWORD PROMPT -->
-            <div id="adminAuthBox" class="bg-white rounded-2xl max-w-sm w-full p-6 custom-shadow border border-gray-200">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-gray-900"><i class="fa-solid fa-lock text-blue-600 mr-2"></i>Admin Access</h3>
-                    <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            <!-- ADMIN HEADER -->
+            <div class="bg-gray-900 text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded">SECRET</span>
+                    <h3 class="font-bold text-sm">Play Guy Admin Control Panel</h3>
                 </div>
-                <p class="text-xs text-gray-500 mb-4">Enter passcode to open Admin Panel.</p>
-                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                    <input type="password" id="adminPasswordInput" placeholder="Password" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm">
-                        Unlock Admin Panel
-                    </button>
-                </form>
+                <button onclick="closeAdminModal()" class="text-gray-400 hover:text-white font-bold text-xl leading-none">&times;</button>
             </div>
 
-            <!-- ADMIN CONTROL PANEL (SEARCH & ELEVATE & STATUS MARKINGS) -->
-            <div id="adminContentBox" class="hidden bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col custom-shadow border border-gray-200 overflow-hidden">
-                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Admin Panel</span>
-                        <h3 class="font-bold text-gray-900">Clan Account Management</h3>
-                    </div>
-                    <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600 text-lg px-2"><i class="fa-solid fa-xmark"></i></button>
+            <!-- ADMIN PASSWORD PROMPT VIEW -->
+            <div id="admin-pass-view" class="p-6 text-center space-y-4">
+                <p class="text-xs text-gray-600 font-semibold">Enter secret passcode to unlock admin options:</p>
+                <input type="password" id="admin-pass-input" class="w-48 text-center px-3 py-2 border border-gray-300 rounded-lg font-mono text-lg tracking-widest focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="•••••">
+                <div>
+                    <button onclick="verifyAdminPass()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-6 py-2 rounded-lg transition">Authenticate</button>
+                </div>
+            </div>
+
+            <!-- ADMIN DASHBOARD VIEW -->
+            <div id="admin-dash-view" class="hidden flex-1 overflow-y-auto p-6 space-y-6">
+                
+                <!-- ACCOUNT SEARCH -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Search All Registered Accounts</label>
+                    <input type="text" id="admin-user-search" oninput="renderAdminUserList()" placeholder="Search by name, school, or state..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-red-500 focus:outline-none">
                 </div>
 
-                <!-- PAGE 1: SEARCH ALL ACCOUNTS -->
-                <div id="adminPage1" class="p-6 flex-grow overflow-y-auto space-y-4">
-                    <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
-                        <input type="text" id="adminSearchInput" oninput="filterAdminAccounts()" placeholder="Search accounts by name, school, or state..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-
-                    <div class="overflow-x-auto border border-gray-100 rounded-xl">
-                        <table class="w-full text-left border-collapse text-sm">
-                            <thead class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 uppercase">
-                                <tr>
-                                    <th class="py-2.5 px-3">Member</th>
-                                    <th class="py-2.5 px-3">School / State</th>
-                                    <th class="py-2.5 px-3">Level Rank</th>
-                                    <th class="py-2.5 px-3 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminAccountsTable" class="divide-y divide-gray-100">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
+                <!-- ACCOUNTS LIST -->
+                <div class="border border-gray-200 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
+                    <div id="admin-user-list" class="divide-y divide-gray-100 text-xs">
+                        <!-- Users list populated here -->
                     </div>
                 </div>
 
-                <!-- PAGE 2: ACCOUNT DETAILS, LEVEL ELEVATION & STATUS MARKINGS -->
-                <div id="adminPage2" class="hidden p-6 flex-grow overflow-y-auto space-y-6">
-                    <button onclick="showAdminPage1()" class="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-left"></i> Back to Account List
-                    </button>
-
-                    <div class="border border-gray-200 rounded-xl p-5 bg-gray-50/50 space-y-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 id="admDetailName" class="text-xl font-bold text-gray-900"></h4>
-                                <p id="admDetailSchoolState" class="text-xs text-gray-500 mt-0.5"></p>
-                            </div>
-                            <span id="admDetailRankBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-800"></span>
+                <!-- SELECTED USER INSPECTOR -->
+                <div id="admin-inspector" class="hidden bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
+                    <div class="flex justify-between items-start border-b border-gray-200 pb-3">
+                        <div>
+                            <h4 id="admin-target-fullname" class="font-extrabold text-base text-gray-900"></h4>
+                            <p id="admin-target-id" class="text-[10px] font-mono text-gray-400"></p>
                         </div>
-
-                        <div class="grid grid-cols-2 gap-4 text-xs pt-2 border-t border-gray-200">
-                            <div>
-                                <span class="text-gray-400 block">First Name</span>
-                                <span id="admDetailFirstName" class="font-semibold text-gray-700"></span>
-                            </div>
-                            <div>
-                                <span class="text-gray-400 block">Last Name</span>
-                                <span id="admDetailLastName" class="font-semibold text-gray-700"></span>
-                            </div>
-                            <div>
-                                <span class="text-gray-400 block">Last Check-In Time</span>
-                                <span id="admDetailLastCheckIn" class="font-semibold text-gray-700"></span>
-                            </div>
-                            <div>
-                                <span class="text-gray-400 block">Level Numeric</span>
-                                <span id="admDetailLevelNum" class="font-semibold text-gray-700"></span>
-                            </div>
-                        </div>
+                        <span id="admin-target-level-badge" class="bg-gray-800 text-white text-[10px] font-bold px-2 py-1 rounded"></span>
                     </div>
 
-                    <!-- Level Elevation Control -->
-                    <div class="border border-purple-200 bg-purple-50/50 rounded-xl p-5 space-y-3">
-                        <h5 class="text-sm font-bold text-purple-900">Change Level Rank</h5>
-                        <p class="text-xs text-purple-700">Admins can promote or elevate members up to Dictator Play Guy (Level 7).</p>
-                        
-                        <div class="flex items-center gap-3">
-                            <select id="admLevelSelect" class="flex-1 px-3 py-2 rounded-lg border border-purple-300 text-sm bg-white font-medium focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div><span class="text-gray-400">School:</span> <strong id="admin-target-school" class="text-gray-800"></strong></div>
+                        <div><span class="text-gray-400">State:</span> <strong id="admin-target-state" class="text-gray-800"></strong></div>
+                        <div><span class="text-gray-400">Password:</span> <strong id="admin-target-password" class="text-gray-800 font-mono"></strong></div>
+                        <div><span class="text-gray-400">Last Active:</span> <strong id="admin-target-lastcheckin" class="text-gray-800"></strong></div>
+                    </div>
+
+                    <!-- LEVEL MODIFIER -->
+                    <div class="pt-2 border-t border-gray-200">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Set Level Rank</label>
+                        <div class="flex gap-2">
+                            <select id="admin-level-select" class="flex-1 bg-white border border-gray-300 rounded-lg text-xs p-2 font-semibold text-gray-800">
                                 <option value="1">Level 1: Regular Play Guy</option>
                                 <option value="2">Level 2: Baseball Bat Play Guy</option>
                                 <option value="3">Level 3: Rifle Play Guy</option>
@@ -340,132 +293,59 @@
                                 <option value="6">Level 6: King Play Guy</option>
                                 <option value="7">Level 7: Dictator Play Guy</option>
                             </select>
-                            <button onclick="saveAdminLevelChange()" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm rounded-lg shadow-sm">
-                                Save Level
-                            </button>
+                            <button onclick="adminSaveLevel()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Set Rank</button>
                         </div>
                     </div>
 
-                    <!-- Status Markings Assign Control -->
-                    <div class="border border-blue-200 bg-blue-50/50 rounded-xl p-5 space-y-4">
-                        <div>
-                            <h5 class="text-sm font-bold text-blue-900">Manage Status Markings</h5>
-                            <p class="text-xs text-blue-700">Toggle official markings assigned to this member.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                            <label class="flex items-center gap-3 p-3 bg-white border rounded-xl cursor-pointer hover:bg-blue-50/50 transition">
-                                <input type="checkbox" id="markYoutube" class="w-4 h-4 text-red-600 rounded">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-6 h-6 rounded bg-red-600 text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-play"></i></span>
-                                    <div>
-                                        <div class="font-bold text-gray-800">YouTube Symbol</div>
-                                        <div class="text-[10px] text-gray-500">Posted YouTube videos about Play Guy</div>
-                                    </div>
-                                </div>
+                    <!-- STATUS MARKINGS TOGGLES -->
+                    <div class="pt-2 border-t border-gray-200">
+                        <label class="block text-xs font-bold text-gray-700 mb-2">Toggle Status Markings</label>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200 cursor-pointer">
+                                <input type="checkbox" id="mark-youtube" onchange="adminToggleMark('youtube')" class="rounded text-red-600">
+                                <span class="font-semibold text-gray-700">YouTube Symbol</span>
                             </label>
-
-                            <label class="flex items-center gap-3 p-3 bg-white border rounded-xl cursor-pointer hover:bg-blue-50/50 transition">
-                                <input type="checkbox" id="markOg" class="w-4 h-4 text-black rounded">
-                                <div class="flex items-center gap-2">
-                                    <span class="px-1.5 py-0.5 rounded bg-white border border-black text-black font-extrabold text-[10px]">O.G.</span>
-                                    <div>
-                                        <div class="font-bold text-gray-800">O.G. Symbol</div>
-                                        <div class="text-[10px] text-gray-500">Starting follower of Play Guy</div>
-                                    </div>
-                                </div>
+                            <label class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200 cursor-pointer">
+                                <input type="checkbox" id="mark-og" onchange="adminToggleMark('og')" class="rounded text-black">
+                                <span class="font-semibold text-gray-700">O.G. Status</span>
                             </label>
-
-                            <label class="flex items-center gap-3 p-3 bg-white border rounded-xl cursor-pointer hover:bg-blue-50/50 transition">
-                                <input type="checkbox" id="markNoElectronics" class="w-4 h-4 text-amber-500 rounded">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-6 h-6 rounded bg-sky-100 text-amber-500 border border-sky-200 flex items-center justify-center text-xs"><i class="fa-solid fa-bolt"></i></span>
-                                    <div>
-                                        <div class="font-bold text-gray-800">No Electronics Usage</div>
-                                        <div class="text-[10px] text-gray-500">Grants 7-Day Timer instead of 3 days</div>
-                                    </div>
-                                </div>
+                            <label class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200 cursor-pointer">
+                                <input type="checkbox" id="mark-noelec" onchange="adminToggleMark('noelec')" class="rounded text-yellow-500">
+                                <span class="font-semibold text-gray-700">No Elec Usage (7-Day Timer)</span>
                             </label>
-
-                            <label class="flex items-center gap-3 p-3 bg-white border rounded-xl cursor-pointer hover:bg-blue-50/50 transition">
-                                <input type="checkbox" id="markCreator" class="w-4 h-4 text-black rounded">
-                                <div class="flex items-center gap-2">
-                                    <span class="px-1.5 py-0.5 rounded bg-black text-white font-bold text-[9px] uppercase tracking-wider">CREATOR</span>
-                                    <div>
-                                        <div class="font-bold text-gray-800">Creator Symbol</div>
-                                        <div class="text-[10px] text-gray-500">Created the Play Guy</div>
-                                    </div>
-                                </div>
+                            <label class="flex items-center gap-2 p-2 bg-white rounded border border-gray-200 cursor-pointer">
+                                <input type="checkbox" id="mark-creator" onchange="adminToggleMark('creator')" class="rounded text-gray-900">
+                                <span class="font-semibold text-gray-700">Creator Status</span>
                             </label>
                         </div>
-
-                        <button onclick="saveAdminMarkingsChange()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm">
-                            Update Status Markings
-                        </button>
                     </div>
-
                 </div>
-
             </div>
         </div>
+    </div>
 
-    </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-gray-100 py-6 bg-white mt-12">
-        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-gray-400">
-            <p>© The Play Guy Clan. Official Web Application.</p>
-        </div>
-    </footer>
-
-    <script>
-  window.__app_id = "play-guy-clan-app";
-
-  window.__firebase_config = JSON.stringify({
-   apiKey: "AIzaSyC8YQweW7eKHDhwZ-QDhVuMhGiNRUEC-mE",
-  authDomain: "play-clan.firebaseapp.com",
-  databaseURL: "https://play-clan-default-rtdb.firebaseio.com",
-  projectId: "play-clan",
-  storageBucket: "play-clan.firebasestorage.app",
-  messagingSenderId: "347261005232",
-  appId: "1:347261005232:web:5d97a30746b7a6e366ba75",
-  measurementId: "G-S66TSKRF2Q"
-  });
-
-  window.__initial_auth_token = "";
-</script>
-
-    <!-- MAIN APP SCRIPT -->
+    <!-- Firebase App & Firestore -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'play-guy-clan-app';
-        let firebaseConfig = null;
-        let db = null;
-        let auth = null;
-        let isFirebaseConnected = false;
+        // YOUR FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8YQweW7eKHDhwZ-QDhVuMhGiNRUEC-mE",
+            authDomain: "play-clan.firebaseapp.com",
+            databaseURL: "https://play-clan-default-rtdb.firebaseio.com",
+            projectId: "play-clan",
+            storageBucket: "play-clan.firebasestorage.app",
+            messagingSenderId: "347261005232",
+            appId: "1:347261005232:web:5d97a30746b7a6e366ba75",
+            measurementId: "G-S66TSKRF2Q"
+        };
 
-        try {
-            if (typeof __firebase_config !== 'undefined') {
-                firebaseConfig = JSON.parse(__firebase_config);
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                isFirebaseConnected = true;
-            }
-        } catch (e) {
-            console.log("Firebase fallback operating in instant local storage mode.");
-        }
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        // Global State
-        let currentUserData = null;
-        let timerInterval = null;
-        let allAccountsCache = [];
-        let selectedAdminAccountKey = null;
-
-        // Level Hierarchy Map (Play Guy)
+        // RANK DEFINITIONS
         const LEVEL_NAMES = {
             1: "Regular Play Guy",
             2: "Baseball Bat Play Guy",
@@ -476,673 +356,509 @@
             7: "Dictator Play Guy"
         };
 
-        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-        const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-        const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-
-        function getLocalAccounts() {
-            try {
-                return JSON.parse(localStorage.getItem('play_guy_clan_accounts') || '{}');
-            } catch (e) {
-                return {};
+        // STATUS MARKINGS DEFINITIONS WITH HTML SYMBOLS
+        const STATUS_DEFINITIONS = {
+            youtube: {
+                key: "youtube",
+                title: "YouTube",
+                description: "This person has posted videos on YouTube about the Play Guy.",
+                html: `<div class="tooltip inline-block"><span class="bg-red-600 text-white font-bold px-1.5 py-0.5 rounded text-[10px] flex items-center gap-0.5 shadow-sm">
+                    <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                </span><span class="tooltiptext">This person has posted videos on YouTube about the "play guy"</span></div>`
+            },
+            og: {
+                key: "og",
+                title: "O.G.",
+                description: "Considered as one of the starting followers of the Play Guy.",
+                html: `<div class="tooltip inline-block"><span class="bg-white border border-gray-900 text-black font-black px-1.5 py-0.5 rounded text-[10px] shadow-sm">
+                    O.G.
+                </span><span class="tooltiptext">Given when the person is considered as one of the starting followers of the "play guy"</span></div>`
+            },
+            noelec: {
+                key: "noelec",
+                title: "No Electronics Usage Daily",
+                description: "Doesn't have access to daily electronics. Granted a 7-day check-in timer.",
+                html: `<div class="tooltip inline-block"><span class="bg-sky-200 text-amber-500 font-bold px-1.5 py-0.5 rounded text-[10px] flex items-center justify-center shadow-sm">
+                    ⚡
+                </span><span class="tooltiptext">No Electronics Usage Daily: Grants a 7-day check-in timer</span></div>`
+            },
+            creator: {
+                key: "creator",
+                title: "Creator",
+                description: "One of the people who created the Play Guy.",
+                html: `<div class="tooltip inline-block"><span class="bg-black text-white font-extrabold uppercase px-1.5 py-0.5 rounded text-[9px] tracking-wider shadow-sm">
+                    CREATOR
+                </span><span class="tooltiptext">One of the people who created the "play guy"</span></div>`
             }
-        }
+        };
 
-        function saveLocalAccounts(accounts) {
-            try {
-                localStorage.setItem('play_guy_clan_accounts', JSON.stringify(accounts));
-            } catch (e) {
-                console.error("Local storage error:", e);
-            }
-        }
+        // GLOBAL APP STATE
+        window.allUsers = [];
+        window.currentUser = null;
+        window.selectedAdminTarget = null;
+        let timerInterval = null;
 
-        async function initApp() {
-            if (isFirebaseConnected && auth) {
-                try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                    subscribeToFirestoreAccounts();
-                } catch (err) {
-                    loadLocalAccountsIntoCache();
+        // REAL-TIME FIRESTORE LISTENER
+        onSnapshot(collection(db, "users"), (snapshot) => {
+            window.allUsers = [];
+            snapshot.forEach((docSnap) => {
+                window.allUsers.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            
+            // Re-evaluate current user if logged in
+            if (window.currentUser) {
+                const refreshed = window.allUsers.find(u => u.id === window.currentUser.id);
+                if (refreshed) {
+                    window.currentUser = refreshed;
+                    checkAndApplyDemotions(window.currentUser);
+                    renderDashboard();
                 }
-            } else {
-                loadLocalAccountsIntoCache();
             }
-        }
 
-        function loadLocalAccountsIntoCache() {
-            const accs = getLocalAccounts();
-            allAccountsCache = Object.values(accs);
             renderLeaderboard();
-            filterAdminAccounts();
-        }
-
-        function subscribeToFirestoreAccounts() {
-            if (!db) return;
-            const membersColl = collection(db, 'artifacts', appId, 'public', 'data', 'members');
-            onSnapshot(membersColl, (snapshot) => {
-                allAccountsCache = [];
-                snapshot.forEach(doc => {
-                    allAccountsCache.push(doc.data());
-                });
-                renderLeaderboard();
-                filterAdminAccounts();
-            }, (err) => {
-                loadLocalAccountsIntoCache();
-            });
-        }
-
-        initApp();
-
-        // --- REGISTER ---
-        window.handleRegister = async function(e) {
-            e.preventDefault();
-
-            const firstName = document.getElementById('regFirstName').value.trim();
-            const lastName = document.getElementById('regLastName').value.trim();
-            const school = document.getElementById('regSchool').value.trim();
-            const state = document.getElementById('regState').value.trim();
-            const password = document.getElementById('regPassword').value;
-
-            if (!firstName || !lastName || !school || !state || !password) {
-                return showToast("Please fill in all fields.", "error");
-            }
-
-            const memberKey = firstName.toLowerCase();
-            const now = Date.now();
-            const newMemberData = {
-                firstName,
-                lastName,
-                normalizedFirstName: memberKey,
-                school,
-                state,
-                password,
-                level: 1, // Default Level 1: Regular Play Guy
-                statusMarkings: {
-                    youtube: false,
-                    og: false,
-                    noElectronics: false,
-                    creator: false
-                },
-                lastCheckInTimestamp: now,
-                createdAt: now
-            };
-
-            const localAccs = getLocalAccounts();
-            if (localAccs[memberKey]) {
-                return showToast(`An account with first name "${firstName}" already exists!`, "error");
-            }
-
-            localAccs[memberKey] = newMemberData;
-            saveLocalAccounts(localAccs);
-
-            if (isFirebaseConnected && db) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
-                    await setDoc(docRef, newMemberData);
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-
-            loadLocalAccountsIntoCache();
-            showToast("Welcome to The Play Guy Clan! Account created.", "success");
-            loginUser(newMemberData);
-        };
-
-        // --- LOGIN (CASE INSENSITIVE FIRST NAME) ---
-        window.handleLogin = async function(e) {
-            e.preventDefault();
-
-            const firstNameInput = document.getElementById('loginFirstName').value.trim();
-            const passwordInput = document.getElementById('loginPassword').value;
-            const memberKey = firstNameInput.toLowerCase();
-
-            let userData = null;
-
-            const localAccs = getLocalAccounts();
-            if (localAccs[memberKey]) {
-                userData = localAccs[memberKey];
-            } else if (isFirebaseConnected && db) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberKey);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        userData = docSnap.data();
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-
-            if (!userData) {
-                return showToast(`No account found for first name "${firstNameInput}".`, "error");
-            }
-
-            if (userData.password !== passwordInput) {
-                return showToast("Incorrect password.", "error");
-            }
-
-            showToast(`Welcome back, ${userData.firstName}!`, "success");
-            loginUser(userData);
-        };
-
-        function loginUser(userData) {
-            currentUserData = userData;
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('dashboardSection').classList.remove('hidden');
-            document.getElementById('headerUserNav').classList.remove('hidden');
-
-            checkAndApplyDemotionIfNeeded();
-            startTimerLoop();
-            updateDashboardUI();
-            renderLeaderboard();
-        }
-
-        window.handleLogout = function() {
-            currentUserData = null;
-            clearInterval(timerInterval);
-            document.getElementById('authSection').classList.remove('hidden');
-            document.getElementById('dashboardSection').classList.add('hidden');
-            document.getElementById('headerUserNav').classList.add('hidden');
-            document.getElementById('loginForm').reset();
-            document.getElementById('registerForm').reset();
-            showToast("Logged out.", "info");
-        };
-
-        // --- CHECK-IN & DYNAMIC TIMER (3 DAYS OR 7 DAYS) ---
-        function getUserAllowedTimerMs(userData) {
-            if (userData && userData.statusMarkings && userData.statusMarkings.noElectronics) {
-                return SEVEN_DAYS_MS;
-            }
-            return THREE_DAYS_MS;
-        }
-
-        window.handleCheckIn = async function() {
-            if (!currentUserData) return;
-
-            const now = Date.now();
-            const lastCheckIn = currentUserData.lastCheckInTimestamp || 0;
-            const timeSinceLast = now - lastCheckIn;
-
-            if (timeSinceLast < ONE_DAY_MS) {
-                return showToast("You can only check-in once every 24 hours!", "error");
-            }
-
-            currentUserData.lastCheckInTimestamp = now;
-
-            const localAccs = getLocalAccounts();
-            if (localAccs[currentUserData.normalizedFirstName]) {
-                localAccs[currentUserData.normalizedFirstName].lastCheckInTimestamp = now;
-                saveLocalAccounts(localAccs);
-            }
-
-            if (isFirebaseConnected && db) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', currentUserData.normalizedFirstName);
-                    await updateDoc(docRef, { lastCheckInTimestamp: now });
-                } catch (err) {
-                    console.error("Firestore update error:", err);
-                }
-            }
-
-            loadLocalAccountsIntoCache();
-            const maxMs = getUserAllowedTimerMs(currentUserData);
-            const maxDays = maxMs === SEVEN_DAYS_MS ? "7 days" : "3 days";
-            showToast(`Check-in recorded! Your timer has been reset to ${maxDays}.`, "success");
-            updateDashboardUI();
-        };
-
-        async function checkAndApplyDemotionIfNeeded() {
-            if (!currentUserData) return;
-
-            const now = Date.now();
-            const lastCheckIn = currentUserData.lastCheckInTimestamp || now;
-            const elapsed = now - lastCheckIn;
-            const allowedMs = getUserAllowedTimerMs(currentUserData);
-
-            if (elapsed >= allowedMs && currentUserData.level > 1) {
-                const newLevel = Math.max(1, currentUserData.level - 1);
-                
-                currentUserData.level = newLevel;
-                currentUserData.lastCheckInTimestamp = now;
-
-                const localAccs = getLocalAccounts();
-                if (localAccs[currentUserData.normalizedFirstName]) {
-                    localAccs[currentUserData.normalizedFirstName].level = newLevel;
-                    localAccs[currentUserData.normalizedFirstName].lastCheckInTimestamp = now;
-                    saveLocalAccounts(localAccs);
-                }
-
-                if (isFirebaseConnected && db) {
-                    try {
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', currentUserData.normalizedFirstName);
-                        await updateDoc(docRef, {
-                            level: newLevel,
-                            lastCheckInTimestamp: now
-                        });
-                    } catch (err) {
-                        console.error("Demotion update error:", err);
-                    }
-                }
-
-                loadLocalAccountsIntoCache();
-                showToast(`Inactivity Notice: Timer elapsed without check-in. You were demoted to ${LEVEL_NAMES[newLevel]}.`, "error");
-            }
-        }
-
-        function startTimerLoop() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (!currentUserData) return;
-
-                const now = Date.now();
-                const lastCheckIn = currentUserData.lastCheckInTimestamp || now;
-                const allowedMs = getUserAllowedTimerMs(currentUserData);
-                const expiresAt = lastCheckIn + allowedMs;
-                const remaining = expiresAt - now;
-
-                if (remaining <= 0) {
-                    checkAndApplyDemotionIfNeeded();
-                    updateDashboardUI();
-                } else {
-                    const hours = Math.floor(remaining / (1000 * 60 * 60));
-                    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-                    
-                    document.getElementById('dashTimerDisplay').textContent = 
-                        `${hours}h ${minutes < 10 ? '0' : ''}${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
-                }
-
-                const timeSinceLast = now - lastCheckIn;
-                const checkInBtn = document.getElementById('checkInBtn');
-                const statusText = document.getElementById('checkInStatusText');
-
-                if (timeSinceLast >= ONE_DAY_MS) {
-                    checkInBtn.disabled = false;
-                    document.getElementById('checkInBtnText').textContent = "Daily Check-In Ready!";
-                    statusText.textContent = "Click to reset your inactivity timer.";
-                } else {
-                    checkInBtn.disabled = true;
-                    const nextCheckInIn = ONE_DAY_MS - timeSinceLast;
-                    const cHours = Math.floor(nextCheckInIn / (1000 * 60 * 60));
-                    const cMins = Math.floor((nextCheckInIn % (1000 * 60 * 60)) / (1000 * 60));
-                    document.getElementById('checkInBtnText').textContent = "Checked-In Today";
-                    statusText.textContent = `Next check-in available in ${cHours}h ${cMins}m`;
-                }
-
-            }, 1000);
-        }
-
-        // --- HELPER TO GENERATE STATUS MARKING ICONS WITH TOOLTIPS ---
-        function renderStatusMarkingsHTML(sm = {}) {
-            let html = '';
-
-            if (sm.youtube) {
-                html += `
-                <div class="tooltip-container">
-                    <span class="w-6 h-6 rounded bg-red-600 text-white flex items-center justify-center text-[10px] shadow-sm cursor-help">
-                        <i class="fa-solid fa-play"></i>
-                    </span>
-                    <div class="tooltip-text absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded whitespace-nowrap z-30 shadow-lg">
-                        Has posted videos on YouTube about the Play Guy
-                    </div>
-                </div>`;
-            }
-
-            if (sm.og) {
-                html += `
-                <div class="tooltip-container">
-                    <span class="px-1.5 py-0.5 rounded bg-white border border-black text-black font-extrabold text-[10px] leading-none cursor-help shadow-sm">
-                        O.G.
-                    </span>
-                    <div class="tooltip-text absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded whitespace-nowrap z-30 shadow-lg">
-                        Starting follower of the Play Guy
-                    </div>
-                </div>`;
-            }
-
-            if (sm.noElectronics) {
-                html += `
-                <div class="tooltip-container">
-                    <span class="w-6 h-6 rounded bg-sky-100 text-amber-500 border border-sky-200 flex items-center justify-center text-xs shadow-sm cursor-help">
-                        <i class="fa-solid fa-bolt"></i>
-                    </span>
-                    <div class="tooltip-text absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded whitespace-nowrap z-30 shadow-lg">
-                        No Daily Electronics Access (7-Day Check-in Timer)
-                    </div>
-                </div>`;
-            }
-
-            if (sm.creator) {
-                html += `
-                <div class="tooltip-container">
-                    <span class="px-1.5 py-0.5 rounded bg-black text-white font-bold text-[9px] uppercase tracking-wider leading-none cursor-help shadow-sm">
-                        CREATOR
-                    </span>
-                    <div class="tooltip-text absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded whitespace-nowrap z-30 shadow-lg">
-                        Creator of the Play Guy
-                    </div>
-                </div>`;
-            }
-
-            return html;
-        }
-
-        function countMarkings(sm = {}) {
-            return (sm.youtube ? 1 : 0) + (sm.og ? 1 : 0) + (sm.noElectronics ? 1 : 0) + (sm.creator ? 1 : 0);
-        }
-
-        function updateDashboardUI() {
-            if (!currentUserData) return;
-
-            const { firstName, lastName, school, state, level = 1, statusMarkings = {} } = currentUserData;
-            const rankTitle = LEVEL_NAMES[level] || LEVEL_NAMES[1];
-
-            document.getElementById('navUserName').textContent = `${firstName} ${lastName}`;
-            document.getElementById('navUserBadge').textContent = rankTitle;
-
-            document.getElementById('dashFullName').textContent = `${firstName} ${lastName}`;
-            document.getElementById('userAvatar').textContent = firstName.charAt(0).toUpperCase();
-            document.getElementById('dashBadge').textContent = `Level ${level}: ${rankTitle}`;
-            document.getElementById('dashSchool').textContent = school;
-            document.getElementById('dashState').textContent = state;
-
-            // Render status markings on user banner
-            document.getElementById('dashStatusMarkings').innerHTML = renderStatusMarkingsHTML(statusMarkings);
-
-            // Timer Rule Label Update
-            const timerNotice = document.getElementById('timerMaxNotice');
-            const timerSub = document.getElementById('timerSubtext');
-            if (statusMarkings.noElectronics) {
-                timerNotice.textContent = "7-Day Extended Timer";
-                timerNotice.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200";
-                timerSub.textContent = "Granted 7 days due to No Daily Electronics status marking.";
-            } else {
-                timerNotice.textContent = "3-Day Standard Timer";
-                timerNotice.className = "text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-700";
-                timerSub.textContent = "Click check-in daily to reset back to 3 full days.";
-            }
-        }
-
-        // --- LEADERBOARD RENDERING ---
-        window.renderLeaderboard = function() {
-            const query = (document.getElementById('lbSearchInput')?.value || '').toLowerCase();
-            const tbody = document.getElementById('leaderboardTableBody');
-            if (!tbody) return;
-
-            tbody.innerHTML = '';
-
-            // Sort by: 1) Level descending, 2) Number of status markings descending, 3) Name
-            const sorted = [...allAccountsCache].sort((a, b) => {
-                const lvlA = a.level || 1;
-                const lvlB = b.level || 1;
-                if (lvlB !== lvlA) return lvlB - lvlA;
-
-                const countA = countMarkings(a.statusMarkings);
-                const countB = countMarkings(b.statusMarkings);
-                if (countB !== countA) return countB - countA;
-
-                return a.firstName.localeCompare(b.firstName);
-            });
-
-            const filtered = sorted.filter(acc => 
-                acc.firstName.toLowerCase().includes(query) ||
-                acc.lastName.toLowerCase().includes(query) ||
-                acc.school.toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-gray-400 text-xs">No clan members found matching search.</td></tr>`;
-                return;
-            }
-
-            filtered.forEach((acc, idx) => {
-                const tr = document.createElement('tr');
-                const isCurrent = currentUserData && currentUserData.normalizedFirstName === acc.normalizedFirstName;
-                tr.className = isCurrent ? "bg-blue-50/60 font-medium" : "hover:bg-gray-50/80 transition";
-
-                const levelNum = acc.level || 1;
-                const rankTitle = LEVEL_NAMES[levelNum] || LEVEL_NAMES[1];
-                const markingsHTML = renderStatusMarkingsHTML(acc.statusMarkings);
-
-                tr.innerHTML = `
-                    <td class="py-3 px-4 text-center font-bold text-gray-500 text-xs">${idx + 1}</td>
-                    <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-gray-900">${acc.firstName} ${acc.lastName}</span>
-                            ${isCurrent ? `<span class="text-[10px] bg-blue-600 text-white font-bold px-1.5 py-0.2 rounded">YOU</span>` : ''}
-                        </div>
-                        <div class="text-[11px] text-gray-400">${acc.school}, ${acc.state}</div>
-                    </td>
-                    <td class="py-3 px-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
-                            Lvl ${levelNum}: ${rankTitle}
-                        </span>
-                    </td>
-                    <td class="py-3 px-4">
-                        <div class="flex items-center gap-1.5">
-                            ${markingsHTML || `<span class="text-xs text-gray-300 italic">None</span>`}
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        };
-
-        // --- SECRET KEYBOARD SHORTCUT FOR ADMIN PANEL (CTRL+SHIFT+A or CMD+SHIFT+A) ---
-        window.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-                e.preventDefault();
-                openSecretAdminModal();
+            if (document.getElementById("admin-dash-view").style.display !== "none") {
+                renderAdminUserList();
             }
         });
 
-        function openSecretAdminModal() {
-            document.getElementById('adminModal').classList.remove('hidden');
-            document.getElementById('adminAuthBox').classList.remove('hidden');
-            document.getElementById('adminContentBox').classList.add('hidden');
-            document.getElementById('adminPasswordInput').value = '';
-            document.getElementById('adminPasswordInput').focus();
-        }
+        // AUTH TAB SWITCHING
+        window.switchAuthTab = function(tab) {
+            const loginForm = document.getElementById("login-form");
+            const regForm = document.getElementById("register-form");
+            const tabLogin = document.getElementById("tab-login");
+            const tabReg = document.getElementById("tab-register");
 
-        window.closeAdminModal = function() {
-            document.getElementById('adminModal').classList.add('hidden');
-        };
-
-        window.handleAdminLogin = function(e) {
-            e.preventDefault();
-            const input = document.getElementById('adminPasswordInput').value;
-            if (input === '12345') {
-                document.getElementById('adminAuthBox').classList.add('hidden');
-                document.getElementById('adminContentBox').classList.remove('hidden');
-                showAdminPage1();
+            if (tab === 'login') {
+                loginForm.classList.remove("hidden");
+                regForm.classList.add("hidden");
+                tabLogin.className = "flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600";
+                tabReg.className = "flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700";
             } else {
-                showToast("Incorrect Admin Password!", "error");
+                loginForm.classList.add("hidden");
+                regForm.classList.remove("hidden");
+                tabReg.className = "flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600";
+                tabLogin.className = "flex-1 py-3 text-center font-bold text-gray-500 hover:text-gray-700";
             }
         };
 
-        window.showAdminPage1 = function() {
-            document.getElementById('adminPage1').classList.remove('hidden');
-            document.getElementById('adminPage2').classList.add('hidden');
-            filterAdminAccounts();
-        };
+        // USER REGISTER
+        window.handleRegister = async function(e) {
+            e.preventDefault();
+            const firstName = document.getElementById("reg-firstname").value.trim();
+            const lastName = document.getElementById("reg-lastname").value.trim();
+            const school = document.getElementById("reg-school").value.trim();
+            const state = document.getElementById("reg-state").value.trim();
+            const password = document.getElementById("reg-password").value;
 
-        window.filterAdminAccounts = function() {
-            const query = (document.getElementById('adminSearchInput')?.value || '').toLowerCase();
-            const tbody = document.getElementById('adminAccountsTable');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            const filtered = allAccountsCache.filter(acc => 
-                acc.firstName.toLowerCase().includes(query) ||
-                acc.lastName.toLowerCase().includes(query) ||
-                acc.school.toLowerCase().includes(query) ||
-                acc.state.toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-400 text-xs">No accounts found.</td></tr>`;
+            if (!firstName || !lastName || !school || !state || !password) {
+                showAlert("Please fill in all registration fields.", "red");
                 return;
             }
 
-            filtered.forEach(acc => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 transition cursor-pointer";
-                tr.onclick = () => openAdminAccountDetails(acc.normalizedFirstName);
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3 font-semibold text-gray-900">${acc.firstName} ${acc.lastName}</td>
-                    <td class="py-2.5 px-3 text-gray-500 text-xs">${acc.school}, ${acc.state}</td>
-                    <td class="py-2.5 px-3 font-medium text-xs text-blue-600">Level ${acc.level || 1}: ${LEVEL_NAMES[acc.level || 1]}</td>
-                    <td class="py-2.5 px-3 text-right">
-                        <button class="text-xs bg-gray-100 hover:bg-blue-600 hover:text-white px-2.5 py-1 rounded font-semibold text-gray-700 transition">
-                            Inspect
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        };
-
-        window.openAdminAccountDetails = function(key) {
-            selectedAdminAccountKey = key;
-            const acc = allAccountsCache.find(a => a.normalizedFirstName === key);
-            if (!acc) return;
-
-            document.getElementById('admDetailName').textContent = `${acc.firstName} ${acc.lastName}`;
-            document.getElementById('admDetailSchoolState').textContent = `${acc.school} • ${acc.state}`;
-            document.getElementById('admDetailRankBadge').textContent = `Level ${acc.level || 1}: ${LEVEL_NAMES[acc.level || 1]}`;
-            document.getElementById('admDetailFirstName').textContent = acc.firstName;
-            document.getElementById('admDetailLastName').textContent = acc.lastName;
-            document.getElementById('admDetailLevelNum').textContent = `${acc.level || 1} of 7`;
-
-            const lastDate = acc.lastCheckInTimestamp ? new Date(acc.lastCheckInTimestamp).toLocaleString() : 'Never';
-            document.getElementById('admDetailLastCheckIn').textContent = lastDate;
-
-            document.getElementById('admLevelSelect').value = acc.level || 1;
-
-            // Checkbox values for status markings
-            const sm = acc.statusMarkings || {};
-            document.getElementById('markYoutube').checked = !!sm.youtube;
-            document.getElementById('markOg').checked = !!sm.og;
-            document.getElementById('markNoElectronics').checked = !!sm.noElectronics;
-            document.getElementById('markCreator').checked = !!sm.creator;
-
-            document.getElementById('adminPage1').classList.add('hidden');
-            document.getElementById('adminPage2').classList.remove('hidden');
-        };
-
-        window.saveAdminLevelChange = async function() {
-            if (!selectedAdminAccountKey) return;
-
-            const newLevel = parseInt(document.getElementById('admLevelSelect').value, 10);
-
-            const localAccs = getLocalAccounts();
-            if (localAccs[selectedAdminAccountKey]) {
-                localAccs[selectedAdminAccountKey].level = newLevel;
-                saveLocalAccounts(localAccs);
-            }
-
-            if (isFirebaseConnected && db) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', selectedAdminAccountKey);
-                    await updateDoc(docRef, { level: newLevel });
-                } catch (err) {
-                    console.error("Admin update error:", err);
+            const docId = firstName.toLowerCase() + "_" + Date.now();
+            const newUser = {
+                firstName: firstName,
+                lastName: lastName,
+                school: school,
+                state: state,
+                password: password,
+                level: 1,
+                lastCheckIn: Date.now(),
+                markings: {
+                    youtube: false,
+                    og: false,
+                    noelec: false,
+                    creator: false
                 }
-            }
-
-            if (currentUserData && currentUserData.normalizedFirstName === selectedAdminAccountKey) {
-                currentUserData.level = newLevel;
-                updateDashboardUI();
-            }
-
-            loadLocalAccountsIntoCache();
-            showToast(`Level updated to Level ${newLevel}: ${LEVEL_NAMES[newLevel]}!`, "success");
-            openAdminAccountDetails(selectedAdminAccountKey);
-        };
-
-        window.saveAdminMarkingsChange = async function() {
-            if (!selectedAdminAccountKey) return;
-
-            const updatedMarkings = {
-                youtube: document.getElementById('markYoutube').checked,
-                og: document.getElementById('markOg').checked,
-                noElectronics: document.getElementById('markNoElectronics').checked,
-                creator: document.getElementById('markCreator').checked
             };
 
-            const localAccs = getLocalAccounts();
-            if (localAccs[selectedAdminAccountKey]) {
-                localAccs[selectedAdminAccountKey].statusMarkings = updatedMarkings;
-                saveLocalAccounts(localAccs);
+            try {
+                await setDoc(doc(db, "users", docId), newUser);
+                showAlert("Account successfully created! Logging you in...", "emerald");
+                document.getElementById("register-form").reset();
+                
+                // AUTOMATIC LOGIN UPON CREATION
+                window.currentUser = { id: docId, ...newUser };
+                showDashboardView();
+            } catch (err) {
+                console.error("Error creating user:", err);
+                showAlert("Failed to save account to database. Check internet connection.", "red");
+            }
+        };
+
+        // USER LOGIN (CASE INSENSITIVE FIRST NAME MATCHING)
+        window.handleLogin = function(e) {
+            e.preventDefault();
+            const firstNameInput = document.getElementById("login-firstname").value.trim().toLowerCase();
+            const passwordInput = document.getElementById("login-password").value;
+
+            const match = window.allUsers.find(u => 
+                u.firstName && u.firstName.toLowerCase() === firstNameInput && u.password === passwordInput
+            );
+
+            if (match) {
+                window.currentUser = match;
+                checkAndApplyDemotions(window.currentUser);
+                showAlert(`Welcome back, ${match.firstName}!`, "emerald");
+                document.getElementById("login-form").reset();
+                showDashboardView();
+            } else {
+                showAlert("Invalid first name or password. Please check your credentials.", "red");
+            }
+        };
+
+        // LOGOUT
+        window.logout = function() {
+            window.currentUser = null;
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById("dashboard-section").classList.add("hidden");
+            document.getElementById("user-header-info").classList.add("hidden");
+            document.getElementById("user-header-info").classList.remove("flex");
+            document.getElementById("auth-section").classList.remove("hidden");
+            showAlert("Logged out successfully.", "blue");
+        };
+
+        // SHOW DASHBOARD VIEW
+        function showDashboardView() {
+            document.getElementById("auth-section").classList.add("hidden");
+            document.getElementById("dashboard-section").classList.remove("hidden");
+            
+            // Header bar update
+            document.getElementById("user-header-info").classList.remove("hidden");
+            document.getElementById("user-header-info").classList.add("flex");
+            document.getElementById("header-user-name").textContent = window.currentUser.firstName + " " + window.currentUser.lastName;
+            document.getElementById("header-user-badge").textContent = "Level " + window.currentUser.level;
+
+            renderDashboard();
+        }
+
+        // RENDER DASHBOARD & TIMER
+        function renderDashboard() {
+            const u = window.currentUser;
+            if (!u) return;
+
+            document.getElementById("dash-name").textContent = `${u.firstName} ${u.lastName}`;
+            document.getElementById("dash-rank-badge").textContent = `Level ${u.level}: ${LEVEL_NAMES[u.level] || "Regular Play Guy"}`;
+            document.getElementById("dash-school").textContent = u.school;
+            document.getElementById("dash-state").textContent = u.state;
+
+            // Render status symbols
+            const symbolsContainer = document.getElementById("dash-symbols");
+            symbolsContainer.innerHTML = "";
+            let markingCount = 0;
+            if (u.markings) {
+                Object.keys(STATUS_DEFINITIONS).forEach(key => {
+                    if (u.markings[key]) {
+                        symbolsContainer.innerHTML += STATUS_DEFINITIONS[key].html;
+                        markingCount++;
+                    }
+                });
             }
 
-            if (isFirebaseConnected && db) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', selectedAdminAccountKey);
-                    await updateDoc(docRef, { statusMarkings: updatedMarkings });
-                } catch (err) {
-                    console.error("Admin update error:", err);
+            const hasNoElec = u.markings && u.markings.noelec;
+            document.getElementById("dash-timer-type").textContent = hasNoElec ? "7-Day (No Elec)" : "3-Day Regular";
+            
+            if (u.lastCheckIn) {
+                document.getElementById("dash-last-checkin").textContent = new Date(u.lastCheckIn).toLocaleDateString() + " " + new Date(u.lastCheckIn).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            } else {
+                document.getElementById("dash-last-checkin").textContent = "Never";
+            }
+
+            // START TIMER COUNTDOWN
+            startTimerCountdown();
+        }
+
+        // TIMER & DEMOTION MECHANICS
+        function startTimerCountdown() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            const updateTimer = () => {
+                const u = window.currentUser;
+                if (!u) return;
+
+                const timerDays = (u.markings && u.markings.noelec) ? 7 : 3;
+                const maxTimeMs = timerDays * 24 * 60 * 60 * 1000;
+                const lastCheckIn = u.lastCheckIn || Date.now();
+                const now = Date.now();
+                const elapsed = now - lastCheckIn;
+                const remaining = maxTimeMs - elapsed;
+
+                const checkinBtn = document.getElementById("checkin-btn");
+                const hint = document.getElementById("checkin-hint");
+
+                // Check if already checked in today (once every 24 hours)
+                const oneDayMs = 24 * 60 * 60 * 1000;
+                const checkedInToday = (now - lastCheckIn) < oneDayMs;
+
+                if (checkedInToday) {
+                    checkinBtn.disabled = true;
+                    checkinBtn.className = "w-full bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed";
+                    hint.textContent = "Checked in for today! Available again tomorrow.";
+                } else {
+                    checkinBtn.disabled = false;
+                    checkinBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow transition text-sm flex items-center justify-center gap-2";
+                    hint.textContent = "Click to reset your countdown timer back to full.";
                 }
-            }
 
-            if (currentUserData && currentUserData.normalizedFirstName === selectedAdminAccountKey) {
-                currentUserData.statusMarkings = updatedMarkings;
-                updateDashboardUI();
-                startTimerLoop();
-            }
+                if (remaining <= 0) {
+                    document.getElementById("timer-display").textContent = "EXPIRED";
+                    document.getElementById("timer-display").className = "text-2xl font-black text-red-600 animate-pulse";
+                    checkAndApplyDemotions(u);
+                } else {
+                    const hours = Math.floor(remaining / (1000 * 60 * 60));
+                    const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((remaining % (1000 * 60)) / 1000);
+                    
+                    document.getElementById("timer-display").textContent = 
+                        `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                    document.getElementById("timer-display").className = "text-2xl font-black text-gray-800";
+                }
+            };
 
-            loadLocalAccountsIntoCache();
-            showToast("Status markings updated successfully!", "success");
-            openAdminAccountDetails(selectedAdminAccountKey);
-        };
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
 
-        // --- UI UTILITIES ---
-        window.switchAuthTab = function(tab) {
-            const loginForm = document.getElementById('loginForm');
-            const regForm = document.getElementById('registerForm');
-            const tabLoginBtn = document.getElementById('tabLoginBtn');
-            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+        // AUTOMATIC DEMOTION IF TIMER EXPIRES
+        async function checkAndApplyDemotions(user) {
+            if (!user) return;
+            const timerDays = (user.markings && user.markings.noelec) ? 7 : 3;
+            const maxTimeMs = timerDays * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const elapsed = now - (user.lastCheckIn || now);
 
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                regForm.classList.add('hidden');
-                tabLoginBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-gray-900 transition";
-                tabRegisterBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-900 transition";
-            } else {
-                loginForm.classList.add('hidden');
-                regForm.classList.remove('hidden');
-                tabRegisterBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-gray-900 transition";
-                tabLoginBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-900 transition";
-            }
-        };
-
-        function showToast(msg, type = "info") {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            const toastIcon = document.getElementById('toastIcon');
-
-            toastMessage.textContent = msg;
-            toast.classList.remove('hidden', 'bg-red-50', 'text-red-800', 'border-red-200', 'bg-green-50', 'text-green-800', 'border-green-200', 'bg-blue-50', 'text-blue-800', 'border-blue-200');
-
-            if (type === 'error') {
-                toast.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
-                toastIcon.className = "fa-solid fa-circle-exclamation text-red-500";
-            } else if (type === 'success') {
-                toast.classList.add('bg-green-50', 'text-green-800', 'border-green-200');
-                toastIcon.className = "fa-solid fa-circle-check text-green-500";
-            } else {
-                toast.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200');
-                toastIcon.className = "fa-solid fa-circle-info text-blue-500";
+            if (elapsed >= maxTimeMs && user.level > 1) {
+                const newLevel = user.level - 1;
+                try {
+                    await updateDoc(doc(db, "users", user.id), {
+                        level: newLevel,
+                        lastCheckIn: now // Reset timer on demotion
+                    });
+                    showAlert(`Your timer expired! You were demoted to Level ${newLevel}: ${LEVEL_NAMES[newLevel]}`, "red");
+                } catch (e) {
+                    console.error("Error auto-demoting user:", e);
+                }
             }
         }
 
-        window.hideToast = function() {
-            document.getElementById('toast').classList.add('hidden');
+        // DO DAILY CHECK-IN
+        window.doCheckIn = async function() {
+            if (!window.currentUser) return;
+            const now = Date.now();
+            try {
+                await updateDoc(doc(db, "users", window.currentUser.id), {
+                    lastCheckIn: now
+                });
+                showAlert("Check-in successful! Your timer has been reset.", "emerald");
+            } catch (e) {
+                console.error("Checkin error:", e);
+                showAlert("Failed to record check-in.", "red");
+            }
+        };
+
+        // LEADERBOARD RENDER
+        window.renderLeaderboard = function() {
+            const tbody = document.getElementById("leaderboard-tbody");
+            if (!tbody) return;
+
+            const searchQuery = (document.getElementById("leaderboard-search")?.value || "").toLowerCase();
+
+            // Calculate score for each user: Level * 100 + Number of Status Markings
+            const sorted = [...window.allUsers].map(u => {
+                let markingCount = 0;
+                if (u.markings) {
+                    Object.values(u.markings).forEach(val => { if (val) markingCount++; });
+                }
+                const score = (u.level * 100) + markingCount;
+                return { ...u, score, markingCount };
+            }).sort((a, b) => b.score - a.score);
+
+            const filtered = sorted.filter(u => 
+                (u.firstName + " " + u.lastName).toLowerCase().includes(searchQuery) ||
+                (u.school || "").toLowerCase().includes(searchQuery)
+            );
+
+            tbody.innerHTML = "";
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-400">No members found</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((u, index) => {
+                let symbolsHtml = "";
+                if (u.markings) {
+                    Object.keys(STATUS_DEFINITIONS).forEach(key => {
+                        if (u.markings[key]) {
+                            symbolsHtml += STATUS_DEFINITIONS[key].html + " ";
+                        }
+                    });
+                }
+
+                const isCurrent = window.currentUser && window.currentUser.id === u.id;
+
+                tbody.innerHTML += `
+                    <tr class="${isCurrent ? 'bg-blue-50/60 font-semibold' : 'hover:bg-gray-50'} transition">
+                        <td class="p-3 text-center font-bold text-gray-500">#${index + 1}</td>
+                        <td class="p-3">
+                            <div class="font-bold text-gray-900">${u.firstName} ${u.lastName} ${isCurrent ? '<span class="text-[10px] bg-blue-600 text-white px-1.5 py-0.2 rounded ml-1">You</span>' : ''}</div>
+                            <div class="text-[10px] text-gray-400">${u.school || ''}</div>
+                        </td>
+                        <td class="p-3 font-semibold text-blue-700">
+                            Level ${u.level}: ${LEVEL_NAMES[u.level] || 'Regular Play Guy'}
+                        </td>
+                        <td class="p-3 text-center">
+                            <div class="flex items-center justify-center gap-1">
+                                ${symbolsHtml || '<span class="text-gray-300">-</span>'}
+                            </div>
+                        </td>
+                        <td class="p-3 text-right font-black text-gray-700">${u.score}</td>
+                    </tr>
+                `;
+            });
+        };
+
+        // ALERT BANNER HELPER
+        function showAlert(msg, color = 'blue') {
+            const banner = document.getElementById("alert-banner");
+            banner.textContent = msg;
+            
+            if (color === 'red') {
+                banner.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200 block";
+            } else if (color === 'emerald') {
+                banner.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 block";
+            } else {
+                banner.className = "mb-6 p-4 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 block";
+            }
+
+            setTimeout(() => {
+                banner.className = "hidden mb-6 p-4 rounded-lg text-sm font-medium transition-all";
+            }, 5000);
+        }
+
+        // ==========================================
+        // SECRET ADMIN PANEL LOGIC (Ctrl + Shift + A)
+        // ==========================================
+        window.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                e.preventDefault();
+                openAdminModal();
+            }
+        });
+
+        function openAdminModal() {
+            const modal = document.getElementById("admin-modal");
+            modal.classList.remove("hidden");
+            document.getElementById("admin-pass-view").classList.remove("hidden");
+            document.getElementById("admin-dash-view").classList.add("hidden");
+            document.getElementById("admin-pass-input").value = "";
+            document.getElementById("admin-pass-input").focus();
+        }
+
+        window.closeAdminModal = function() {
+            document.getElementById("admin-modal").classList.add("hidden");
+        };
+
+        window.verifyAdminPass = function() {
+            const pass = document.getElementById("admin-pass-input").value;
+            if (pass === "12345") {
+                document.getElementById("admin-pass-view").classList.add("hidden");
+                document.getElementById("admin-dash-view").classList.remove("hidden");
+                renderAdminUserList();
+            } else {
+                alert("Incorrect Admin Password.");
+            }
+        };
+
+        window.renderAdminUserList = function() {
+            const container = document.getElementById("admin-user-list");
+            const q = (document.getElementById("admin-user-search").value || "").toLowerCase();
+
+            const filtered = window.allUsers.filter(u => 
+                (u.firstName + " " + u.lastName).toLowerCase().includes(q) ||
+                (u.school || "").toLowerCase().includes(q) ||
+                (u.state || "").toLowerCase().includes(q)
+            );
+
+            container.innerHTML = "";
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="p-3 text-center text-gray-400">No accounts match search</div>`;
+                return;
+            }
+
+            filtered.forEach(u => {
+                container.innerHTML += `
+                    <div onclick="adminSelectUser('${u.id}')" class="p-3 hover:bg-gray-100 cursor-pointer flex justify-between items-center transition">
+                        <div>
+                            <span class="font-bold text-gray-900">${u.firstName} ${u.lastName}</span>
+                            <span class="text-gray-400 text-[10px] ml-2">(${u.school}, ${u.state})</span>
+                        </div>
+                        <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">Lvl ${u.level}</span>
+                    </div>
+                `;
+            });
+        };
+
+        window.adminSelectUser = function(id) {
+            const target = window.allUsers.find(u => u.id === id);
+            if (!target) return;
+            window.selectedAdminTarget = target;
+
+            document.getElementById("admin-inspector").classList.remove("hidden");
+            document.getElementById("admin-target-fullname").textContent = `${target.firstName} ${target.lastName}`;
+            document.getElementById("admin-target-id").textContent = `ID: ${target.id}`;
+            document.getElementById("admin-target-school").textContent = target.school;
+            document.getElementById("admin-target-state").textContent = target.state;
+            document.getElementById("admin-target-password").textContent = target.password;
+            document.getElementById("admin-target-level-badge").textContent = `Level ${target.level}: ${LEVEL_NAMES[target.level]}`;
+            document.getElementById("admin-level-select").value = target.level;
+
+            if (target.lastCheckIn) {
+                document.getElementById("admin-target-lastcheckin").textContent = new Date(target.lastCheckIn).toLocaleString();
+            } else {
+                document.getElementById("admin-target-lastcheckin").textContent = "Never";
+            }
+
+            // Checkboxes for status markings
+            const m = target.markings || {};
+            document.getElementById("mark-youtube").checked = !!m.youtube;
+            document.getElementById("mark-og").checked = !!m.og;
+            document.getElementById("mark-noelec").checked = !!m.noelec;
+            document.getElementById("mark-creator").checked = !!m.creator;
+        };
+
+        window.adminSaveLevel = async function() {
+            if (!window.selectedAdminTarget) return;
+            const newLvl = parseInt(document.getElementById("admin-level-select").value, 10);
+
+            try {
+                await updateDoc(doc(db, "users", window.selectedAdminTarget.id), {
+                    level: newLvl
+                });
+                alert(`Updated level to ${newLvl}: ${LEVEL_NAMES[newLvl]}`);
+                adminSelectUser(window.selectedAdminTarget.id);
+            } catch (e) {
+                console.error("Admin save level error:", e);
+                alert("Failed to update level in Firebase.");
+            }
+        };
+
+        window.adminToggleMark = async function(markKey) {
+            if (!window.selectedAdminTarget) return;
+            const checkbox = document.getElementById(`mark-${markKey}`);
+            const isChecked = checkbox.checked;
+
+            const currentMarkings = window.selectedAdminTarget.markings || {};
+            const updatedMarkings = { ...currentMarkings, [markKey]: isChecked };
+
+            try {
+                await updateDoc(doc(db, "users", window.selectedAdminTarget.id), {
+                    markings: updatedMarkings
+                });
+                window.selectedAdminTarget.markings = updatedMarkings;
+            } catch (e) {
+                console.error("Admin toggle mark error:", e);
+                alert("Failed to update status marking.");
+            }
         };
     </script>
 </body>
