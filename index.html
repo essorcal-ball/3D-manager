@@ -202,6 +202,28 @@
                     </div>
                 </div>
 
+                <!-- ONE-TIME LIFETIME SUBSCRIBE BONUS BANNER -->
+                <div id="subscribe-bonus-card" class="mb-6 p-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl shrink-0">
+                            📺
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-yellow-400 text-red-950 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider">ONE-TIME BONUS</span>
+                                <h4 class="font-extrabold text-sm">Subscribe to Play Guy YouTube Channel</h4>
+                            </div>
+                            <p class="text-xs text-red-100 mt-0.5">Subscribe to the official channel to instantly claim <strong>+15 Normal Score points</strong> for your entire lifetime!</p>
+                        </div>
+                    </div>
+                    <div id="subscribe-bonus-action" class="shrink-0">
+                        <button onclick="claimSubscribeBonus()" class="bg-white hover:bg-red-50 text-red-700 font-black text-xs px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1.5">
+                            <svg class="w-4 h-4 fill-current text-red-600" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            Subscribe & Claim +15 Pts
+                        </button>
+                    </div>
+                </div>
+
                 <!-- INFO GRID WITH SEPARATE SCORES -->
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs mb-8">
                     <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100">
@@ -265,21 +287,55 @@
                     </div>
                 </div>
 
-                <!-- WEEKLY ACTIVITIES CARD -->
+                <!-- WEEKLY ACTIVITIES CARD (SINGLE RANDOM SELECTION) -->
                 <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <span class="bg-purple-100 text-purple-800 font-black text-xs px-2.5 py-1 rounded-lg uppercase tracking-wider">WEEKLY</span>
-                                <h3 class="text-lg font-extrabold text-gray-900">Weekly Challenges</h3>
+                                <h3 class="text-lg font-extrabold text-gray-900">This Week's Challenge</h3>
                             </div>
-                            <span class="text-[11px] font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100">+10 Normal Pts Each</span>
+                            <span class="text-[11px] font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100">+10 Normal Pts</span>
                         </div>
-                        <p class="text-xs text-gray-500 mb-4">Challenges run Monday through Sunday. Earn major score bonuses upon completion!</p>
+                        <p class="text-xs text-gray-500 mb-4">One special weekly activity chosen at random each week. Complete it before Sunday night!</p>
                         
                         <div id="weekly-activities-list" class="space-y-3">
-                            <!-- Dynamically loaded weekly activities -->
+                            <!-- Dynamically loaded single weekly activity -->
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN REQUEST CHAT SECTION FOR USER -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-blue-600 text-white p-1.5 rounded-lg text-sm">💬</span>
+                        <div>
+                            <h3 class="text-lg font-extrabold text-gray-900">Admin Request Chat</h3>
+                            <p class="text-xs text-gray-500">Have a question or request? Send a message directly to Clan Administration.</p>
+                        </div>
+                    </div>
+                    <span id="junk-explaining-indicator" class="hidden bg-amber-100 text-amber-900 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-300">
+                        🔗 Explaining previous junk request
+                    </span>
+                </div>
+
+                <div class="space-y-3">
+                    <textarea id="user-request-input" rows="3" placeholder="Type your message to the clan admin here..." class="w-full p-3 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none transition"></textarea>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[11px] text-gray-400">All messages are analyzed by our automated AI filter before reaching admins.</p>
+                        <button onclick="sendAdminRequest()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition flex items-center gap-1.5">
+                            <span>Send Request</span> ➔
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SENT REQUESTS HISTORY -->
+                <div class="pt-3 border-t border-gray-100">
+                    <h4 class="text-xs font-bold text-gray-700 mb-2">Your Sent Requests:</h4>
+                    <div id="user-requests-history" class="space-y-2 max-h-40 overflow-y-auto">
+                        <!-- Populated dynamically -->
                     </div>
                 </div>
             </div>
@@ -361,7 +417,15 @@
                     <span class="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded">SECRET</span>
                     <h3 class="font-bold text-sm">Play Guy Admin Control Panel</h3>
                 </div>
-                <button onclick="closeAdminModal()" class="text-gray-400 hover:text-white font-bold text-xl leading-none">&times;</button>
+                <div class="flex items-center gap-2">
+                    <button id="admin-nav-requests-btn" onclick="toggleAdminView('requests')" class="hidden bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                        📩 User Requests <span id="admin-request-count-badge" class="bg-white text-blue-900 text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
+                    </button>
+                    <button id="admin-nav-accounts-btn" onclick="toggleAdminView('accounts')" class="hidden bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                        👥 Accounts
+                    </button>
+                    <button onclick="closeAdminModal()" class="text-gray-400 hover:text-white font-bold text-xl leading-none">&times;</button>
+                </div>
             </div>
 
             <!-- ADMIN PASSWORD PROMPT VIEW -->
@@ -374,7 +438,29 @@
                 </div>
             </div>
 
-            <!-- ADMIN DASHBOARD VIEW -->
+            <!-- ADMIN REQUESTS VIEW -->
+            <div id="admin-requests-view" class="hidden flex-1 overflow-y-auto p-6 space-y-4">
+                <div class="flex border-b border-gray-200">
+                    <button id="tab-req-normal" onclick="switchAdminReqTab('normal')" class="flex-1 py-2.5 text-center font-bold text-blue-600 border-b-2 border-blue-600 text-xs transition">
+                        Normal Requests (<span id="count-normal-reqs">0</span>)
+                    </button>
+                    <button id="tab-req-junk" onclick="switchAdminReqTab('junk')" class="flex-1 py-2.5 text-center font-bold text-gray-500 hover:text-gray-700 text-xs transition">
+                        🗑️ Junk Requests (<span id="count-junk-reqs">0</span>)
+                    </button>
+                </div>
+
+                <!-- NORMAL REQUESTS LIST -->
+                <div id="admin-req-list-normal" class="space-y-3">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- JUNK REQUESTS LIST -->
+                <div id="admin-req-list-junk" class="hidden space-y-3">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- ADMIN DASHBOARD VIEW (ACCOUNTS SEARCH & INSPECTOR) -->
             <div id="admin-dash-view" class="hidden flex-1 overflow-y-auto p-6 space-y-6">
                 
                 <!-- ACCOUNT SEARCH -->
@@ -415,18 +501,27 @@
 
                     <!-- LEVEL MODIFIER -->
                     <div class="pt-2 border-t border-gray-200">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Set Level Rank</label>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Set Level Rank (Auto-adjusts Score to Requirements)</label>
                         <div class="flex gap-2">
                             <select id="admin-level-select" class="flex-1 bg-white border border-gray-300 rounded-xl text-xs p-2.5 font-semibold text-gray-800">
-                                <option value="1">Level 1: Regular Play Guy</option>
-                                <option value="2">Level 2: Baseball Bat Play Guy</option>
-                                <option value="3">Level 3: Rifle Play Guy</option>
-                                <option value="4">Level 4: Army Play Guy</option>
-                                <option value="5">Level 5: Rich Play Guy</option>
-                                <option value="6">Level 6: King Play Guy</option>
-                                <option value="7">Level 7: Dictator Play Guy</option>
+                                <option value="1">Level 1: Regular Play Guy (0 pts req)</option>
+                                <option value="2">Level 2: Baseball Bat Play Guy (10 pts req)</option>
+                                <option value="3">Level 3: Rifle Play Guy (25 pts req)</option>
+                                <option value="4">Level 4: Army Play Guy (50 pts req)</option>
+                                <option value="5">Level 5: Rich Play Guy (100 pts req)</option>
+                                <option value="6">Level 6: King Play Guy (200 pts req)</option>
+                                <option value="7">Level 7: Dictator Play Guy (350 pts req)</option>
                             </select>
                             <button onclick="adminSaveLevel()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition">Set Rank</button>
+                        </div>
+                    </div>
+
+                    <!-- ADMIN DIRECT SCORE MODIFIER -->
+                    <div class="pt-2 border-t border-gray-200">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Directly Modify Normal Score Points</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="admin-score-input" min="0" class="w-28 px-3 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-900" placeholder="Normal Score">
+                            <button onclick="adminSaveScore()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition">Update Points</button>
                         </div>
                     </div>
 
@@ -488,6 +583,37 @@
         </div>
     </div>
 
+    <!-- JUNK WARNING POPUP MODAL FOR USER -->
+    <div id="junk-alert-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full border border-gray-200 shadow-2xl p-6 text-center space-y-4">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+                ⚠️
+            </div>
+            <div>
+                <h3 class="text-lg font-extrabold text-gray-900">Message Added to Junk</h3>
+                <p class="text-xs text-gray-600 mt-2 leading-relaxed">
+                    Your message has been added to the junk section for being:
+                </p>
+                <ul class="text-xs font-semibold text-red-600 mt-2 space-y-1 bg-red-50 p-3 rounded-xl border border-red-100 text-left">
+                    <li>1. Too extreme</li>
+                    <li>2. Too needy</li>
+                    <li>3. Unkind</li>
+                </ul>
+            </div>
+            <p class="text-[11px] text-gray-500">
+                If you want to send another message to explain yourself, click the button below:
+            </p>
+            <div class="flex flex-col gap-2">
+                <button onclick="startJunkExplanation()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl transition shadow">
+                    Click here to explain your request
+                </button>
+                <button onclick="closeJunkModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2 rounded-xl transition">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Application Logic with Firebase Real-time Multi-Device Sync -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -502,6 +628,17 @@
             5: "Rich Play Guy",
             6: "King Play Guy",
             7: "Dictator Play Guy"
+        };
+
+        // OBJECTIVE REQUIREMENTS PER LEVEL
+        const LEVEL_OBJECTIVES = {
+            1: { desc: "Default starting level", check: () => true },
+            2: { desc: "12 Normal Score", check: (u) => (u.normalScore || 0) >= 12 },
+            3: { desc: "32 Normal Pts, YouTube Subbed, & 1 Referral", check: (u) => (u.normalScore || 0) >= 32 && u.hasClaimedSubscribeBonus && (u.totalReferrals || 0) >= 1 },
+            4: { desc: "60 Normal Pts, 3 Referrals, & 1 Weekly Activity Completed", check: (u) => (u.normalScore || 0) >= 60 && (u.totalReferrals || 0) >= 3 && (u.lifetimeWeeklyCompleted || 0) >= 1 },
+            5: { desc: "100 Normal Pts, 3 Secrets Found, 6 Referrals, & 3 Weekly Completed", check: (u) => (u.normalScore || 0) >= 100 && (u.lifetimeSecretsFound || 0) >= 3 && (u.totalReferrals || 0) >= 6 && (u.lifetimeWeeklyCompleted || 0) >= 3 },
+            6: { desc: "150 Normal Pts, YouTube Status, & 15 Referrals", check: (u) => (u.normalScore || 0) >= 150 && (u.markings && u.markings.youtube) && (u.totalReferrals || 0) >= 15 },
+            7: { desc: "Unobtainable automatically (Admin Manual Assignment Only)", check: () => false }
         };
 
         const MARKING_DEFINITIONS = {
@@ -548,11 +685,16 @@
                 state: "California",
                 password: "123",
                 level: 7,
-                normalScore: 12,
+                normalScore: 360,
                 isOutlaw: false,
                 lastCheckIn: Date.now() - 3600000,
                 markings: { youtube: true, og: true, noelec: false, creator: true },
-                referralCountThisWeek: 1
+                referralCountThisWeek: 1,
+                totalReferrals: 16,
+                lifetimeWeeklyCompleted: 5,
+                lifetimeSecretsFound: 4,
+                hasClaimedSubscribeBonus: true,
+                adminRequests: []
             },
             {
                 id: "sam_og_02",
@@ -562,11 +704,16 @@
                 state: "Texas",
                 password: "123",
                 level: 5,
-                normalScore: 8,
+                normalScore: 110,
                 isOutlaw: false,
                 lastCheckIn: Date.now() - 72000000,
                 markings: { youtube: true, og: true, noelec: true, creator: false },
-                referralCountThisWeek: 0
+                referralCountThisWeek: 0,
+                totalReferrals: 6,
+                lifetimeWeeklyCompleted: 3,
+                lifetimeSecretsFound: 3,
+                hasClaimedSubscribeBonus: true,
+                adminRequests: []
             },
             {
                 id: "jordan_outlaw_03",
@@ -576,17 +723,23 @@
                 state: "Florida",
                 password: "123",
                 level: 3,
-                normalScore: 2,
+                normalScore: 25,
                 isOutlaw: true,
                 lastCheckIn: Date.now() - 500000000,
                 markings: { youtube: false, og: false, noelec: false, creator: false },
-                referralCountThisWeek: 0
+                referralCountThisWeek: 0,
+                totalReferrals: 0,
+                lifetimeWeeklyCompleted: 0,
+                lifetimeSecretsFound: 0,
+                hasClaimedSubscribeBonus: false,
+                adminRequests: []
             }
         ];
 
         window.allUsers = [];
         window.currentUser = null;
         window.selectedAdminTarget = null;
+        window.linkingJunkId = null;
         let timerInterval = null;
 
         /* FIREBASE STATE */
@@ -681,6 +834,7 @@
                     console.error("Error writing user to cloud:", e);
                 }
             }
+            triggerLocalUpdate(window.allUsers);
         }
 
         async function deleteUserFromCloud(userId) {
@@ -697,14 +851,16 @@
                     console.error("Error deleting user from cloud:", e);
                 }
             }
+            triggerLocalUpdate(window.allUsers);
         }
 
         function triggerLocalUpdate(users) {
-            window.allUsers = users;
+            window.allUsers = users || [];
             if (window.currentUser) {
                 const refreshed = window.allUsers.find(u => u.id === window.currentUser.id);
                 if (refreshed) {
                     window.currentUser = refreshed;
+                    checkAutoLevelUp(window.currentUser);
                     checkAndApplyDemotions(window.currentUser);
                     renderDashboard();
                 }
@@ -714,6 +870,29 @@
             const adminDash = document.getElementById("admin-dash-view");
             if (adminDash && !adminDash.classList.contains("hidden")) {
                 renderAdminUserList();
+            }
+            const adminReqs = document.getElementById("admin-requests-view");
+            if (adminReqs && !adminReqs.classList.contains("hidden")) {
+                renderAdminRequests();
+            }
+        }
+
+        // AUTOMATIC LEVEL PROGRESSION REQUIREMENT CHECKER
+        function checkAutoLevelUp(user) {
+            if (!user) return;
+            let eligibleLevel = user.level || 1;
+
+            // Check levels 6 down to 2 against custom objective rules
+            for (let lvl = 6; lvl >= 2; lvl--) {
+                if (LEVEL_OBJECTIVES[lvl].check(user)) {
+                    eligibleLevel = Math.max(eligibleLevel, lvl);
+                    break;
+                }
+            }
+
+            if (eligibleLevel > (user.level || 1)) {
+                user.level = eligibleLevel;
+                showAlert(`🎉 Level Up! You completed all objectives for Level ${user.level}: ${LEVEL_NAMES[user.level]}!`, "emerald");
             }
         }
 
@@ -758,11 +937,7 @@
             const checkbox = document.getElementById("reg-has-referrer");
             const fields = document.getElementById("referral-fields");
             if (checkbox && fields) {
-                if (checkbox.checked) {
-                    fields.classList.remove("hidden");
-                } else {
-                    fields.classList.add("hidden");
-                }
+                fields.classList.toggle("hidden", !checkbox.checked);
             }
         }
 
@@ -793,11 +968,15 @@
                 lastCheckIn: Date.now(),
                 markings: { youtube: false, og: false, noelec: false, creator: false },
                 referralCountThisWeek: 0,
+                totalReferrals: 0,
+                lifetimeWeeklyCompleted: 0,
+                lifetimeSecretsFound: 0,
+                hasClaimedSubscribeBonus: false,
+                adminRequests: [],
                 dailyActivityState: { date: getTodayString(), completedIndices: [] },
                 weeklyActivityState: { weekId: getCurrentWeekId(), completedIndices: [] }
             };
 
-            // Check if referred by someone
             const hasReferrer = document.getElementById("reg-has-referrer")?.checked;
             if (hasReferrer) {
                 const refFirst = (document.getElementById("ref-firstname")?.value || "").trim().toLowerCase();
@@ -814,17 +993,18 @@
                 if (referrer) {
                     referrer.normalScore = (referrer.normalScore || 0) + 1;
                     referrer.referralCountThisWeek = (referrer.referralCountThisWeek || 0) + 1;
+                    referrer.totalReferrals = (referrer.totalReferrals || 0) + 1;
+                    checkAutoLevelUp(referrer);
                     await saveUserToCloud(referrer);
                     showAlert(`Account created! Referral bonus awarded to ${referrer.firstName} ${referrer.lastName}!`, "emerald");
                 }
             }
 
-            window.allUsers.push(newUser);
+            window.currentUser = newUser;
             await saveUserToCloud(newUser);
 
             document.getElementById("register-form").reset();
             toggleReferralInputs();
-            window.currentUser = newUser;
             showDashboardView();
             showAlert(`Welcome to the Clan, ${firstName}! Your account has been created.`, "emerald");
         }
@@ -840,6 +1020,7 @@
 
             if (match) {
                 window.currentUser = match;
+                checkAutoLevelUp(window.currentUser);
                 checkAndApplyDemotions(window.currentUser);
                 showAlert(`Welcome back, ${match.firstName}!`, "emerald");
                 document.getElementById("login-form").reset();
@@ -919,10 +1100,43 @@
                 document.getElementById("dash-last-checkin").textContent = "Never";
             }
 
+            const subAction = document.getElementById("subscribe-bonus-action");
+            if (subAction) {
+                if (u.hasClaimedSubscribeBonus) {
+                    subAction.innerHTML = `<span class="bg-emerald-500 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl border border-emerald-300 shadow-sm flex items-center gap-1">✓ +15 Bonus Claimed</span>`;
+                } else {
+                    subAction.innerHTML = `
+                        <button onclick="claimSubscribeBonus()" class="bg-white hover:bg-red-50 text-red-700 font-black text-xs px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1.5">
+                            <svg class="w-4 h-4 fill-current text-red-600" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            Subscribe & Claim +15 Pts
+                        </button>
+                    `;
+                }
+            }
+
             renderLevelTimeline(u.level);
             renderDailyActivities();
             renderWeeklyActivities();
+            renderUserRequestsHistory();
             startTimerCountdown();
+        }
+
+        async function claimSubscribeBonus() {
+            const u = window.currentUser;
+            if (!u) return;
+
+            if (u.hasClaimedSubscribeBonus) {
+                showAlert("You have already claimed your YouTube subscription bonus!", "red");
+                return;
+            }
+
+            window.open("https://youtube.com", "_blank");
+            u.hasClaimedSubscribeBonus = true;
+            u.normalScore = (u.normalScore || 0) + 15;
+            checkAutoLevelUp(u);
+            await saveUserToCloud(u);
+            showAlert("🎁 YouTube Subscribe Bonus claimed! +15 Normal Score points added!", "emerald");
+            renderDashboard();
         }
 
         function renderLevelTimeline(userLevel) {
@@ -936,9 +1150,10 @@
             for (let lvl = 1; lvl <= 7; lvl++) {
                 const isUnlocked = lvl <= userLevel;
                 const isCurrent = lvl === userLevel;
+                const objDesc = LEVEL_OBJECTIVES[lvl].desc;
 
                 const cardHtml = `
-                    <div class="flex flex-col items-center flex-1 min-w-[95px] relative group px-1">
+                    <div class="flex flex-col items-center flex-1 min-w-[110px] relative group px-1">
                         ${lvl < 7 ? `<div class="absolute top-5 left-[50%] w-full h-1 ${lvl < userLevel ? 'bg-emerald-500' : 'bg-gray-200'} -z-0"></div>` : ''}
 
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-xs z-10 transition-all ${
@@ -952,6 +1167,7 @@
                             <p class="text-[11px] font-bold ${isUnlocked ? 'text-gray-900' : 'text-gray-400 opacity-60'} leading-tight">
                                 ${LEVEL_NAMES[lvl]}
                             </p>
+                            <span class="text-[9px] text-gray-400 font-medium block mt-0.5 max-w-[110px] truncate" title="${objDesc}">${objDesc}</span>
                         </div>
 
                         <div class="mt-2 flex items-center justify-center">
@@ -983,33 +1199,11 @@
             return `${d.getFullYear()}-W${weekNumber}`;
         }
 
-        // Daily Activities Pool
         const DAILY_ACTIVITIES_POOL = [
-            {
-                id: 0,
-                title: "1. Visit YouTube Channel",
-                desc: "Click to check out the official YouTube channel.",
-                actionType: "link",
-                url: "https://youtube.com" // Channel link placeholder
-            },
-            {
-                id: 1,
-                title: "2. Draw & Upload Play Guy Picture",
-                desc: "Upload a picture of your drawing from your photos or files.",
-                actionType: "upload"
-            },
-            {
-                id: 2,
-                title: "3. Recruit a Friend",
-                desc: "Have a friend register and check 'I got referred by' with your First Name, Last Name, and School.",
-                actionType: "referral"
-            },
-            {
-                id: 3,
-                title: "4. Find the Secret Button",
-                desc: "Find and click the hidden secret button located somewhere on your dashboard!",
-                actionType: "secret"
-            }
+            { id: 0, title: "1. Visit YouTube Channel", desc: "Click to check out the official YouTube channel.", actionType: "link", url: "https://youtube.com" },
+            { id: 1, title: "2. Draw & Upload Play Guy Picture", desc: "Upload a picture of your drawing from your photos or files.", actionType: "upload" },
+            { id: 2, title: "3. Recruit a Friend", desc: "Have a friend register and check 'I got referred by' with your details.", actionType: "referral" },
+            { id: 3, title: "4. Find the Secret Button", desc: "Find and click the hidden secret button located on your dashboard!", actionType: "secret" }
         ];
 
         function getTodaysAssignedDailyIndices() {
@@ -1061,10 +1255,9 @@
                 } else if (act.actionType === "secret") {
                     actionHtml = `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 px-2 py-1 rounded border border-amber-200 animate-pulse">Secret button hidden on page!</span>`;
                     
-                    // Spawn Secret Button in a random corner on dashboard card
                     secretContainer.classList.remove("hidden");
                     secretContainer.innerHTML = `
-                        <button onclick="completeDailyActivity(${actIdx})" class="secret-btn-hidden bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[9px] px-2 py-1 rounded shadow-md border border-amber-300" style="bottom: 12px; right: 16px;">
+                        <button onclick="completeDailyActivity(${actIdx}, true)" class="secret-btn-hidden bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[9px] px-2 py-1 rounded shadow-md border border-amber-300" style="bottom: 12px; right: 16px;">
                             ⭐ click here to finish daily activity
                         </button>
                     `;
@@ -1084,7 +1277,7 @@
             });
         }
 
-        async function completeDailyActivity(actIdx) {
+        async function completeDailyActivity(actIdx, isSecret = false) {
             const u = window.currentUser;
             if (!u) return;
 
@@ -1096,6 +1289,11 @@
             if (!u.dailyActivityState.completedIndices.includes(actIdx)) {
                 u.dailyActivityState.completedIndices.push(actIdx);
                 u.normalScore = (u.normalScore || 0) + 1;
+                u.weeklyDailiesCompletedCount = (u.weeklyDailiesCompletedCount || 0) + 1;
+                if (isSecret) {
+                    u.lifetimeSecretsFound = (u.lifetimeSecretsFound || 0) + 1;
+                }
+                checkAutoLevelUp(u);
                 await saveUserToCloud(u);
                 showAlert("Daily activity completed! +1 Normal Score point added.", "emerald");
                 renderDashboard();
@@ -1110,6 +1308,24 @@
             }
         }
 
+        // WEEKLY ACTIVITIES POOL (SINGLE RANDOM ACTIVITY PICKED PER WEEK)
+        const WEEKLY_ACTIVITIES_POOL = [
+            { id: 0, title: "1. Weekly Master", desc: "Finish 14 daily activities this week.", check: (u) => (u.weeklyDailiesCompletedCount || 0) >= 14, reqText: "14 Dailies" },
+            { id: 1, title: "2. Recruiter Streak", desc: "Get 5 referrals in 1 week.", check: (u) => (u.referralCountThisWeek || 0) >= 5, reqText: "5 Referrals" },
+            { id: 2, title: "3. Leaderboard Climber", desc: "Pass up 2 people on the leaderboard in 1 week.", check: (u) => (u.weeklyLeaderboardPasses || 0) >= 2, reqText: "2 Rank Passes" },
+            { id: 3, title: "4. Clan Devotee", desc: "Check in at least 5 times during this week.", check: (u) => (u.weeklyCheckins || 0) >= 5, reqText: "5 Check-Ins" }
+        ];
+
+        function getSingleWeeklyActivityIndex() {
+            const weekId = getCurrentWeekId();
+            let hash = 0;
+            for (let i = 0; i < weekId.length; i++) {
+                hash = (hash << 5) - hash + weekId.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash) % WEEKLY_ACTIVITIES_POOL.length;
+        }
+
         function renderWeeklyActivities() {
             const u = window.currentUser;
             const container = document.getElementById("weekly-activities-list");
@@ -1120,49 +1336,32 @@
                 u.weeklyActivityState = { weekId: weekId, completedIndices: [] };
             }
 
-            const weeklyChallenges = [
-                {
-                    id: 0,
-                    title: "1. Weekly Master",
-                    desc: "Finish both daily activities every day for a week.",
-                    progress: `${(u.dailyActivityState?.completedIndices?.length || 0)}/2 Today`
-                },
-                {
-                    id: 1,
-                    title: "2. Recruiter Streak",
-                    desc: "Get 5 referrals in 1 week.",
-                    progress: `${u.referralCountThisWeek || 0}/5 Referrals`
-                },
-                {
-                    id: 2,
-                    title: "3. Leaderboard Climber",
-                    desc: "Pass up 2 people on the leaderboard in 1 week.",
-                    progress: "Tracked automatically"
-                }
-            ];
+            const activeIdx = getSingleWeeklyActivityIndex();
+            const challenge = WEEKLY_ACTIVITIES_POOL[activeIdx];
+            const isCompleted = u.weeklyActivityState.completedIndices.includes(activeIdx);
+            const isEligible = challenge.check(u);
 
-            container.innerHTML = "";
-            weeklyChallenges.forEach(ch => {
-                const isCompleted = u.weeklyActivityState.completedIndices.includes(ch.id);
+            let buttonHtml = "";
+            if (isCompleted) {
+                buttonHtml = `<span class="bg-purple-100 text-purple-900 text-[10px] font-black px-2.5 py-1 rounded-lg border border-purple-200">✓ COMPLETED (+10 Pts)</span>`;
+            } else if (isEligible) {
+                buttonHtml = `<button onclick="claimWeeklyChallenge(${activeIdx})" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm">Claim Bonus (+10)</button>`;
+            } else {
+                buttonHtml = `<button disabled class="bg-gray-200 text-gray-400 font-bold text-xs px-3 py-1.5 rounded-lg cursor-not-allowed">Locked (Incomplete)</button>`;
+            }
 
-                container.innerHTML += `
-                    <div class="p-3.5 rounded-xl border ${isCompleted ? 'bg-purple-50/60 border-purple-200' : 'bg-gray-50 border-gray-200'} transition">
-                        <div class="flex items-center justify-between gap-3">
-                            <div>
-                                <h4 class="font-extrabold text-xs text-gray-900">${ch.title}</h4>
-                                <p class="text-[11px] text-gray-500 mt-0.5">${ch.desc}</p>
-                                <span class="text-[10px] font-bold text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded mt-1.5 inline-block">${ch.progress}</span>
-                            </div>
-                            <div class="shrink-0">
-                                ${isCompleted ? 
-                                    `<span class="bg-purple-100 text-purple-900 text-[10px] font-black px-2.5 py-1 rounded-lg border border-purple-200">✓ COMPLETED (+10 Pts)</span>` :
-                                    `<button onclick="claimWeeklyChallenge(${ch.id})" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm">Claim Bonus</button>`
-                                }
-                            </div>
+            container.innerHTML = `
+                <div class="p-4 rounded-xl border ${isCompleted ? 'bg-purple-50/60 border-purple-200' : 'bg-gray-50 border-gray-200'} transition space-y-2">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <span class="bg-amber-100 text-amber-800 text-[9px] font-extrabold px-2 py-0.5 rounded tracking-wider uppercase mb-1 inline-block">Chosen for ${weekId}</span>
+                            <h4 class="font-extrabold text-sm text-gray-900">${challenge.title}</h4>
+                            <p class="text-xs text-gray-600 mt-0.5">${challenge.desc}</p>
                         </div>
+                        <div class="shrink-0">${buttonHtml}</div>
                     </div>
-                `;
-            });
+                </div>
+            `;
         }
 
         async function claimWeeklyChallenge(chId) {
@@ -1174,13 +1373,132 @@
                 u.weeklyActivityState = { weekId: weekId, completedIndices: [] };
             }
 
+            const activeIdx = getSingleWeeklyActivityIndex();
+            const challenge = WEEKLY_ACTIVITIES_POOL[activeIdx];
+
+            if (!challenge.check(u)) {
+                showAlert("Requirements not met for this weekly challenge yet!", "red");
+                return;
+            }
+
             if (!u.weeklyActivityState.completedIndices.includes(chId)) {
                 u.weeklyActivityState.completedIndices.push(chId);
                 u.normalScore = (u.normalScore || 0) + 10;
+                u.lifetimeWeeklyCompleted = (u.lifetimeWeeklyCompleted || 0) + 1;
+                checkAutoLevelUp(u);
                 await saveUserToCloud(u);
                 showAlert("Weekly challenge claimed! +10 Normal Score points awarded!", "emerald");
                 renderDashboard();
             }
+        }
+
+        /* SIMULATED AI JUNK CLASSIFIER LOGIC */
+        function classifyAdminRequest(text) {
+            const lower = text.toLowerCase().trim();
+
+            // Extreme Level / Points Demands
+            const extremeDemands = ["level 7", "dictator", "1000", "10000", "all the things", "give me everything", "max level"];
+            const isExtreme = extremeDemands.some(term => lower.includes(term));
+
+            // Excessive Needy Begging
+            const beggingMatches = (lower.match(/please/g) || []).length >= 3 || lower.includes("pls pls pls") || lower.includes("please please please");
+
+            // Unkind / Rude Words
+            const meanWords = ["stupid", "dumb", "hate", "trash", "shut up", "idiot", "sucks"];
+            const isUnkind = meanWords.some(w => lower.includes(w));
+
+            if (isExtreme || beggingMatches || isUnkind) {
+                return {
+                    category: "junk",
+                    reasons: [
+                        isExtreme ? "1. Too extreme" : null,
+                        beggingMatches ? "2. Too needy" : null,
+                        isUnkind ? "3. Unkind" : null
+                    ].filter(Boolean)
+                };
+            }
+
+            return { category: "normal" };
+        }
+
+        async function sendAdminRequest() {
+            const u = window.currentUser;
+            const input = document.getElementById("user-request-input");
+            const text = input ? input.value.trim() : "";
+
+            if (!text || !u) {
+                showAlert("Please enter a message before sending.", "red");
+                return;
+            }
+
+            const analysis = classifyAdminRequest(text);
+            const newReq = {
+                id: "req_" + Date.now(),
+                userId: u.id,
+                userName: `${u.firstName} ${u.lastName}`,
+                text: text,
+                category: analysis.category,
+                timestamp: Date.now(),
+                linkedJunkId: window.linkingJunkId || null
+            };
+
+            if (!u.adminRequests) u.adminRequests = [];
+            u.adminRequests.push(newReq);
+
+            await saveUserToCloud(u);
+            input.value = "";
+
+            if (analysis.category === "junk") {
+                // Trigger the required pop-up modal for the user
+                window.lastJunkReqId = newReq.id;
+                document.getElementById("junk-alert-modal").classList.remove("hidden");
+            } else {
+                showAlert("Your request has been submitted to Clan Administration!", "emerald");
+                window.linkingJunkId = null;
+                document.getElementById("junk-explaining-indicator").classList.add("hidden");
+            }
+
+            renderUserRequestsHistory();
+        }
+
+        function startJunkExplanation() {
+            closeJunkModal();
+            window.linkingJunkId = window.lastJunkReqId;
+            document.getElementById("junk-explaining-indicator").classList.remove("hidden");
+            const input = document.getElementById("user-request-input");
+            if (input) {
+                input.focus();
+                input.placeholder = "Explain your request politely here to link it with your previous message...";
+            }
+        }
+
+        function closeJunkModal() {
+            document.getElementById("junk-alert-modal").classList.add("hidden");
+        }
+
+        function renderUserRequestsHistory() {
+            const container = document.getElementById("user-requests-history");
+            const u = window.currentUser;
+            if (!container || !u) return;
+
+            const reqs = u.adminRequests || [];
+            if (reqs.length === 0) {
+                container.innerHTML = `<p class="text-[11px] text-gray-400">No previous requests sent yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = reqs.map(r => `
+                <div class="p-2.5 rounded-xl border text-xs ${r.category === 'junk' ? 'bg-amber-50/60 border-amber-200 text-amber-900' : 'bg-gray-50 border-gray-200 text-gray-800'} flex justify-between items-center gap-2">
+                    <div class="truncate">
+                        <span class="font-bold">${new Date(r.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}:</span>
+                        <span class="ml-1">${r.text}</span>
+                        ${r.linkedJunkId ? '<span class="ml-2 text-[9px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.2 rounded">Linked Explanation</span>' : ''}
+                    </div>
+                    <span class="shrink-0 text-[10px] font-black uppercase px-2 py-0.5 rounded ${r.category === 'junk' ? 'bg-amber-200 text-amber-950' : 'bg-blue-100 text-blue-800'}">
+                        ${r.category === 'junk' ? 'Categorized: Junk' : 'Categorized: Normal'}
+                    </span>
+                </div>
+            `).join('');
         }
 
         function startTimerCountdown() {
@@ -1253,6 +1571,8 @@
             const now = Date.now();
             window.currentUser.lastCheckIn = now;
             window.currentUser.normalScore = (window.currentUser.normalScore || 0) + 1;
+            window.currentUser.weeklyCheckins = (window.currentUser.weeklyCheckins || 0) + 1;
+            checkAutoLevelUp(window.currentUser);
             await saveUserToCloud(window.currentUser);
             showAlert("Check-in successful! +1 Normal Score point awarded and timer reset.", "emerald");
         }
@@ -1261,7 +1581,7 @@
             const tbody = document.getElementById("leaderboard-tbody");
             if (!tbody) return;
 
-            const searchQuery = (document.getElementById("leaderboard-search")?.value || "").toLowerCase();
+            const searchQuery = (document.getElementById("leaderboard-search")?.value || "").toLowerCase().trim();
             const activeUsers = (window.allUsers || []).filter(u => !u.isOutlaw);
 
             const sorted = activeUsers.map(u => {
@@ -1273,11 +1593,9 @@
                     markingCount: scores.markingCount 
                 };
             }).sort((a, b) => {
-                // Primary Sort: Overall Score
                 if (b.overallScore !== a.overallScore) {
                     return b.overallScore - a.overallScore;
                 }
-                // Tie Breaker: Normal Score (Check-ins + Activities)
                 return b.normalScore - a.normalScore;
             });
 
@@ -1322,7 +1640,7 @@
                                 ${markingsHtml || '<span class="text-gray-300">-</span>'}
                             </div>
                         </td>
-                        <td class="p-3 text-right font-bold text-blue-800">${u.normalScore} pts</td>
+                        <td class="p-3 text-right font-bold text-blue-800">${u.normalScore || 0} pts</td>
                         <td class="p-3 text-right font-black text-amber-950 text-sm bg-amber-50/40">${u.overallScore} pts</td>
                     </tr>
                 `;
@@ -1379,6 +1697,9 @@
             modal.classList.remove("hidden");
             document.getElementById("admin-pass-view").classList.remove("hidden");
             document.getElementById("admin-dash-view").classList.add("hidden");
+            document.getElementById("admin-requests-view").classList.add("hidden");
+            document.getElementById("admin-nav-requests-btn").classList.add("hidden");
+            document.getElementById("admin-nav-accounts-btn").classList.add("hidden");
             document.getElementById("admin-pass-input").value = "";
             document.getElementById("admin-pass-input").focus();
         }
@@ -1394,10 +1715,118 @@
                 errEl.classList.add("hidden");
                 document.getElementById("admin-pass-view").classList.add("hidden");
                 document.getElementById("admin-dash-view").classList.remove("hidden");
+                document.getElementById("admin-nav-requests-btn").classList.remove("hidden");
+                document.getElementById("admin-nav-accounts-btn").classList.remove("hidden");
                 renderAdminUserList();
+                updateAdminRequestBadge();
             } else {
                 errEl.classList.remove("hidden");
             }
+        }
+
+        function toggleAdminView(view) {
+            const dashView = document.getElementById("admin-dash-view");
+            const reqsView = document.getElementById("admin-requests-view");
+
+            if (view === 'requests') {
+                dashView.classList.add("hidden");
+                reqsView.classList.remove("hidden");
+                renderAdminRequests();
+            } else {
+                reqsView.classList.add("hidden");
+                dashView.classList.remove("hidden");
+                renderAdminUserList();
+            }
+        }
+
+        function updateAdminRequestBadge() {
+            let totalReqs = 0;
+            (window.allUsers || []).forEach(u => {
+                if (u.adminRequests) totalReqs += u.adminRequests.length;
+            });
+            const badge = document.getElementById("admin-request-count-badge");
+            if (badge) badge.textContent = totalReqs;
+        }
+
+        function switchAdminReqTab(tab) {
+            const normList = document.getElementById("admin-req-list-normal");
+            const junkList = document.getElementById("admin-req-list-junk");
+            const tabNorm = document.getElementById("tab-req-normal");
+            const tabJunk = document.getElementById("tab-req-junk");
+
+            if (tab === 'normal') {
+                normList.classList.remove("hidden");
+                junkList.classList.add("hidden");
+                tabNorm.className = "flex-1 py-2.5 text-center font-bold text-blue-600 border-b-2 border-blue-600 text-xs transition";
+                tabJunk.className = "flex-1 py-2.5 text-center font-bold text-gray-500 hover:text-gray-700 text-xs transition";
+            } else {
+                normList.classList.add("hidden");
+                junkList.classList.remove("hidden");
+                tabJunk.className = "flex-1 py-2.5 text-center font-bold text-blue-600 border-b-2 border-blue-600 text-xs transition";
+                tabNorm.className = "flex-1 py-2.5 text-center font-bold text-gray-500 hover:text-gray-700 text-xs transition";
+            }
+        }
+
+        function renderAdminRequests() {
+            const normContainer = document.getElementById("admin-req-list-normal");
+            const junkContainer = document.getElementById("admin-req-list-junk");
+            if (!normContainer || !junkContainer) return;
+
+            const allReqs = [];
+            (window.allUsers || []).forEach(u => {
+                if (u.adminRequests) {
+                    u.adminRequests.forEach(r => {
+                        allReqs.push({ ...r, user: u });
+                    });
+                }
+            });
+
+            const normalReqs = allReqs.filter(r => r.category === 'normal');
+            const junkReqs = allReqs.filter(r => r.category === 'junk');
+
+            document.getElementById("count-normal-reqs").textContent = normalReqs.length;
+            document.getElementById("count-junk-reqs").textContent = junkReqs.length;
+
+            const renderReqCard = (r, isJunk) => {
+                return `
+                    <div id="admin-req-card-${r.id}" class="p-4 rounded-xl border ${isJunk ? 'bg-amber-50/70 border-amber-200' : 'bg-gray-50 border-gray-200'} space-y-2 transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-extrabold text-xs text-gray-900">${r.userName}</span>
+                                <span class="text-[10px] text-gray-400 ml-2">(${r.user.school})</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-gray-400">${new Date(r.timestamp).toLocaleDateString()} ${new Date(r.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <p class="text-xs text-gray-800 font-medium bg-white p-2.5 rounded-lg border border-gray-200">${r.text}</p>
+
+                        ${r.linkedJunkId ? `
+                            <div class="pt-1">
+                                <button onclick="viewLinkedJunkMessage('${r.linkedJunkId}')" class="bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-sm inline-flex items-center gap-1">
+                                    🔗 View person's first message that became junk
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            };
+
+            normContainer.innerHTML = normalReqs.length ? normalReqs.map(r => renderReqCard(r, false)).join('') : `<p class="text-xs text-gray-400 text-center py-4">No normal requests found.</p>`;
+            junkContainer.innerHTML = junkReqs.length ? junkReqs.map(r => renderReqCard(r, true)).join('') : `<p class="text-xs text-gray-400 text-center py-4">No junk requests found.</p>`;
+            updateAdminRequestBadge();
+        }
+
+        function viewLinkedJunkMessage(junkId) {
+            switchAdminReqTab('junk');
+            setTimeout(() => {
+                const el = document.getElementById(`admin-req-card-${junkId}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add("ring-4", "ring-amber-400");
+                    setTimeout(() => el.classList.remove("ring-4", "ring-amber-400"), 3000);
+                } else {
+                    showAlert("Original junk message found in archive.", "blue");
+                }
+            }, 100);
         }
 
         function renderAdminUserList() {
@@ -1444,6 +1873,7 @@
             document.getElementById("admin-target-normalscore").textContent = target.normalScore || 0;
             document.getElementById("admin-target-level-badge").textContent = `Level ${target.level}: ${LEVEL_NAMES[target.level]}`;
             document.getElementById("admin-level-select").value = target.level;
+            document.getElementById("admin-score-input").value = target.normalScore || 0;
 
             const m = target.markings || {};
             document.getElementById("mark-youtube").checked = !!m.youtube;
@@ -1458,7 +1888,18 @@
             window.selectedAdminTarget.level = newLvl;
 
             await saveUserToCloud(window.selectedAdminTarget);
-            showAlert(`Updated level for ${window.selectedAdminTarget.firstName} to Level ${newLvl}`, "emerald");
+            showAlert(`Updated ${window.selectedAdminTarget.firstName} to Level ${newLvl}.`, "emerald");
+            adminSelectUser(window.selectedAdminTarget.id);
+        }
+
+        async function adminSaveScore() {
+            if (!window.selectedAdminTarget) return;
+            const newScore = parseInt(document.getElementById("admin-score-input").value, 10) || 0;
+            window.selectedAdminTarget.normalScore = newScore;
+            
+            checkAutoLevelUp(window.selectedAdminTarget);
+            await saveUserToCloud(window.selectedAdminTarget);
+            showAlert(`Updated Normal Score for ${window.selectedAdminTarget.firstName} to ${newScore} pts!`, "emerald");
             adminSelectUser(window.selectedAdminTarget.id);
         }
 
@@ -1471,6 +1912,7 @@
             currentMarkings[markKey] = isChecked;
 
             window.selectedAdminTarget.markings = currentMarkings;
+            checkAutoLevelUp(window.selectedAdminTarget);
             await saveUserToCloud(window.selectedAdminTarget);
         }
 
@@ -1520,17 +1962,25 @@
         window.completeDailyActivity = completeDailyActivity;
         window.handleImageUpload = handleImageUpload;
         window.claimWeeklyChallenge = claimWeeklyChallenge;
+        window.claimSubscribeBonus = claimSubscribeBonus;
         window.openAdminModal = openAdminModal;
         window.closeAdminModal = closeAdminModal;
         window.verifyAdminPass = verifyAdminPass;
+        window.toggleAdminView = toggleAdminView;
+        window.switchAdminReqTab = switchAdminReqTab;
         window.renderAdminUserList = renderAdminUserList;
         window.adminSelectUser = adminSelectUser;
         window.adminSaveLevel = adminSaveLevel;
+        window.adminSaveScore = adminSaveScore;
         window.adminToggleMark = adminToggleMark;
         window.triggerDeleteModal = triggerDeleteModal;
         window.closeDeleteModal = closeDeleteModal;
         window.confirmActionMakeOutlaw = confirmActionMakeOutlaw;
         window.confirmActionPermanentlyDelete = confirmActionPermanentlyDelete;
+        window.sendAdminRequest = sendAdminRequest;
+        window.startJunkExplanation = startJunkExplanation;
+        window.closeJunkModal = closeJunkModal;
+        window.viewLinkedJunkMessage = viewLinkedJunkMessage;
 
         window.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
