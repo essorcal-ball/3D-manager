@@ -556,7 +556,7 @@
     <div id="delete-outlaw-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full border border-gray-200 shadow-2xl p-6 text-center space-y-5">
             <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl font-black">
-                ⚠️
+                ⚠️️
             </div>
             <div>
                 <h3 class="text-lg font-extrabold text-gray-900">Account Deletion Prompt</h3>
@@ -614,11 +614,9 @@
         </div>
     </div>
 
-    <!-- Application Logic with Firebase Real-time Multi-Device Sync -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- Application Logic connected to Node.js & SQLite Backend -->
+    <script>
+        const API_BASE = '/api';
 
         const LEVEL_NAMES = {
             1: "Regular Play Guy",
@@ -630,7 +628,6 @@
             7: "Dictator Play Guy"
         };
 
-        // OBJECTIVE REQUIREMENTS PER LEVEL
         const LEVEL_OBJECTIVES = {
             1: { desc: "Default starting level", check: () => true },
             2: { desc: "12 Normal Score", check: (u) => (u.normalScore || 0) >= 12 },
@@ -714,25 +711,6 @@
                 lifetimeSecretsFound: 3,
                 hasClaimedSubscribeBonus: true,
                 adminRequests: []
-            },
-            {
-                id: "jordan_outlaw_03",
-                firstName: "Jordan",
-                lastName: "Rogue",
-                school: "Pinecrest Tech",
-                state: "Florida",
-                password: "123",
-                level: 3,
-                normalScore: 25,
-                isOutlaw: true,
-                lastCheckIn: Date.now() - 500000000,
-                markings: { youtube: false, og: false, noelec: false, creator: false },
-                referralCountThisWeek: 0,
-                totalReferrals: 0,
-                lifetimeWeeklyCompleted: 0,
-                lifetimeSecretsFound: 0,
-                hasClaimedSubscribeBonus: false,
-                adminRequests: []
             }
         ];
 
@@ -742,38 +720,38 @@
         window.linkingJunkId = null;
         let timerInterval = null;
 
-        /* FIREBASE STATE */
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pgc-clan-app';
-        let db = null;
-        let auth = null;
-        let isCloudConnected = false;
-
-        async function initFirebase() {
+        async function initSQLiteData() {
             try {
-                if (typeof __firebase_config === 'undefined') {
-                    fallbackToLocalStorage();
-                    return false;
-                }
-                const config = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-                const app = initializeApp(config);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                const res = await fetch(`${API_BASE}/users`);
+                if (res.ok) {
+                    const users = await res.json();
+                    if (users.length === 0) {
+                        for (const u of INITIAL_SEED_USERS) {
+                            await saveUserToCloud(u);
+                        }
+                    } else {
+                        window.allUsers = users;
+                        triggerLocalUpdate(users);
+                    }
                 } else {
-                    await signInAnonymously(auth);
+                    fallbackToLocalStorage();
                 }
-
-                isCloudConnected = true;
-                subscribeToCloudUsers();
-                return true;
             } catch (e) {
-                console.warn("Firestore initialization error, operating in local fallback:", e);
-                isCloudConnected = false;
+                console.warn("Node/SQLite Server not detected, using browser local storage:", e);
                 fallbackToLocalStorage();
-                return false;
             }
+            setInterval(fetchLatestDatabase, 3000);
+        }
+
+        async function fetchLatestDatabase() {
+            try {
+                const res = await fetch(`${API_BASE}/users`);
+                if (res.ok) {
+                    const cloudUsers = await res.json();
+                    window.allUsers = cloudUsers;
+                    triggerLocalUpdate(cloudUsers);
+                }
+            } catch (e) {}
         }
 
         function fallbackToLocalStorage() {
@@ -791,30 +769,6 @@
             triggerLocalUpdate(window.allUsers);
         }
 
-        function subscribeToCloudUsers() {
-            if (!db) return;
-            const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
-            
-            onSnapshot(usersRef, (snapshot) => {
-                if (snapshot.empty) {
-                    INITIAL_SEED_USERS.forEach(u => saveUserToCloud(u));
-                    return;
-                }
-                const cloudUsers = [];
-                snapshot.forEach(docSnap => {
-                    cloudUsers.push(docSnap.data());
-                });
-                window.allUsers = cloudUsers;
-                try {
-                    localStorage.setItem("pgc_clan_users", JSON.stringify(cloudUsers));
-                } catch(e) {}
-                triggerLocalUpdate(cloudUsers);
-            }, (error) => {
-                console.error("Cloud snapshot listener error:", error);
-                fallbackToLocalStorage();
-            });
-        }
-
         async function saveUserToCloud(user) {
             try {
                 const existingIdx = window.allUsers.findIndex(u => u.id === user.id);
@@ -824,15 +778,14 @@
                     window.allUsers.push(user);
                 }
                 localStorage.setItem("pgc_clan_users", JSON.stringify(window.allUsers));
-            } catch(e) {}
 
-            if (isCloudConnected && db && user && user.id) {
-                try {
-                    const userDoc = doc(db, 'artifacts', appId, 'public', 'data', 'users', user.id);
-                    await setDoc(userDoc, user);
-                } catch (e) {
-                    console.error("Error writing user to cloud:", e);
-                }
+                await fetch(`${API_BASE}/users`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(user)
+                });
+            } catch (e) {
+                console.error("Error writing user to SQLite server:", e);
             }
             triggerLocalUpdate(window.allUsers);
         }
@@ -841,15 +794,12 @@
             try {
                 window.allUsers = window.allUsers.filter(u => u.id !== userId);
                 localStorage.setItem("pgc_clan_users", JSON.stringify(window.allUsers));
-            } catch(e) {}
 
-            if (isCloudConnected && db && userId) {
-                try {
-                    const userDoc = doc(db, 'artifacts', appId, 'public', 'data', 'users', userId);
-                    await deleteDoc(userDoc);
-                } catch (e) {
-                    console.error("Error deleting user from cloud:", e);
-                }
+                await fetch(`${API_BASE}/users/${userId}`, {
+                    method: 'DELETE'
+                });
+            } catch (e) {
+                console.error("Error deleting user from SQLite server:", e);
             }
             triggerLocalUpdate(window.allUsers);
         }
@@ -877,12 +827,10 @@
             }
         }
 
-        // AUTOMATIC LEVEL PROGRESSION REQUIREMENT CHECKER
         function checkAutoLevelUp(user) {
             if (!user) return;
             let eligibleLevel = user.level || 1;
 
-            // Check levels 6 down to 2 against custom objective rules
             for (let lvl = 6; lvl >= 2; lvl--) {
                 if (LEVEL_OBJECTIVES[lvl].check(user)) {
                     eligibleLevel = Math.max(eligibleLevel, lvl);
@@ -1308,7 +1256,6 @@
             }
         }
 
-        // WEEKLY ACTIVITIES POOL (SINGLE RANDOM ACTIVITY PICKED PER WEEK)
         const WEEKLY_ACTIVITIES_POOL = [
             { id: 0, title: "1. Weekly Master", desc: "Finish 14 daily activities this week.", check: (u) => (u.weeklyDailiesCompletedCount || 0) >= 14, reqText: "14 Dailies" },
             { id: 1, title: "2. Recruiter Streak", desc: "Get 5 referrals in 1 week.", check: (u) => (u.referralCountThisWeek || 0) >= 5, reqText: "5 Referrals" },
@@ -1392,18 +1339,11 @@
             }
         }
 
-        /* SIMULATED AI JUNK CLASSIFIER LOGIC */
         function classifyAdminRequest(text) {
             const lower = text.toLowerCase().trim();
-
-            // Extreme Level / Points Demands
             const extremeDemands = ["level 7", "dictator", "1000", "10000", "all the things", "give me everything", "max level"];
             const isExtreme = extremeDemands.some(term => lower.includes(term));
-
-            // Excessive Needy Begging
             const beggingMatches = (lower.match(/please/g) || []).length >= 3 || lower.includes("pls pls pls") || lower.includes("please please please");
-
-            // Unkind / Rude Words
             const meanWords = ["stupid", "dumb", "hate", "trash", "shut up", "idiot", "sucks"];
             const isUnkind = meanWords.some(w => lower.includes(w));
 
@@ -1449,7 +1389,6 @@
             input.value = "";
 
             if (analysis.category === "junk") {
-                // Trigger the required pop-up modal for the user
                 window.lastJunkReqId = newReq.id;
                 document.getElementById("junk-alert-modal").classList.remove("hidden");
             } else {
@@ -1951,7 +1890,6 @@
             renderAdminUserList();
         }
 
-        // Attach global window handlers
         window.switchAuthTab = switchAuthTab;
         window.toggleReferralInputs = toggleReferralInputs;
         window.handleRegister = handleRegister;
@@ -1989,8 +1927,8 @@
             }
         });
 
-        // Initialize App and Firebase Data Sync
-        initFirebase();
+        // Initialize app data connection
+        initSQLiteData();
     </script>
 </body>
 </html>
