@@ -1,3 +1,5 @@
+require('dotenv').config();
+const pool = require('./database'); // Assumes your file is named database.js
 const express = require('express');
 const cors = require('cors');
 const Database = require('better-sqlite3');
